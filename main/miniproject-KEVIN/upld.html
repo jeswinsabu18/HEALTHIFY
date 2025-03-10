@@ -500,66 +500,6 @@
                 }
             }
 
-            function saveReport(reportData) {
-                let reports = JSON.parse(localStorage.getItem('bloodReports')) || [];
-                reports.push({ date: new Date().toISOString(), data: reportData });
-                console.log(reports);
-                localStorage.setItem('bloodReports', JSON.stringify(reports));
-            }
-
-            // Handle analyze button click
-            analyzeButton.addEventListener('click', async function () {
-                if (pdfFile.files.length === 0) return;
-
-                // Reset previous results
-                extractedTextContent.textContent = '';
-                analysisContent.innerHTML = '';
-
-                // Show loader
-                loader.style.display = 'block';
-                analyzeButton.disabled = true;
-                errorMessage.style.display = 'none';
-
-                const file = pdfFile.files[0];
-
-                try {
-                    // Extract text from PDF
-                    const extractedText = await extractTextFromPDF(file);
-                    displayExtractedText(extractedText);
-
-                    // Save extracted text and values to localStorage
-                    saveProcessedReport(extractedText);
-
-                    // Send extracted text to LLM API
-                    const analysisResult = await sendToLLM(extractedText);
-
-                    // Display analysis results
-                    displayAnalysisResults(analysisResult);
-
-                    // Show results section
-                    results.style.display = 'block';
-
-                    // Clear any existing redirect timeout
-                    if (window.redirectTimeout) {
-                        clearTimeout(window.redirectTimeout);
-                    }
-
-                    // Set timeout for automatic redirect (can be cancelled by user action)
-                    window.redirectTimeout = setTimeout(() => {
-                        window.location.href = "progress.html";
-                    }, 10000); // Show results for 10 seconds before redirecting
-
-                } catch (error) {
-                    console.error('Error:', error);
-                    errorMessage.textContent = 'An error occurred during processing: ' + error.message;
-                    errorMessage.style.display = 'block';
-                } finally {
-                    // Hide loader
-                    loader.style.display = 'none';
-                    analyzeButton.disabled = false;
-                }
-            });
-
             // Function to extract text from PDF using PDF.js
             async function extractTextFromPDF(file) {
                 return new Promise((resolve, reject) => {
@@ -635,13 +575,31 @@
                 extractedTextContent.textContent = text;
             }
 
-            // Function to send extracted text to LLM API using direct fetch to Gemini API
-            async function sendToLLM(text) {
-                try {
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+            // Helper function to convert file to base64
+            function fileToBase64(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                });
+            }
 
-                    const prompt = `
-                    Analyze this blood test report and provide a concise, structured analysis following these rules:
+            // Function to send PDF directly to Gemini
+            async function sendPDFToGemini(file) {
+                try {
+                    // Create a FormData object to handle the file
+                    const formData = new FormData();
+                    
+                    // Convert file to base64
+                    const base64PDF = await fileToBase64(file);
+                    
+                    // Gemini API endpoint with your API key
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+                    
+                    // Construct the prompt with instructions
+                    const instructions = `
+                    Analyze this blood test report PDF and provide a concise, structured analysis following these rules:
                     
                     1. Extract and present patient information first (name, age, ID, etc.)
                     2. Present test results in tables with clear categorization of normal vs abnormal values
@@ -658,28 +616,36 @@
                     - <div class="summary-section"> for abnormal findings summary
                     - <div class="recommendations"> for recommendations
                     - For test results, mark with class="normal", class="abnormal" or class="borderline"
+                    `;
                     
-                    Here is the report content:
-                    ${text}`;
-
+                    // Create request payload with both text instructions and the PDF file
+                    const requestBody = {
+                        contents: [{
+                            parts: [
+                                { text: instructions },
+                                { 
+                                    inline_data: {
+                                        mime_type: "application/pdf",
+                                        data: base64PDF.split('base64,')[1] // Remove the data:application/pdf;base64, prefix
+                                    }
+                                }
+                            ]
+                        }],
+                        generationConfig: {
+                            maxOutputTokens: 2048,
+                            temperature: 0.2,
+                            topP: 0.8,
+                            topK: 40,
+                        }
+                    };
+                    
+                    // Send the request
                     const response = await fetch(apiUrl, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({
-                            contents: [{
-                                parts: [{
-                                    text: prompt
-                                }]
-                            }],
-                            generationConfig: {
-                                maxOutputTokens: 2048,
-                                temperature: 0.2,
-                                topP: 0.8,
-                                topK: 40,
-                            }
-                        })
+                        body: JSON.stringify(requestBody)
                     });
 
                     if (!response.ok) {
@@ -696,7 +662,9 @@
                     let result = "";
                     data.candidates.forEach(candidate => {
                         candidate.content.parts.forEach(part => {
-                            result += part.text;
+                            if (part.text) {
+                                result += part.text;
+                            }
                         });
                     });
 
@@ -836,10 +804,54 @@
                     link.setAttribute('rel', 'noopener noreferrer');
                 });
             }
-        });
 
-        document.getElementById('goBackButton').addEventListener('click', function () {
-            window.location.href = 'home.html'; // Change this to your actual homepage URL
+            // Handle analyze button click
+            analyzeButton.addEventListener('click', async function () {
+                if (pdfFile.files.length === 0) return;
+
+                // Reset previous results
+                extractedTextContent.textContent = '';
+                analysisContent.innerHTML = '';
+
+                // Show loader
+                loader.style.display = 'block';
+                analyzeButton.disabled = true;
+                errorMessage.style.display = 'none';
+
+                const file = pdfFile.files[0];
+
+                try {
+                    // Send PDF directly to Gemini API
+                    const analysisResult = await sendPDFToGemini(file);
+
+                    // Display analysis results
+                    displayAnalysisResults(analysisResult);
+
+                    // Optionally also extract and display text
+                    const extractedText = await extractTextFromPDF(file);
+                    displayExtractedText(extractedText);
+                    
+                    // Save extracted text and values for progress tracking
+                    saveProcessedReport(extractedText);
+
+                    // Show results section
+                    results.style.display = 'block';
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    errorMessage.textContent = 'An error occurred during processing: ' + error.message;
+                    errorMessage.style.display = 'block';
+                } finally {
+                    // Hide loader
+                    loader.style.display = 'none';
+                    analyzeButton.disabled = false;
+                }
+            });
+
+            // Handle go back button
+            document.getElementById('goBackButton').addEventListener('click', function () {
+                window.location.href = 'home.html'; // Change this to your actual homepage URL
+            });
         });
     </script>
 </body>
