@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Progress - Healthify</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        header {
+            background-color: #3b637d;
+            color: white;
+            padding: 1rem;
+        }
+
+        nav {
+            background-color: #87bdd8;
+            padding: 1rem;
+        }
+
+        nav a {
+            color: white;
+            margin: 0 1rem;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .chart-container {
+            width: 80%;
+            max-width: 800px;
+            margin: 2rem auto;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        footer {
+            background-color: #667292;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Track Your Health Progress</h1>
+        <p>Visualize your health trends over time with interactive charts.</p>
+    </header>
+
+    <nav>
+        <a href="home.html">Home</a>
+        <a href="upld.html">Upload Reports</a>
+        <a href="progress.html">Track Progress</a>
+    </nav>
+
+    <div class="chart-container">
+        <h2>Health Metrics Over Time</h2>
+        <canvas id="progressChart"></canvas>
+        <canvas id="bloodTestChart"></canvas>
+
+        <div id="noDataMessage" style="display: none; margin-top: 20px; color: #666;">
+            <p>No blood test data available. Please upload some reports first.</p>
+            <a href="upld.html" class="button"
+                style="display: inline-block; margin-top: 10px; padding: 8px 16px; background-color: #87bdd8; color: white; text-decoration: none; border-radius: 4px;">Upload
+                Reports</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Healthify. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Replace the entire script section in your progress.html
+
+        document.addEventListener("DOMContentLoaded", function () {
+            updateChart();
+        });
+
+        function updateChart() {
+            try {
+                // Get data from localStorage
+                let reports = JSON.parse(localStorage.getItem("bloodReports")) || [];
+
+                if (!Array.isArray(reports) || reports.length === 0) {
+                    console.warn("No valid blood report data found.");
+                    document.getElementById("progressChart").parentNode.innerHTML +=
+                        '<p class="no-data-message">No blood test data available. Please upload some reports first.</p>';
+                    return;
+                }
+
+                console.log("Found reports:", reports);
+
+                // Extract dates for x-axis
+                let dates = reports.map(report => new Date(report.date).toLocaleDateString());
+
+                // Create datasets for each test type
+                let datasets = [];
+                let testTypes = new Set();
+
+                // First identify all available test types across all reports
+                reports.forEach(report => {
+                    if (report.values) {
+                        Object.keys(report.values).forEach(test => testTypes.add(test));
+                    }
+                });
+
+                // Create a dataset for each test type
+                testTypes.forEach(testType => {
+                    let values = reports.map(report => {
+                        // Return null for missing values so chart shows gaps rather than zeros
+                        return report.values && report.values[testType] !== undefined ?
+                            report.values[testType] : null;
+                    });
+
+                    if (values.some(val => val !== null)) {
+                        datasets.push({
+                            label: testType,
+                            data: values,
+                            borderColor: getRandomColor(),
+                            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.1,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        });
+                    }
+                });
+
+                // Clear any existing charts
+                let existingChart = Chart.getChart("progressChart");
+                if (existingChart) {
+                    existingChart.destroy();
+                }
+
+                // Create the new chart
+                let ctx = document.getElementById("progressChart").getContext("2d");
+                new Chart(ctx, {
+                    type: "line",
+                    data: {
+                        labels: dates,
+                        datasets: datasets
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: false
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Blood Test Results Over Time',
+                                font: {
+                                    size: 16
+                                }
+                            },
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += context.parsed.y;
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        responsive: true,
+                        maintainAspectRatio: true
+                    }
+                });
+
+                console.log("Chart updated successfully");
+            } catch (error) {
+                console.error("Error updating chart:", error);
+            }
+        }
+
+        function getRandomColor() {
+            return `hsl(${Math.random() * 360}, 70%, 50%)`;
+        }
+    </script>
+</body>
+
+</html>
