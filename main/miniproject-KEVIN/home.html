@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health Management Platform</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: #333;
+      margin: 0;
+      min-height: 100vh;
+      overflow-y: auto;
+      position: relative;
+      background-color: #f5f7fa;
+    }
+    body::before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('assets/report.webp');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      filter: blur(2px);
+      z-index: -1;
+      content: '';
+    }
+    .logo {
+      width: 150px;
+      height: auto;
+      cursor: pointer;
+    }
+    .Login {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+    }
+    .Login a {
+      color: white;
+      background-color: #2e7aad;
+      padding: 8px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .Login a:hover {
+      background-color: #245b8b;
+      transform: scale(1.05);
+    }
+    nav {
+      background-color: hsl(199, 52%, 57%);
+      padding: .75rem 0;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+    header {
+      background-color: #2e7aad;
+      color: white;
+      padding: 1.5rem 0;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      position: relative;
+    }
+    nav a {
+      color: white;
+      margin: 0 1rem;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 8px 12px;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+    nav a:hover {
+      background-color: #1f5f91;
+    }
+    .hero {
+      color: rgb(9, 16, 38);
+      text-align: center;
+      padding: 6rem 1rem;
+    }
+    .hero h1{
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+    }
+    .hero p {
+      font-size: 1.5rem;
+    }
+    .features {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      padding: 4rem 2rem;
+      flex-wrap: wrap;
+      max-width: 1400px;
+      margin: 2rem auto;
+    }
+    .feature-card {
+      background: white;
+      border-radius: 20px;
+      width: 350px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+    }
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 40px rgba(46, 122, 173, 0.15);
+    }
+    .card-image {
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+      position: relative;
+    }
+    .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .feature-card:hover .card-image img {
+      transform: scale(1.1);
+    }
+    .card-content {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      background: white;
+    }
+    .card-content h2 {
+      color: #2e7aad;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+    .card-content p {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      flex-grow: 1;
+    }
+    .card-button {
+      background: linear-gradient(135deg, #2e7aad, #1f5f91);
+      color: white;
+      text-decoration: none;
+      padding: 0.8rem 1.5rem;
+      border-radius: 50px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      justify-content: center;
+    }
+    .card-button:hover {
+      transform: translateX(5px);
+      box-shadow: 0 5px 15px rgba(46, 122, 173, 0.3);
+    }
+    .card-button i {
+      font-size: 0.9rem;
+      transition: transform 0.3s ease;
+    }
+    .card-button:hover i {
+      transform: translateX(3px);
+    }
+    @media (max-width: 768px) {
+      .feature-card {
+        width: 100%;
+        max-width: 400px;
+      }
+    }
+    /* Add animation for cards */
+    @keyframes cardFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .feature-card {
+      animation: cardFadeIn 0.8s ease-out backwards;
+    }
+    .feature-card:nth-child(1) { animation-delay: 0.2s; }
+    .feature-card:nth-child(2) { animation-delay: 0.4s; }
+    .feature-card:nth-child(3) { animation-delay: 0.6s; }
+    footer {
+      background-color: #667292;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      margin-top: 2rem;
+    }
+    .username {
+      color: white;
+      padding: 8px 20px;
+      border-radius: 5px;
+      font-weight: bold;
+      background-color: #2e7aad;
+      display: inline-block;
+    }
+    #logoutBtn {
+      cursor: pointer;
+    }
+    #logoutBtn:hover {
+      background-color: #dc3545;
+    }
+    .services-section {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 5rem 2rem;
+      margin-top: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .services-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(to right, 
+          transparent, 
+          rgba(46, 122, 173, 0.2), 
+          transparent
+      );
+    }
+    .section-header {
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto 4rem auto;
+      position: relative;
+    }
+    .section-header h2 {
+      font-size: 2.5rem;
+      color: #2e7aad;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #2e7aad, #1f5f91);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+      display: inline-block;
+    }
+    .section-header h2::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(to right, #2e7aad, #1f5f91);
+      border-radius: 2px;
+    }
+    .section-header p {
+      color: #666;
+      font-size: 1.2rem;
+      margin-top: 1.5rem;
+    }
+    /* Add subtle background patterns */
+    .services-section::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+          radial-gradient(circle at 20px 20px, #2e7aad 2px, transparent 0),
+          radial-gradient(circle at 40px 70px, #1f5f91 2px, transparent 0),
+          radial-gradient(circle at 70px 40px, #2e7aad 2px, transparent 0);
+      background-size: 100px 100px;
+      opacity: 0.05;
+      pointer-events: none;
+    }
+    /* Update card animations */
+    @keyframes cardFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .feature-card {
+      animation: cardFadeIn 0.8s ease-out backwards;
+    }
+    .feature-card:nth-child(1) { animation-delay: 0.3s; }
+    .feature-card:nth-child(2) { animation-delay: 0.6s; }
+    .feature-card:nth-child(3) { animation-delay: 0.9s; }
+    /* Add responsive adjustments */
+    @media (max-width: 768px) {
+      .services-section {
+        padding: 3rem 1rem;
+      }
+      .section-header h2 {
+        font-size: 2rem;
+      }
+      .section-header p {
+        font-size: 1rem;
+      }
+    }
+    /* Responsive styles for different screen sizes */
+    @media (max-width: 1200px) {
+      .features {
+        padding: 3rem 1.5rem;
+        gap: 1.5rem;
+      }
+      .feature-card {
+        width: 300px;
+      }
+    }
+    @media (max-width: 992px) {
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+      .hero p {
+        font-size: 1.2rem;
+      }
+      .section-header h2 {
+        font-size: 2rem;
+      }
+    }
+    @media (max-width: 768px) {
+      header {
+        padding: 1rem 0;
+      }
+      .logo {
+        width: 120px;
+      }
+      nav {
+        padding: .5rem 0;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+      nav a {
+        margin: 0 0.5rem;
+        padding: 6px 10px;
+        font-size: 0.9rem;
+      }
+      .hero {
+        padding: 3rem 1rem;
+      }
+      .hero h1 {
+        font-size: 2rem;
+      }
+      .hero p {
+        font-size: 1rem;
+      }
+      .features {
+        padding: 2rem 1rem;
+      }
+      .feature-card {
+        width: 100%;
+        max-width: 400px;
+      }
+      .card-image {
+        height: 180px;
+      }
+      .card-content {
+        padding: 1.2rem;
+      }
+      .card-content h2 {
+        font-size: 1.3rem;
+      }
+      .services-section {
+        padding: 3rem 1rem;
+      }
+      .section-header {
+        margin-bottom: 2rem;
+      }
+      .section-header h2 {
+        font-size: 1.8rem;
+      }
+      .section-header p {
+        font-size: 1rem;
+      }
+      .Login {
+        top: 5px;
+        right: 10px;
+      }
+      .username {
+        padding: 6px 15px;
+        font-size: 0.9rem;
+      }
+    }
+    @media (max-width: 480px) {
+      header h1 {
+        font-size: 1.5rem;
+      }
+      header p {
+        font-size: 0.9rem;
+      }
+      .hero h1 {
+        font-size: 1.8rem;
+      }
+      .hero p {
+        font-size: 0.9rem;
+      }
+      .card-button {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+      }
+      footer {
+        padding: 0.8rem;
+        font-size: 0.8rem;
+      }
+      .Login a {
+        padding: 6px 15px;
+        font-size: 0.9rem;
+      }
+    }
+    /* Fix for navigation on small screens */
+    @media (max-width: 380px) {
+      nav {
+        display: flex;
+        justify-content: flex-start;
+        padding: 0.5rem;
+      }
+      nav a {
+        flex: 0 0 auto;
+        margin: 0 0.3rem;
+        padding: 5px 8px;
+        font-size: 0.8rem;
+      }
+    }
+    /* Improve touch targets on mobile */
+    @media (hover: none) {
+      .card-button,
+      nav a,
+      .Login a {
+        padding: 12px 20px; /* Larger touch targets */
+      }
+      .feature-card:hover {
+        transform: none; /* Remove hover effects on touch devices */
+      }
+      .card-button:hover {
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="Login">
+      <span id="username" class="username"></span>
+    </div>
+    <img src="./assets/Logo.webp.png" alt="Website Logo" class="logo" onclick="location.href='details.html';">
+
+    <h1>Health Management Platform</h1>
+    <p>Analyze your health reports and get personalized recommendations</p>
+  </header>
+
+  <nav>
+    <a href="#" id="logoutBtn" aria-label="Logout" onclick="event.preventDefault();">Logout</a>
+    <a href="upld.html" aria-label="Upload Reports">Upload Reports</a>
+    <a href="insights.html" aria-label="Insights">Insights</a>
+    <a href="progress.html" aria-label="Progress Tracking">Progress Tracking</a>
+  </nav>
+
+  <div class="hero">
+    <h1>Take Control of Your Health</h1>
+    <p>Upload your health reports, track your progress, and receive personalized recommendations.</p>
+  </div>
+
+  <section class="services-section">
+    <div class="section-header">
+      <h2>Our Services</h2>
+      <p>Comprehensive health management tools at your fingertips</p>
+    </div>
+    
+    <div class="features">
+      <div class="feature-card">
+        <div class="card-image">
+          <img src="assets/logoreport.webp.jpg" alt="Upload Reports" onclick="location.href='upld.html';">
+        </div>
+        <div class="card-content">
+          <h2>Upload Reports</h2>
+          <p>Securely store and analyze your health reports to get actionable insights.</p>
+          <a href="upld.html" class="card-button">
+            Upload Now
+            <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="card-image">
+          <img src="assets/yoga.jpg" alt="Insights">
+        </div>
+        <div class="card-content">
+          <h2>Personalized Insights</h2>
+          <p>Receive tailored diet and exercise recommendations based on your health data.</p>
+          <a href="insights.html" class="card-button">
+            View Insights
+            <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="card-image">
+          <img src="assets/healthcareanalyst.jpg" alt="Track Progress" onclick="location.href='progress.html';">
+        </div>
+        <div class="card-content">
+          <h2>Track Progress</h2>
+          <p>Visualize your health trends over time with graphs and charts.</p>
+          <a href="progress.html" class="card-button">
+            See Progress
+            <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <footer>
+    <p>&copy; 2025 Healthify Group of Management. All rights reserved.</p>
+  </footer>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script type="module" src="scripts/home.js"></script>
+</body>
+</html>
