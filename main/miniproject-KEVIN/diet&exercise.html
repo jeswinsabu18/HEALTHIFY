@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalized Health Recommendations</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #F9F9F9;
+            color: #333;
+        }
+
+        .go-back-button {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: #62a6b8;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: inline-block;
+            width: auto;
+            min-width: unset;
+            max-width: fit-content;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .go-back-button:hover {
+            background-color: #388E3C;
+            transform: scale(1.05);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: #B5B25C;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .recommendation-section {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            margin-top: 25px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        .section-subtitle {
+            color: #3b637d;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .parameter-card {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 5px solid #3498db;
+        }
+
+        .parameter-card.anemia {
+            border-left-color: #e74c3c;
+        }
+
+        .parameter-card.inflammation {
+            border-left-color: #e67e22;
+        }
+
+        .parameter-card.diabetes {
+            border-left-color: #9b59b6;
+        }
+
+        .parameter-card.cholesterol {
+            border-left-color: #f1c40f;
+        }
+
+        .parameter-card h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .parameter-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-left: 10px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .status-low {
+            background-color: #d4edff;
+            color: #2980b9;
+        }
+
+        .status-high {
+            background-color: #ffd4d4;
+            color: #c0392b;
+        }
+
+        .status-normal {
+            background-color: #d4ffda;
+            color: #27ae60;
+        }
+
+        .diet-plan, .exercise-plan {
+            margin-top: 25px;
+        }
+
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .food-item {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #eee;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .food-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .food-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .food-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .food-description {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .exercise-item {
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #eee;
+        }
+
+        .exercise-item-icon {
+            font-size: 24px;
+            margin-right: 15px;
+            color: #3b637d;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .exercise-item-content {
+            flex: 1;
+        }
+
+        .exercise-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .exercise-description {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .exercise-duration {
+            font-weight: bold;
+            color: #3b637d;
+        }
+
+        .meal-plan {
+            margin-top: 30px;
+        }
+
+        .meal-plan-day {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .meal-plan-day h4 {
+            margin-top: 0;
+            color: #3b637d;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .meal-item {
+            margin-bottom: 15px;
+        }
+
+        .meal-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .meal-description {
+            font-size: 14px;
+        }
+
+        .disclaimer {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        .tab-container {
+            margin-top: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            margin-right: 5px;
+            border-radius: 4px 4px 0 0;
+        }
+
+        .tab.active {
+            background-color: white;
+            border-bottom: 1px solid white;
+            margin-bottom: -1px;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-top: none;
+            background-color: white;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .print-button {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .print-button:hover {
+            background-color: #27ae60;
+        }
+
+        @media print {
+            .go-back-button, .print-button, .tabs {
+                display: none;
+            }
+            
+            .tab-content {
+                display: block;
+                border: none;
+            }
+            
+            body {
+                background-color: white;
+            }
+            
+            .container {
+                width: 100%;
+                max-width: 100%;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <button id="goBackButton" class="go-back-button">⬅ Go Back</button>
+    
+    <header>
+        <h1>Personalized Health Recommendations</h1>
+        <p>Tailored diet and exercise plans based on your blood test results</p>
+    </header>
+
+    <div class="container">
+        <div class="recommendation-section">
+            <div id="patientSummary">
+                <!-- Dynamically populated from blood test data -->
+            </div>
+
+            <div class="tab-container">
+                <div class="tabs">
+                    <div class="tab active" data-tab="diet-recommendations">Diet Plan</div>
+                    <div class="tab" data-tab="exercise-recommendations">Exercise Plan</div>
+                    <div class="tab" data-tab="sample-meal-plan">Sample Meal Plan</div>
+                </div>
+
+                <div id="diet-recommendations" class="tab-content active">
+                    <h3 class="section-title">Personalized Diet Recommendations</h3>
+                    
+                    <div id="dietSummary">
+                        <!-- Dynamically populated based on test results -->
+                    </div>
+                    
+                    <div class="food-grid" id="recommendedFoods">
+                        <!-- Dynamically populated based on test results -->
+                    </div>
+                    
+                    <h4 class="section-subtitle">Foods to Limit</h4>
+                    <div class="food-grid" id="limitFoods">
+                        <!-- Dynamically populated based on test results -->
+                    </div>
+                    
+                    <h4 class="section-subtitle">General Nutrition Guidelines</h4>
+                    <ul id="nutritionGuidelines">
+                        <li>Maintain proper hydration by drinking 8-10 glasses of water daily</li>
+                        <li>Aim for 5-7 servings of fruits and vegetables each day</li>
+                        <li>Include a source of protein with each meal</li>
+                        <li>Focus on whole grains rather than refined carbohydrates</li>
+                        <li>Limit processed foods and those high in added sugars</li>
+                    </ul>
+                </div>
+
+                <div id="exercise-recommendations" class="tab-content">
+                    <h3 class="section-title">Personalized Exercise Plan</h3>
+                    
+                    <div id="exerciseSummary">
+                        <!-- Dynamically populated based on test results -->
+                    </div>
+                    
+                    <div id="exerciseRecommendations">
+                        <!-- Dynamically populated based on test results -->
+                    </div>
+                    
+                    <h4 class="section-subtitle">Weekly Exercise Schedule</h4>
+                    <div id="exerciseSchedule">
+                        <!-- Dynamically populated based on test results -->
+                    </div>
+                    
+                    <h4 class="section-subtitle">Getting Started Tips</h4>
+                    <ul>
+                        <li>Start slowly and gradually increase intensity and duration</li>
+                        <li>Always warm up for 5-10 minutes before exercising</li>
+                        <li>Cool down and stretch after each workout</li>
+                        <li>Stay hydrated before, during, and after exercise</li>
+                        <li>Listen to your body and rest when needed</li>
+                    </ul>
+                </div>
+
+                <div id="sample-meal-plan" class="tab-content">
+                    <h3 class="section-title">7-Day Sample Meal Plan</h3>
+                    <p>Below is a sample meal plan that incorporates the recommended foods based on your blood test results. Adjust portion sizes to meet your specific caloric needs.</p>
+                    
+                    <div id="mealPlanContainer">
+                        <!-- Dynamically populated based on test results -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="disclaimer">
+                <p><strong>Disclaimer:</strong> These recommendations are generated based on general patterns in your blood test results and should not replace professional medical advice. Always consult with your healthcare provider or a registered dietitian before making significant changes to your diet or exercise routine, especially if you have existing health conditions or take medications.</p>
+            </div>
+            
+            <button id="printButton" class="print-button">Print Recommendations</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching functionality
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Go back button
+            document.getElementById('goBackButton').addEventListener('click', function() {
+                window.location.href = 'upld.html';
+            });
+            
+            // Print button
+            document.getElementById('printButton').addEventListener('click', function() {
+                window.print();
+            });
+            
+            // Load the latest blood report data from localStorage
+            function getLatestBloodReport() {
+                try {
+                    const reports = JSON.parse(localStorage.getItem('bloodReports')) || [];
+                    if (reports.length === 0) return null;
+                    
+                    // Sort by date and get the most recent
+                    reports.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    return reports[0];
+                } catch (error) {
+                    console.error('Error getting latest blood report:', error);
+                    return null;
+                }
+            }
+            
+            // Generate health recommendations based on blood test values
+            function generateRecommendations(bloodData) {
+                if (!bloodData || !bloodData.values) {
+                    showNoDataMessage();
+                    return;
+                }
+                
+                const values = bloodData.values;
+                const date = new Date(bloodData.date).toLocaleDateString();
+                
+                // Populate patient summary
+                document.getElementById('patientSummary').innerHTML = `
+                    <h3 class="section-title">Health Profile</h3>
+                    <p>Recommendations based on your blood test from ${date}</p>
+                    <div id="abnormalParameters"></div>
+                `;
+                
+                // Track parameters for recommendations
+                const parameters = {
+                    lowHemoglobin: false,
+                    highGlucose: false,
+                    highCRP: false,
+                    lowRBC: false
+                };
+                
+                const abnormalParamsContainer = document.getElementById('abnormalParameters');
+                
+                // Check hemoglobin (g/dL)
+                if (values.Hemoglobin !== undefined) {
+                    const hemoglobin = values.Hemoglobin;
+                    let status = '', statusClass = '';
+                    
+                    if (hemoglobin < 12) {
+                        status = 'Low';
+                        statusClass = 'status-low';
+                        parameters.lowHemoglobin = true;
+                        
+                        const elem = document.createElement('div');
+                        elem.className = 'parameter-card anemia';
+                        elem.innerHTML = `
+                            <h3>Hemoglobin <span class="parameter-status ${statusClass}">${status}</span></h3>
+                            <p>Your hemoglobin level of ${hemoglobin} g/dL is below the normal range, which may indicate anemia or low iron levels.</p>
+                        `;
+                        abnormalParamsContainer.appendChild(elem);
+                    }
+                }
+                
+                // Check glucose (mg/dL)
+                if (values.Glucose !== undefined) {
+                    const glucose = values.Glucose;
+                    let status = '', statusClass = '';
+                    
+                    if (glucose > 100) {
+                        status = 'High';
+                        statusClass = 'status-high';
+                        parameters.highGlucose = true;
+                        
+                        const elem = document.createElement('div');
+                        elem.className = 'parameter-card diabetes';
+                        elem.innerHTML = `
+                            <h3>Glucose <span class="parameter-status ${statusClass}">${status}</span></h3>
+                            <p>Your glucose level of ${glucose} mg/dL is above the normal range, which may indicate prediabetes or difficulties with blood sugar regulation.</p>
+                        `;
+                        abnormalParamsContainer.appendChild(elem);
+                    }
+                }
+                
+                // Check CRP (mg/L)
+                if (values.CRP !== undefined) {
+                    const crp = values.CRP;
+                    let status = '', statusClass = '';
+                    
+                    if (crp > 3) {
+                        status = 'High';
+                        statusClass = 'status-high';
+                        parameters.highCRP = true;
+                        
+                        const elem = document.createElement('div');
+                        elem.className = 'parameter-card inflammation';
+                        elem.innerHTML = `
+                            <h3>C-Reactive Protein <span class="parameter-status ${statusClass}">${status}</span></h3>
+                            <p>Your CRP level of ${crp} mg/L is elevated, which may indicate inflammation in your body.</p>
+                        `;
+                        abnormalParamsContainer.appendChild(elem);
+                    }
+                }
+                
+                // Check RBC count
+                if (values['RBC count'] !== undefined) {
+                    const rbc = values['RBC count'];
+                    let status = '', statusClass = '';
+                    
+                    if (rbc < 4.2) {
+                        status = 'Low';
+                        statusClass = 'status-low';
+                        parameters.lowRBC = true;
+                        
+                        const elem = document.createElement('div');
+                        elem.className = 'parameter-card anemia';
+                        elem.innerHTML = `
+                            <h3>Red Blood Cell Count <span class="parameter-status ${statusClass}">${status}</span></h3>
+                            <p>Your RBC count of ${rbc} million cells/mcL is below the normal range, which may contribute to anemia.</p>
+                        `;
+                        abnormalParamsContainer.appendChild(elem);
+                    }
+                }
+                
+                // If no abnormal parameters, show normal message
+                if (abnormalParamsContainer.children.length === 0) {
+                    abnormalParamsContainer.innerHTML = `
+                        <div class="parameter-card">
+                            <h3>Overall Health <span class="parameter-status status-normal">Normal</span></h3>
+                            <p>Your blood test results appear to be within normal ranges. The following recommendations are for general health maintenance.</p>
+                        </div>
+                    `;
+                }
+                
+                // Generate diet recommendations
+                generateDietRecommendations(parameters);
+                
+                // Generate exercise recommendations
+                generateExerciseRecommendations(parameters);
+                
+                // Generate meal plan
+                generateMealPlan(parameters);
+            }
+            
+            function generateDietRecommendations(parameters) {
+                const dietSummary = document.getElementById('dietSummary');
+                const recommendedFoods = document.getElementById('recommendedFoods');
+                const limitFoods = document.getElementById('limitFoods');
+                
+                // Create diet summary based on parameters
+                let summaryHTML = '<p>Based on your blood test results, we recommend focusing on a diet that:</p><ul>';
+                
+                if (parameters.lowHemoglobin || parameters.lowRBC) {
+                    summaryHTML += '<li>Is rich in iron and vitamin C to improve hemoglobin levels and red blood cell production</li>';
+                }
+                
+                if (parameters.highGlucose) {
+                    summaryHTML += '<li>Helps regulate blood sugar levels through low glycemic index foods</li>';
+                }
+                
+                if (parameters.highCRP) {
+                    summaryHTML += '<li>Contains anti-inflammatory foods to reduce inflammation markers</li>';
+                }
+                
+                summaryHTML += '<li>Provides balanced nutrition to support overall health</li></ul>';
+                dietSummary.innerHTML = summaryHTML;
+                
+                // Define recommended foods based on test results
+                const foods = [];
+                const avoidFoods = [];
+                
+                // Iron-rich foods for low hemoglobin/RBC
+                if (parameters.lowHemoglobin || parameters.lowRBC) {
+                    foods.push(
+                        {icon: '🥩', title: 'Lean Red Meat', description: 'Rich in heme iron that is easily absorbed'},
+                        {icon: '🫘', title: 'Beans & Lentils', description: 'Plant-based source of iron and protein'},
+                        {icon: '🥬', title: 'Leafy Greens', description: 'Spinach and kale provide iron and folate'},
+                        {icon: '🍊', title: 'Vitamin C Foods', description: 'Citrus fruits enhance iron absorption'},
+                        {icon: '🥜', title: 'Nuts & Seeds', description: 'Provide iron, protein and healthy fats'}
+                    );
+                }
+                
+                // Blood sugar management foods
+                if (parameters.highGlucose) {
+                    foods.push(
+                        {icon: '🥗', title: 'Non-Starchy Vegetables', description: 'Low in carbs, high in nutrients'},
+                        {icon: '🐟', title: 'Fatty Fish', description: 'Omega-3s improve insulin sensitivity'},
+                        {icon: '🥑', title: 'Healthy Fats', description: 'Avocados and olive oil slow glucose absorption'},
+                        {icon: '🫐', title: 'Berries', description: 'Low glycemic with antioxidants'},
+                        {icon: '🌰', title: 'Whole Grains', description: 'Higher in fiber to slow carb absorption'}
+                    );
+                    
+                    avoidFoods.push(
+                        {icon: '🍰', title: 'Sugary Foods', description: 'Cause blood sugar spikes'},
+                        {icon: '🍞', title: 'Refined Carbs', description: 'White bread, pasta, and rice'},
+                        {icon: '🥤', title: 'Sweetened Drinks', description: 'High in sugar with little nutritional value'},
+                        {icon: '🍯', title: 'Honey & Syrups', description: 'Natural but still impact blood sugar'}
+                    );
+                }
+                
+                // Anti-inflammatory foods
+                if (parameters.highCRP) {
+                    foods.push(
+                        {icon: '🐟', title: 'Fatty Fish', description: 'Salmon and mackerel high in omega-3s'},
+                        {icon: '🫒', title: 'Olive Oil', description: 'Contains oleocanthal with anti-inflammatory properties'},
+                        {icon: '🍎', title: 'Colorful Fruits', description: 'Rich in antioxidants that combat inflammation'},
+                        {icon: '🥦', title: 'Cruciferous Vegetables', description: 'Broccoli and cauliflower reduce inflammation'},
+                        {icon: '🍵', title: 'Green Tea', description: 'Contains antioxidants that reduce inflammation'}
+                    );
+                    
+                    avoidFoods.push(
+                        {icon: '🍔', title: 'Processed Foods', description: 'High in inflammatory compounds'},
+                        {icon: '🥩', title: 'Red/Processed Meats', description: 'May increase inflammatory markers'},
+                        {icon: '🧈', title: 'Trans Fats', description: 'Found in fried and processed foods'},
+                        {icon: '🧂', title: 'High Sodium Foods', description: 'Can increase inflammation'}
+                    );
+                }
+                
+                // Add general healthy foods if no specific conditions
+                if (foods.length === 0) {
+                    foods.push(
+                        {icon: '🥦', title: 'Vegetables', description: 'Diverse colors for variety of nutrients'},
+                        {icon: '🍎', title: 'Fruits', description: 'Rich in vitamins and antioxidants'},
+                        {icon: '🐟', title: 'Lean Proteins', description: 'Fish, poultry, beans, and tofu'},
+                        {icon: '🥑', title: 'Healthy Fats', description: 'Avocados, olive oil, and nuts'},
+                        {icon: '🫐', title: 'Berries', description: 'Packed with antioxidants and fiber'},
+                        {icon: '🥜', title: 'Nuts & Seeds', description: 'Provide healthy fats and protein'}
+                    );
+                }
+                
+                // Add general foods to avoid
+                if (avoidFoods.length === 0) {
+                    avoidFoods.push(
+                        {icon: '🍰', title: 'Added Sugars', description: 'Limit desserts and sweetened products'},
+                        {icon: '🧂', title: 'High Sodium', description: 'Processed and packaged foods'},
+                        {icon: '🍟', title: 'Fried Foods', description: 'High in trans fats and calories'},
+                        {icon: '🥓', title: 'Processed Meats', description: 'High in sodium and preservatives'}
+                    );
+                }
+                
+                // Remove duplicates from recommended foods
+                const uniqueFoods = foods.filter((food, index, self) =>
+                    index === self.findIndex((f) => f.title === food.title)
+                );
+                
+                // Generate food item HTML
+                recommendedFoods.innerHTML = '';
+                uniqueFoods.forEach(food => {
+                    const foodItem = document.createElement('div');
+                    foodItem.className = 'food-item';
+                    foodItem.innerHTML = `
+                        <div class="food-icon">${food.icon}</div>
+                        <div class="food-title">${food.title}</div>
+                        <div class="food-description">${food.description}</div>
+                    `;
+                    recommendedFoods.appendChild(foodItem);
+                });
+                
+                // Remove duplicates from foods to limit
+                const uniqueAvoidFoods = avoidFoods.filter((food, index, self) =>
+                    index === self.findIndex((f) => f.title === food.title)
+                );
+                
+                // Generate foods to limit HTML
+                limitFoods.innerHTML = '';
+                uniqueAvoidFoods.forEach(food => {
+                    const foodItem = document.createElement('div');
+                    foodItem.className = 'food-item';
+                    foodItem.innerHTML = `
+                        <div class="food-icon">${food.icon}</div>
+                        <div class="food-title">${food.title}</div>
+                        <div class="food-description">${food.description}</div>
+                    `;
+                    limitFoods.appendChild(foodItem);
+                });
+            }
+            
+            function generateExerciseRecommendations(parameters) {
+                const exerciseSummary = document.getElementById('exerciseSummary');
+                const exerciseRecommendations = document.getElementById('exerciseRecommendations');
+                const exerciseSchedule = document.getElementById('exerciseSchedule');
+                
+                // Create exercise summary based on parameters
+                let summaryHTML = '<p>Physical activity is crucial for maintaining health and can help improve your specific blood markers. We recommend:</p>';
+                exerciseSummary.innerHTML = summaryHTML;
+                
+                // Define exercise recommendations based on test results
+                const exercises = [];
+                
+                // For anemia (low hemoglobin/RBC)
+                if (parameters.lowHemoglobin || parameters.lowRBC) {
+                    exercises.push(
+                        {
+                            icon: '🚶', 
+                            title: 'Low-Intensity Walking', 
+                            description: 'Start with shorter walks (15-20 minutes) and gradually increase duration as your energy improves.',
+                            duration: '15-30 min, 3-5 days/week'
+                        },
+                        {
+                            icon: '🧘', 
+                            title: 'Gentle Yoga', 
+                            description: 'Improves circulation without excessive exertion, perfect for building stamina with anemia.',
+                            duration: '20-30 min, 2-3 days/week'
+                        }
+                    );
+                    
+                    // Add caution note
+                    exerciseSummary.innerHTML += `
+                        <div class="parameter-card anemia">
+                            <h3>Exercise with Low Hemoglobin/RBC</h3>
+                            <p>With lower hemoglobin levels, your body's oxygen-carrying capacity is reduced. Start with lighter activities and monitor for symptoms of fatigue or shortness of breath. Gradually increase intensity as your levels improve.</p>
+                        </div>
+                    `;
+                }
+                
+                // For high glucose
+                if (parameters.highGlucose) {
+                    exercises.push(
+                        {
+                            icon: '🚶', 
+                            title: 'Brisk Walking', 
+                            description: 'Helps lower blood glucose levels and improves insulin sensitivity.',
+                            duration: '30 min, 5+ days/week'
+                        },
+                        {
+                            icon: '🏋️', 
+                            title: 'Resistance Training', 
+                            description: 'Building muscle helps improve glucose metabolism and insulin sensitivity.',
+                            duration: '20-30 min, 2-3 days/week'
+                        },
+                        {
+                            icon: '⏱️', 
+                            title: 'Interval Training', 
+                            description: 'Alternating between higher and lower intensity can be particularly effective for glucose control.',
+                            duration: '20 min, 2-3 days/week'
+                        }
+                    );
+                    
+                    // Add guidance note
+                    exerciseSummary.innerHTML += `
+                        <div class="parameter-card diabetes">
+                            <h3>Exercise for Blood Sugar Management</h3>
+                            <p>Regular physical activity helps your muscles use glucose more efficiently, reducing blood sugar levels. Aim for a mix of cardio and strength training for optimal results.</p>
+                        </div>
+                    `;
+                }
+                
+                // For inflammation (high CRP)
+                if (parameters.highCRP) {
+                    exercises.push(
+                        {
+                            icon: '🏊', 
+                            title: '                            Swimming', 
+                            description: 'Low-impact exercise that reduces stress on joints while providing a full-body workout.',
+                            duration: '30 min, 3-4 days/week'
+                        },
+                        {
+                            icon: '🚴', 
+                            title: 'Cycling', 
+                            description: 'Gentle on the joints and helps reduce inflammation markers.',
+                            duration: '30-45 min, 3-5 days/week'
+                        },
+                        {
+                            icon: '🧘', 
+                            title: 'Yoga', 
+                            description: 'Reduces stress and inflammation through mindful movement and breathing.',
+                            duration: '20-30 min, 2-3 days/week'
+                        }
+                    );
+                    
+                    // Add guidance note
+                    exerciseSummary.innerHTML += `
+                        <div class="parameter-card inflammation">
+                            <h3>Exercise for Inflammation</h3>
+                            <p>Moderate exercise can help reduce inflammation markers like CRP. Focus on low-impact activities that don't overstress the body.</p>
+                        </div>
+                    `;
+                }
+                
+                // Add general exercises if no specific conditions
+                if (exercises.length === 0) {
+                    exercises.push(
+                        {
+                            icon: '🚶', 
+                            title: 'Brisk Walking', 
+                            description: 'A simple and effective way to improve cardiovascular health.',
+                            duration: '30 min, 5+ days/week'
+                        },
+                        {
+                            icon: '🏋️', 
+                            title: 'Strength Training', 
+                            description: 'Builds muscle, improves metabolism, and supports bone health.',
+                            duration: '20-30 min, 2-3 days/week'
+                        },
+                        {
+                            icon: '🧘', 
+                            title: 'Yoga', 
+                            description: 'Improves flexibility, balance, and mental well-being.',
+                            duration: '20-30 min, 2-3 days/week'
+                        },
+                        {
+                            icon: '🏊', 
+                            title: 'Swimming', 
+                            description: 'Full-body, low-impact exercise for overall fitness.',
+                            duration: '30 min, 3-4 days/week'
+                        }
+                    );
+                }
+                
+                // Generate exercise recommendations HTML
+                exerciseRecommendations.innerHTML = '';
+                exercises.forEach(exercise => {
+                    const exerciseItem = document.createElement('div');
+                    exerciseItem.className = 'exercise-item';
+                    exerciseItem.innerHTML = `
+                        <div class="exercise-item-icon">${exercise.icon}</div>
+                        <div class="exercise-item-content">
+                            <div class="exercise-title">${exercise.title}</div>
+                            <div class="exercise-description">${exercise.description}</div>
+                            <div class="exercise-duration">Duration: ${exercise.duration}</div>
+                        </div>
+                    `;
+                    exerciseRecommendations.appendChild(exerciseItem);
+                });
+                
+                // Generate weekly exercise schedule
+                exerciseSchedule.innerHTML = `
+                    <div class="parameter-card">
+                        <h3>Sample Weekly Exercise Schedule</h3>
+                        <p>Here's a balanced weekly plan to help you get started:</p>
+                        <ul>
+                            <li><strong>Monday:</strong> 30 minutes of brisk walking</li>
+                            <li><strong>Tuesday:</strong> 20-30 minutes of strength training</li>
+                            <li><strong>Wednesday:</strong> 30 minutes of swimming or cycling</li>
+                            <li><strong>Thursday:</strong> Rest or gentle yoga</li>
+                            <li><strong>Friday:</strong> 30 minutes of brisk walking or interval training</li>
+                            <li><strong>Saturday:</strong> 20-30 minutes of strength training</li>
+                            <li><strong>Sunday:</strong> Rest or light activity like stretching</li>
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            function generateMealPlan(parameters) {
+                const mealPlanContainer = document.getElementById('mealPlanContainer');
+                
+                // Define meal plan based on parameters
+                let mealPlanHTML = '';
+                
+                // Example 7-day meal plan
+                const days = [
+                    {
+                        day: 'Monday',
+                        meals: [
+                            {title: 'Breakfast', description: 'Oatmeal with berries and a boiled egg'},
+                            {title: 'Lunch', description: 'Grilled chicken salad with mixed greens and olive oil dressing'},
+                            {title: 'Dinner', description: 'Baked salmon with steamed broccoli and quinoa'}
+                        ]
+                    },
+                    {
+                        day: 'Tuesday',
+                        meals: [
+                            {title: 'Breakfast', description: 'Greek yogurt with nuts and honey'},
+                            {title: 'Lunch', description: 'Lentil soup with whole-grain bread'},
+                            {title: 'Dinner', description: 'Stir-fried tofu with vegetables and brown rice'}
+                        ]
+                    },
+                    {
+                        day: 'Wednesday',
+                        meals: [
+                            {title: 'Breakfast', description: 'Smoothie with spinach, banana, and almond milk'},
+                            {title: 'Lunch', description: 'Quinoa salad with chickpeas and avocado'},
+                            {title: 'Dinner', description: 'Grilled turkey breast with sweet potato and asparagus'}
+                        ]
+                    },
+                    {
+                        day: 'Thursday',
+                        meals: [
+                            {title: 'Breakfast', description: 'Whole-grain toast with avocado and a side of fruit'},
+                            {title: 'Lunch', description: 'Grilled fish tacos with cabbage slaw'},
+                            {title: 'Dinner', description: 'Vegetable stir-fry with tofu and brown rice'}
+                        ]
+                    },
+                    {
+                        day: 'Friday',
+                        meals: [
+                            {title: 'Breakfast', description: 'Scrambled eggs with spinach and whole-grain toast'},
+                            {title: 'Lunch', description: 'Chicken and vegetable wrap with hummus'},
+                            {title: 'Dinner', description: 'Baked cod with roasted vegetables and quinoa'}
+                        ]
+                    },
+                    {
+                        day: 'Saturday',
+                        meals: [
+                            {title: 'Breakfast', description: 'Pancakes made with whole-grain flour and topped with fresh fruit'},
+                            {title: 'Lunch', description: 'Grilled vegetable and goat cheese salad'},
+                            {title: 'Dinner', description: 'Beef stir-fry with mixed vegetables and brown rice'}
+                        ]
+                    },
+                    {
+                        day: 'Sunday',
+                        meals: [
+                            {title: 'Breakfast', description: 'Smoothie bowl with granola and fresh fruit'},
+                            {title: 'Lunch', description: 'Grilled chicken sandwich with a side salad'},
+                            {title: 'Dinner', description: 'Baked chicken with roasted sweet potatoes and green beans'}
+                        ]
+                    }
+                ];
+                
+                // Generate meal plan HTML
+                days.forEach(day => {
+                    const dayPlan = document.createElement('div');
+                    dayPlan.className = 'meal-plan-day';
+                    dayPlan.innerHTML = `
+                        <h4>${day.day}</h4>
+                        ${day.meals.map(meal => `
+                            <div class="meal-item">
+                                <div class="meal-title">${meal.title}</div>
+                                <div class="meal-description">${meal.description}</div>
+                            </div>
+                        `).join('')}
+                    `;
+                    mealPlanContainer.appendChild(dayPlan);
+                });
+            }
+            
+            function showNoDataMessage() {
+                document.getElementById('patientSummary').innerHTML = `
+                    <h3 class="section-title">No Data Available</h3>
+                    <p>Please upload a blood test report to generate personalized recommendations.</p>
+                `;
+            }
+            
+            // Load and generate recommendations
+            const latestReport = getLatestBloodReport();
+            generateRecommendations(latestReport);
+        });
+    </script>
+</body>
+
+</html>
