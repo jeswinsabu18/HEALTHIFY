@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Healthfyyyyyyy</title>
+    <title>Login - Healthfy</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
@@ -14,7 +14,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            background: linear-gradient(135deg, #cce1ff 0%, #73b0ffce 100%);
             margin: 0;
             padding: 20px;
             display: flex;
@@ -22,16 +22,45 @@
             align-items: center;
             min-height: 100vh;
         }
+        .logo-container {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    animation: fade-in 1s ease-in-out;
+}
+
+/* Logo styling with highlight and shadow */
+.logo {
+    width: 120px; /* Increase logo size */
+    height: auto;
+    border-radius: 50%;
+    padding: 8px;
+    background: linear-gradient(135deg, #5fb5ff, #79beff);
+    box-shadow: 0 8px 20px rgba(0, 123, 255, 0.2);
+    border: 2px solid #a3d6f74b;
+    animation: glow 1.5s infinite alternate;
+}
+/* Optional: Fade-in animation */
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 
         .appointment-form {
-            background: #1e1e1e;
+            background: #dff6ffe4;
             padding: 2.5rem;
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(232, 240, 242, 0.884);
             max-width: 500px;
             width: 100%;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(220, 236, 246, 0.647);
             transform: translateY(0);
             transition: all 0.3s ease;
         }
@@ -59,7 +88,7 @@
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
-            color: #cccccc;
+            color: #4d4d4d;
             font-size: 0.95rem;
             transition: all 0.3s ease;
         }
@@ -68,23 +97,23 @@
         input[type="password"] {
             width: 100%;
             padding: 0.8rem 1rem;
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(195, 218, 253, 0.705);
             border-radius: 12px;
-            background-color: #2a2a2a;
+            background-color: #ececec;
             font-size: 1rem;
             transition: all 0.3s ease;
-            color: #ffffff;
+            color: #88c0f5;
         }
 
         input:focus {
             outline: none;
             border-color: #3498db;
-            background-color: #2d2d2d;
-            box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.1);
+            background-color: #f5f5f5;
+            box-shadow: 0 0 0 4px rgb(68, 165, 255);
         }
 
         input::placeholder {
-            color: #666;
+            color: #7a7a7a;
             opacity: 0.7;
         }
 
@@ -100,19 +129,19 @@
             cursor: pointer;
             margin-top: 1rem;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.856);
+            border: 1px solid rgba(255, 255, 255, 0.459);
         }
 
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
+            box-shadow: 0 6px 20px rgba(187, 228, 255, 0.825);
             background: linear-gradient(135deg, #2980b9, #3498db);
         }
 
         button:active {
             transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(52, 152, 219, 0.1);
+            box-shadow: 0 2px 4px rgba(244, 248, 251, 0.932);
         }
 
         .signup-button {
@@ -203,7 +232,8 @@
 </head>
 <body>
     <form class="appointment-form" id="login">
-        <h2>Healthfyyyyyyy</h2>
+        <img src="./assets/Logo.webp.png" alt="Healthfy Logo" class="logo">
+        <h2>Healthfy</h2>
         
         <div class="form-group">
             <label for="email">Email</label>
