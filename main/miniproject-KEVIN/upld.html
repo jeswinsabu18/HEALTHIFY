@@ -249,18 +249,22 @@
             border-bottom: 1px solid #ddd;
         }
 
+
         .normal {
-            color: #28a745;
+            color: #28a745 !important;
+            /* Green color */
         }
 
-        .abnormal {
-            color: #dc3545;
-            font-weight: bold;
+        .high {
+            color: #dc3545 !important;
+            /* Red for high */
+            font-weight: bold !important;
         }
 
-        .borderline {
-            color: #ffc107;
-            font-weight: bold;
+        .low {
+            color: #e67e22 !important;
+            /* Orange for low */
+            font-weight: bold !important;
         }
 
         .section-title {
@@ -442,7 +446,7 @@
             });
 
             // Handle progress button click
-            progressButton.addEventListener('click', function() {
+            progressButton.addEventListener('click', function () {
                 window.location.href = 'progress.html';
             });
 
@@ -586,44 +590,61 @@
             }
 
             // Function to send PDF directly to Gemini
+            // Replace the existing sendPDFToGemini function with this improved version
             async function sendPDFToGemini(file) {
                 try {
                     // Create a FormData object to handle the file
                     const formData = new FormData();
-                    
+
                     // Convert file to base64
                     const base64PDF = await fileToBase64(file);
-                    
+
                     // Gemini API endpoint with your API key
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-                    
-                    // Construct the prompt with instructions
+
+                    // Construct the prompt with enhanced instructions
                     const instructions = `
-                    Analyze this blood test report PDF and provide a concise, structured analysis following these rules:
-                    
-                    1. Extract and present patient information first (name, age, ID, etc.)
-                    2. Present test results in tables with clear categorization of normal vs abnormal values
-                    3. For abnormal values only, provide a brief interpretation (1-2 lines max)
-                    4. Provide 2-3 key recommendations based on abnormal findings only
-                    5. Keep all explanations very brief and focused on actionable insights
-                    6. Format your response as HTML - DO NOT include code block markers like \`\`\`html or \`\`\` 
-                       just return the pure HTML content
-                    
-                    Use this structure and these HTML classes:
-                    - <div class="patient-info"> for patient details
-                    - <h3 class="section-title"> for section headers
-                    - <table class="results-table"> for test results
-                    - <div class="summary-section"> for abnormal findings summary
-                    - <div class="recommendations"> for recommendations
-                    - For test results, mark with class="normal", class="abnormal" or class="borderline"
-                    `;
-                    
+        Analyze this blood test report PDF and provide a detailed, structured analysis following these rules:
+        
+        1. Extract and present patient information first (name, age, ID, etc.)
+        2. Present test results in tables with these columns:
+           - Test Name/Parameter
+           - Result
+           - Reference Range
+           - Status (IMPORTANT: Always include this column with values: Normal, High, Low, or Borderline)
+        3. For abnormal values, mark with appropriate status (High or Low)
+        4. For each abnormal value, provide a brief interpretation (1-2 lines max)
+        5. Provide 3-4 key recommendations based on abnormal findings
+        6. Format your response as HTML - DO NOT include code block markers
+        
+        Use this structure and these HTML classes:
+        - <div class="patient-info"> for patient details
+        - <h3 class="section-title"> for section headers
+        - <table class="results-table"> for test results
+        - <div class="summary-section"> for abnormal findings summary
+        - <div class="recommendations"> for recommendations
+        - For test results, mark with class="normal", class="abnormal" or class="borderline"
+        
+        IMPORTANT: Be thorough in examining all test values. For the blood report I'm giving you, 
+        pay special attention to:
+        - Hemoglobin (HB)
+        - PCV (Hematocrit)
+        - Total Count (TC)
+        - Platelet Count (PLC)
+        - Creatinine
+        - Blood Sugar (Glucose)
+        - HbA1c
+        - Lipid Profile (Cholesterol, Triglycerides, etc.)
+        
+        ALWAYS add a Status column even if one doesn't exist in the original report.
+        `;
+
                     // Create request payload with both text instructions and the PDF file
                     const requestBody = {
                         contents: [{
                             parts: [
                                 { text: instructions },
-                                { 
+                                {
                                     inline_data: {
                                         mime_type: "application/pdf",
                                         data: base64PDF.split('base64,')[1] // Remove the data:application/pdf;base64, prefix
@@ -638,7 +659,7 @@
                             topK: 40,
                         }
                     };
-                    
+
                     // Send the request
                     const response = await fetch(apiUrl, {
                         method: 'POST',
@@ -678,7 +699,39 @@
                 }
             }
 
-            // Function to display analysis results with proper formatting
+            // Enhanced function to better extract test values
+            function extractTestValues(rawText) {
+                let extractedValues = {};
+
+                // Improved regex patterns for extracting test values
+                let regexPatterns = {
+                    "Hemoglobin": /H(?:b|emoglobin)\s+(\d+\.?\d*)\s*(?:g\/dl|gm\/dl)/i,
+                    "RBC count": /RBC\s+(?:count)?\s+(\d+\.?\d*)/i,
+                    "PCV": /PCV\s+(\d+\.?\d*)\s*%/i,
+                    "WBC count": /(?:TC|WBC|White\s+Blood\s+Cells|Total\s+Count)\s+(\d+\.?\d*)/i,
+                    "Platelets": /(?:PLC|PLT|Platelets?)\s+(\d+)\s*x?1000?\/cumm/i,
+                    "Glucose": /(?:Glucose|RBS|FBS|Blood\s+sugar)\s+(\d+)\s*mg\/dl/i,
+                    "HbA1c": /HbA1c\s+(\d+\.?\d*)\s*%/i,
+                    "Creatinine": /Creatinine\s+(\d+\.?\d*)\s*mg\/dl/i,
+                    "Cholesterol": /Cholesterol\s+total\s+(\d+)\s*mg\/dl/i,
+                    "Triglycerides": /Triglycerides\s+(\d+)\s*mg\/dl/i,
+                    "HDL": /Cholesterol\s+HDL\s+(\d+)\s*mg\/dl/i,
+                    "LDL": /Cholesterol\s+LDL\s+(\d+)\s*mg\/dl/i,
+                    "VLDL": /Cholesterol\s+VLDL\s+(\d+)\s*mg\/dl/i
+                };
+
+                // Apply regex patterns
+                for (let test in regexPatterns) {
+                    let match = rawText.match(regexPatterns[test]);
+                    if (match) {
+                        extractedValues[test] = parseFloat(match[1]);
+                    }
+                }
+
+                console.log("Extracted test values:", extractedValues);
+                return extractedValues;
+            }
+
             function displayAnalysisResults(analysis) {
                 // Clean any remaining markdown or code block markers
                 let cleanedAnalysis = analysis.trim();
@@ -701,13 +754,33 @@
                     const headers = Array.from(headerRow.querySelectorAll('th')).map(th =>
                         th.textContent.trim().toLowerCase());
 
-                    // Find the column indices
+                    // Find the column indices with more flexible matching
+                    const testNameColIndex = headers.findIndex(h =>
+                        h.includes('test') || h.includes('parameter') || h.includes('description'));
                     const resultColIndex = headers.findIndex(h =>
                         h.includes('result') || h.includes('value'));
                     const rangeColIndex = headers.findIndex(h =>
                         h.includes('reference') || h.includes('range') || h.includes('normal'));
-                    const classColIndex = headers.findIndex(h =>
-                        h.includes('class') || h.includes('status') || h.includes('flag'));
+
+                    // Find or create status column
+                    let statusColIndex = headers.findIndex(h =>
+                        h.includes('status') || h.includes('flag') || h.includes('class'));
+
+                    // If no status column exists, create one
+                    if (statusColIndex === -1) {
+                        // Add a status header to the header row
+                        const statusHeader = document.createElement('th');
+                        statusHeader.textContent = 'Status';
+                        headerRow.appendChild(statusHeader);
+                        statusColIndex = headers.length; // New column will be at the end
+
+                        // Add a status cell to each data row
+                        const rows = Array.from(table.querySelectorAll('tr')).slice(1);
+                        rows.forEach(row => {
+                            const statusCell = document.createElement('td');
+                            row.appendChild(statusCell);
+                        });
+                    }
 
                     // Only process tables with result and range columns
                     if (resultColIndex === -1 || rangeColIndex === -1) return;
@@ -717,82 +790,114 @@
 
                     rows.forEach(row => {
                         const cells = row.querySelectorAll('td');
-                        if (cells.length <= Math.max(resultColIndex, rangeColIndex)) return;
+                        if (cells.length <= Math.max(resultColIndex, rangeColIndex, statusColIndex)) return;
 
                         // Get test result and reference range
                         const resultCell = cells[resultColIndex];
                         const rangeCell = cells[rangeColIndex];
+                        const statusCell = cells[statusColIndex];
 
                         // Skip if cells don't exist
-                        if (!resultCell || !rangeCell) return;
+                        if (!resultCell || !rangeCell || !statusCell) return;
 
-                        const resultValue = parseFloat(resultCell.textContent.replace(/[^\d.-]/g, ''));
+                        // Extract numeric result value, handling various formats
+                        const resultText = resultCell.textContent.trim();
+                        const resultValue = parseFloat(resultText.replace(/[^\d.-]/g, ''));
                         const rangeText = rangeCell.textContent.trim();
 
                         // Only process if we have a valid numeric result
                         if (isNaN(resultValue)) return;
 
-                        // Extract range values (handles formats like "10-20", "< 10", "> 5", etc.)
+                        // Extract range values with improved pattern matching
                         let lowerBound, upperBound;
+                        let rangePattern;
 
+                        // Handle ranges like "10-20", "< 10", "> 5", etc.
                         if (rangeText.includes('-')) {
-                            const rangeParts = rangeText.split('-').map(p => parseFloat(p.replace(/[^\d.-]/g, '')));
-                            if (rangeParts.length >= 2) {
-                                lowerBound = rangeParts[0];
-                                upperBound = rangeParts[1];
+                            rangePattern = /(\d+\.?\d*)\s*-\s*(\d+\.?\d*)/;
+                            const match = rangeText.match(rangePattern);
+                            if (match && match.length >= 3) {
+                                lowerBound = parseFloat(match[1]);
+                                upperBound = parseFloat(match[2]);
                             }
                         } else if (rangeText.includes('<')) {
-                            upperBound = parseFloat(rangeText.replace(/[^\d.-]/g, ''));
+                            rangePattern = /[<≤]\s*(\d+\.?\d*)/;
+                            const match = rangeText.match(rangePattern);
+                            if (match && match.length >= 2) {
+                                upperBound = parseFloat(match[1]);
+                            }
                         } else if (rangeText.includes('>')) {
-                            lowerBound = parseFloat(rangeText.replace(/[^\d.-]/g, ''));
+                            rangePattern = /[>≥]\s*(\d+\.?\d*)/;
+                            const match = rangeText.match(rangePattern);
+                            if (match && match.length >= 2) {
+                                lowerBound = parseFloat(match[1]);
+                            }
                         }
 
-                        // Determine class based on value comparison with range
-                        let testClass = '';
+                        // Determine status based on value comparison with range
+                        let statusClass = '';
+                        let statusText = '';
 
                         if (!isNaN(lowerBound) && !isNaN(upperBound)) {
                             // We have both bounds
                             if (resultValue < lowerBound) {
-                                testClass = 'abnormal';
-                                resultCell.classList.add('abnormal');
+                                statusClass = 'low';
+                                statusText = 'Low';
                             } else if (resultValue > upperBound) {
-                                testClass = 'abnormal';
-                                resultCell.classList.add('abnormal');
+                                statusClass = 'high';
+                                statusText = 'High';
                             } else {
-                                testClass = 'normal';
-                                resultCell.classList.add('normal');
+                                statusClass = 'normal';
+                                statusText = 'Normal';
                             }
                         } else if (!isNaN(lowerBound)) {
                             // Only lower bound (> value)
                             if (resultValue < lowerBound) {
-                                testClass = 'abnormal';
-                                resultCell.classList.add('abnormal');
+                                statusClass = 'low';
+                                statusText = 'Low';
                             } else {
-                                testClass = 'normal';
-                                resultCell.classList.add('normal');
+                                statusClass = 'normal';
+                                statusText = 'Normal';
                             }
                         } else if (!isNaN(upperBound)) {
                             // Only upper bound (< value)
                             if (resultValue > upperBound) {
-                                testClass = 'abnormal';
-                                resultCell.classList.add('abnormal');
+                                statusClass = 'high';
+                                statusText = 'High';
                             } else {
-                                testClass = 'normal';
-                                resultCell.classList.add('normal');
+                                statusClass = 'normal';
+                                statusText = 'Normal';
                             }
+                        } else {
+                            // Default if no range is defined
+                            statusClass = '';
+                            statusText = '-';
                         }
 
-                        // If there's a class/status column, fill it in
-                        if (classColIndex !== -1 && cells[classColIndex]) {
-                            const classCell = cells[classColIndex];
+                        // Apply consistent styling
+                        if (statusClass) {
+                            // Remove any existing status classes
+                            resultCell.classList.remove('normal', 'high', 'low', 'abnormal', 'borderline');
+                            statusCell.classList.remove('normal', 'high', 'low', 'abnormal', 'borderline');
 
-                            // Only update if the cell is currently empty
-                            if (!classCell.textContent.trim()) {
-                                classCell.textContent = testClass.charAt(0).toUpperCase() + testClass.slice(1);
+                            // Add appropriate class
+                            resultCell.classList.add(statusClass);
+                            statusCell.classList.add(statusClass);
+
+                            // Set text content for status cell
+                            statusCell.textContent = statusText;
+
+                            // Apply appropriate color
+                            if (statusClass === 'high') {
+                                resultCell.style.color = '#dc3545'; // Red for high
+                                statusCell.style.color = '#dc3545';
+                            } else if (statusClass === 'low') {
+                                resultCell.style.color = '#e67e22'; // Orange for low
+                                statusCell.style.color = '#e67e22';
+                            } else if (statusClass === 'normal') {
+                                resultCell.style.color = '#28a745'; // Green for normal
+                                statusCell.style.color = '#28a745';
                             }
-
-                            // Apply styling class
-                            classCell.classList.add(testClass);
                         }
                     });
                 });
@@ -830,7 +935,7 @@
                     // Optionally also extract and display text
                     const extractedText = await extractTextFromPDF(file);
                     displayExtractedText(extractedText);
-                    
+
                     // Save extracted text and values for progress tracking
                     saveProcessedReport(extractedText);
 
