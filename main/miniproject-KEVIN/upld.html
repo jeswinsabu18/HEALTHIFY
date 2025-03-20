@@ -376,6 +376,7 @@
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            let currentAnalysisData = null; // Global variable to store the current analysis
             // Set the workerSrc property to load worker from CDN
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
@@ -473,36 +474,35 @@
                 return extractedValues;
             }
 
-            function saveProcessedReport(rawText) {
-                try {
-                    // Get existing reports or initialize empty array
-                    let previousReports = JSON.parse(localStorage.getItem("bloodReports")) || [];
+function saveProcessedReport(rawText, analysisHTML) {
+    try {
+        // Get existing reports or initialize empty array
+        let previousReports = JSON.parse(localStorage.getItem("bloodReports")) || [];
 
-                    // Extract test values from the raw text
-                    let extractedValues = extractTestValues(rawText);
+        // Extract test values from the raw text
+        let extractedValues = extractTestValues(rawText);
 
-                    if (Object.keys(extractedValues).length === 0) {
-                        console.warn("No test values extracted. Data might be incorrect.");
-                        return;
-                    }
+        // Create a consistent report structure
+        const newReport = {
+            date: new Date().toISOString(),
+            values: extractedValues,
+            analysisHTML: analysisHTML, // Store the complete HTML analysis from Gemini
+            rawText: rawText // Optionally store the raw text as well
+        };
 
-                    // Create a consistent report structure
-                    const newReport = {
-                        date: new Date().toISOString(),
-                        values: extractedValues
-                    };
+        // Add the new report
+        previousReports.push(newReport);
 
-                    // Add the new report
-                    previousReports.push(newReport);
+        // Save to localStorage
+        localStorage.setItem("bloodReports", JSON.stringify(previousReports));
 
-                    // Save to localStorage
-                    localStorage.setItem("bloodReports", JSON.stringify(previousReports));
-
-                    console.log("Processed report saved:", newReport);
-                } catch (error) {
-                    console.error("Error in saveProcessedReport():", error);
-                }
-            }
+        console.log("Processed report saved:", newReport);
+        return newReport; // Return the saved report
+    } catch (error) {
+        console.error("Error in saveProcessedReport():", error);
+        return null;
+    }
+}
 
             // Function to extract text from PDF using PDF.js
             async function extractTextFromPDF(file) {
@@ -937,8 +937,18 @@
                     displayExtractedText(extractedText);
 
                     // Save extracted text and values for progress tracking
-                    saveProcessedReport(extractedText);
-
+                    const savedReport = saveProcessedReport(extractedText, analysisResult);
+                    if (savedReport) {
+                        // Store the current analysis data in a global variable
+                        currentAnalysisData = savedReport;
+                        
+                        // Also store in sessionStorage for access across pages in the same session
+                        sessionStorage.setItem('currentBloodAnalysis', JSON.stringify(currentAnalysisData));
+                        
+                        console.log("Analysis data saved and ready for use:", currentAnalysisData);
+                    } else {
+                        console.warn("Failed to save analysis data");
+                    }
                     // Show results section
                     results.style.display = 'block';
 
