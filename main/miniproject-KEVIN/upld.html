@@ -411,8 +411,8 @@
                     // Get existing reports or initialize empty array
                     let previousReports = JSON.parse(localStorage.getItem("bloodReports")) || [];
 
-                    // Extract test values from the raw text
-                    let extractedValues = extractTestValues(rawText);
+                    // Extract test values from the HTML table
+                    let extractedValues = extractTestValues(rawText, analysisHTML);
 
                     // Create a consistent report structure
                     const newReport = {
@@ -435,8 +435,8 @@
                     return null;
                 }
             }
-
             // Function to extract text from PDF using PDF.js
+
             async function extractTextFromPDF(file) {
                 return new Promise((resolve, reject) => {
                     const fileReader = new FileReader();
@@ -504,6 +504,7 @@
             }
 
             // Helper function to convert file to base64
+
             function fileToBase64(file) {
                 return new Promise((resolve, reject) => {
                     const reader = new FileReader();
@@ -514,6 +515,7 @@
             }
 
             // Function to send PDF directly to Gemini
+
             async function sendPDFToGemini(file) {
                 try {
                     // Create a FormData object to handle the file
@@ -527,40 +529,56 @@
 
                     // Construct the prompt with enhanced instructions
                     const instructions = `
-            Analyze this blood test report PDF and provide a detailed, structured analysis following these rules:
-            
-            1. Extract and present patient information first (name, age, ID, etc.)
-            2. Present test results in tables with these columns:
-               - Test Name/Parameter
-               - Result
-               - Reference Range
-               - Status (IMPORTANT: Always include this column with values: Normal, High, Low, or Borderline)
-            3. For abnormal values, mark with appropriate status (High or Low)
-            4. For each abnormal value, provide a brief interpretation (1-2 lines max)
-            5. Provide 3-4 key recommendations based on abnormal findings
-            6. Format your response as HTML - DO NOT include code block markers
-            
-            Use this structure and these HTML classes:
-            - <div class="patient-info"> for patient details
-            - <h3 class="section-title"> for section headers
-            - <table class="results-table"> for test results
-            - <div class="summary-section"> for abnormal findings summary
-            - <div class="recommendations"> for recommendations
-            - For test results, mark with class="normal", class="abnormal" or class="borderline"
-            
-            IMPORTANT: Be thorough in examining all test values. For the blood report I'm giving you, 
-            pay special attention to:
-            - Hemoglobin (HB)
-            - PCV (Hematocrit)
-            - Total Count (TC)
-            - Platelet Count (PLC)
-            - Creatinine
-            - Blood Sugar (Glucose)
-            - HbA1c
-            - Lipid Profile (Cholesterol, Triglycerides, etc.)
-            
-            ALWAYS add a Status column even if one doesn't exist in the original report.
-            `;
+Analyze this blood test report PDF and provide a detailed, structured analysis following these rules:
+
+1. Extract and present patient information first (name, age, sex, ID, etc.) in a structured format.
+2. Extract test results and present them in a table with these columns:
+   - Test Name/Parameter
+   - Result (numeric value only, after interpreting units)
+   - Unit (e.g., gm/dl, millions/cumm, x1000/cumm, etc.)
+   - Reference Range (numeric range after interpreting units)
+   - Status (must be one of: Normal, High, Low, or Borderline)
+3. For test values with "x1000/cumm" (e.g., Platelet Count (PLC), Total Leucocyte Count (TLC)):
+   - Interpret the value by multiplying by 1000 (e.g., "251 x1000/cumm" should be extracted as 251000).
+   - Interpret the reference range in the same unit (e.g., "150 - 450" for PLC means 150000 - 450000).
+   - Compare the adjusted value to the adjusted range to determine the status.
+4. For each abnormal value (High or Low), provide a brief interpretation (1-2 lines max) in a separate section.
+5. Provide 3-4 key recommendations based on abnormal findings.
+6. Format your response as HTML - DO NOT include code block markers.
+
+Use this structure and these HTML classes:
+- <div class="patient-info"> for patient details
+- <h3 class="section-title"> for section headers
+- <table class="results-table"> for test results
+- <div class="summary-section"> for abnormal findings summary
+- <div class="recommendations"> for recommendations
+- For the Status column, apply these classes to the <td> element:
+  - class="normal" for Normal
+  - class="high" for High
+  - class="low" for Low
+  - class="borderline" for Borderline
+
+Example table row for Platelet Count (PLC):
+<tr>
+  <td>PLC</td>
+  <td>251000</td>
+  <td>per microliter</td>
+  <td>150000 - 450000</td>
+  <td class="normal">Normal</td>
+</tr>
+
+IMPORTANT: Be thorough in examining all test values. Pay special attention to:
+- Hemoglobin (HB)
+- PCV (Hematocrit)
+- Total Leucocyte Count (TLC)
+- Platelet Count (PLC)
+- Creatinine
+- Blood Sugar (Glucose)
+- HbA1c
+- Lipid Profile (Cholesterol, Triglycerides, etc.)
+
+ALWAYS include a Status column and ensure the status is determined after interpreting the units correctly.
+`;
 
                     // Create request payload with both text instructions and the PDF file
                     const requestBody = {
@@ -621,46 +639,62 @@
                     throw new Error('Failed to analyze with Gemini API: ' + error.message);
                 }
             }
-
             // Enhanced function to better extract test values
-            function extractTestValues(rawText) {
 
+            function extractTestValues(rawText, analysisHTML) {
                 let extractedValues = {};
 
-                // Improved regex patterns for extracting test values
-                let regexPatterns = {
-                    "Hemoglobin": /H(?:b|emoglobin)\s+(\d+\.?\d*)\s*(?:g\/dl|gm\/dl)/i,
-                    "RBC count": /RBC\s+(?:count)?\s+(\d+\.?\d*)/i,
-                    "PCV": /PCV\s+(\d+\.?\d*)\s*%/i,
-                    "WBC count": /(?:TC|WBC|White\s+Blood\s+Cells|Total\s+Count)\s+(\d+\.?\d*)/i,
-                    "Platelets": /(?:PLC|PLT|Platelets?)\s+(\d+)\s*x?1000?\/cumm/i,
-                    "Glucose": /(?:Glucose|RBS|FBS|Blood\s+sugar)\s+(\d+)\s*mg\/dl/i,
-                    "HbA1c": /HbA1c\s+(\d+\.?\d*)\s*%/i,
-                    "Creatinine": /Creatinine\s+(\d+\.?\d*)\s*mg\/dl/i,
-                    "Cholesterol": /Cholesterol\s+total\s+(\d+)\s*mg\/dl/i,
-                    "Triglycerides": /Triglycerides\s+(\d+)\s*mg\/dl/i,
-                    "HDL": /Cholesterol\s+HDL\s+(\d+)\s*mg\/dl/i,
-                    "LDL": /Cholesterol\s+LDL\s+(\d+)\s*mg\/dl/i,
-                    "VLDL": /Cholesterol\s+VLDL\s+(\d+)\s*mg\/dl/i
-                };
+                // Parse the HTML to extract values from the table
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(analysisHTML, 'text/html');
+                const tables = doc.querySelectorAll('table.results-table');
 
-                // Apply regex patterns
-                for (let test in regexPatterns) {
-                    let match = rawText.match(regexPatterns[test]);
-                    if (match) {
-                        let value = parseFloat(match[1]);
-                        // Special handling for Platelets to account for x1000 multiplier
-                        if (test === "Platelets" && rawText.match(/(?:PLC|PLT|Platelets?)\s+\d+\s*x1000\/cumm/i)) {
-                            value *= 1000; // Multiply by 1000 to get the actual count
-                        }
-                        extractedValues[test] = value;
-                    }
+                if (tables.length === 0) {
+                    console.warn("No results table found in analysis HTML");
+                    return extractedValues;
                 }
 
-                console.log("Extracted test values:", extractedValues);
+                // Map test names to keys for extractedValues
+                const testNameMap = {
+                    "hb": "Hemoglobin",
+                    "hct": "PCV",
+                    "rbc count": "RBC count",
+                    "tlc": "WBC count",
+                    "plc": "Platelets",
+                    "glucose": "Glucose",
+                    "hba1c": "HbA1c",
+                    "creatinine": "Creatinine",
+                    "cholesterol": "Cholesterol",
+                    "triglycerides": "Triglycerides",
+                    "hdl": "HDL",
+                    "ldl": "LDL",
+                    "vldl": "VLDL"
+                };
+
+                tables.forEach(table => {
+                    const rows = Array.from(table.querySelectorAll('tr')).slice(1); // Skip header
+                    rows.forEach(row => {
+                        const cells = row.querySelectorAll('td');
+                        if (cells.length < 5) return; // Expecting 5 columns: Test Name, Result, Unit, Reference Range, Status
+
+                        const testName = cells[0].textContent.trim().toLowerCase();
+                        const resultText = cells[1].textContent.trim();
+                        const resultValue = parseFloat(resultText);
+
+                        if (isNaN(resultValue)) return;
+
+                        // Map the test name to the key used in extractedValues
+                        const mappedTestName = Object.keys(testNameMap).find(key => testName.includes(key));
+                        if (mappedTestName) {
+                            const standardTestName = testNameMap[mappedTestName];
+                            extractedValues[standardTestName] = resultValue;
+                        }
+                    });
+                });
+
+                console.log("Extracted test values from HTML table:", extractedValues);
                 return extractedValues;
             }
-
 
 
             function displayAnalysisResults(analysis) {
@@ -670,7 +704,7 @@
                 // Apply the HTML formatting from the API response
                 analysisContent.innerHTML = cleanedAnalysis;
 
-                // Process all tables in the report
+                // Process all tables in the report to apply styling based on Gemini's classes
                 const tables = analysisContent.querySelectorAll('table');
                 tables.forEach(table => {
                     // Ensure table has proper styling
@@ -685,177 +719,31 @@
                     const headers = Array.from(headerRow.querySelectorAll('th')).map(th =>
                         th.textContent.trim().toLowerCase());
 
-                    // Find the column indices with more flexible matching
-                    const testNameColIndex = headers.findIndex(h =>
-                        h.includes('test') || h.includes('parameter') || h.includes('description'));
-                    const resultColIndex = headers.findIndex(h =>
-                        h.includes('result') || h.includes('value'));
-                    const rangeColIndex = headers.findIndex(h =>
-                        h.includes('reference') || h.includes('range') || h.includes('normal'));
-
-                    // Find or create status column
-                    let statusColIndex = headers.findIndex(h =>
+                    // Find the column indices
+                    const statusColIndex = headers.findIndex(h =>
                         h.includes('status') || h.includes('flag') || h.includes('class'));
 
-                    // If no status column exists, create one
-                    if (statusColIndex === -1) {
-                        // Add a status header to the header row
-                        const statusHeader = document.createElement('th');
-                        statusHeader.textContent = 'Status';
-                        headerRow.appendChild(statusHeader);
-                        statusColIndex = headers.length; // New column will be at the end
-
-                        // Add a status cell to each data row
-                        const rows = Array.from(table.querySelectorAll('tr')).slice(1);
-                        rows.forEach(row => {
-                            const statusCell = document.createElement('td');
-                            row.appendChild(statusCell);
-                        });
-                    }
-
-                    // Only process tables with result and range columns
-                    if (resultColIndex === -1 || rangeColIndex === -1) return;
+                    if (statusColIndex === -1) return;
 
                     // Process each row in the table (skip header)
                     const rows = Array.from(table.querySelectorAll('tr')).slice(1);
 
                     rows.forEach(row => {
                         const cells = row.querySelectorAll('td');
-                        if (cells.length <= Math.max(resultColIndex, rangeColIndex, statusColIndex)) return;
+                        if (cells.length <= statusColIndex) return;
 
-                        // Get test name, result, and reference range
-                        const testNameCell = cells[testNameColIndex];
-                        const resultCell = cells[resultColIndex];
-                        const rangeCell = cells[rangeColIndex];
                         const statusCell = cells[statusColIndex];
+                        if (!statusCell) return;
 
-                        // Skip if cells don't exist
-                        if (!testNameCell || !resultCell || !rangeCell || !statusCell) return;
-
-                        // Get the test name to handle special cases
-                        const testName = testNameCell.textContent.trim().toLowerCase();
-
-                        // Extract numeric result value, handling various formats
-                        const resultText = resultCell.textContent.trim();
-                        let resultValue = parseFloat(resultText.replace(/[^\d.-]/g, ''));
-                        const rangeText = rangeCell.textContent.trim();
-
-                        // Only process if we have a valid numeric result
-                        if (isNaN(resultValue)) return;
-
-                        // Extract range values with improved pattern matching
-                        let lowerBound, upperBound;
-                        let rangePattern;
-
-                        // Handle ranges like "10-20", "< 10", "> 5", etc.
-                        if (rangeText.includes('-')) {
-                            rangePattern = /(\d+\.?\d*)\s*-\s*(\d+\.?\d*)/;
-                            const match = rangeText.match(rangePattern);
-                            if (match && match.length >= 3) {
-                                lowerBound = parseFloat(match[1]);
-                                upperBound = parseFloat(match[2]);
-                            }
-                        } else if (rangeText.includes('<')) {
-                            rangePattern = /[<≤]\s*(\d+\.?\d*)/;
-                            const match = rangeText.match(rangePattern);
-                            if (match && match.length >= 2) {
-                                upperBound = parseFloat(match[1]);
-                            }
-                        } else if (rangeText.includes('>')) {
-                            rangePattern = /[>≥]\s*(\d+\.?\d*)/;
-                            const match = rangeText.match(rangePattern);
-                            if (match && match.length >= 2) {
-                                lowerBound = parseFloat(match[1]);
-                            }
-                        }
-
-                        // Special handling for Platelet Count (PLC) and Total Leucocyte Count (TLC)
-                        if (testName.includes('plc') || testName.includes('platelet') || testName.includes('tlc')) {
-                            // If the result includes "x1000", adjust the result value
-                            if (resultText.includes('x1000')) {
-                                resultValue *= 1000; // Convert to actual count (e.g., 251 becomes 251000)
-                            }
-                            // Adjust the reference range to be in thousands if necessary
-                            if (!isNaN(lowerBound) && !isNaN(upperBound) && upperBound <= 1000) {
-                                lowerBound *= 1000; // Convert range to thousands (e.g., 150 becomes 150000)
-                                upperBound *= 1000; // Convert range to thousands (e.g., 450 becomes 450000)
-                            }
-                        }
-
-                        // Log the values for debugging
-                        console.log(`Test: ${testName}, Result Value: ${resultValue}, Range: ${lowerBound} - ${upperBound}`);
-
-                        // Determine status based on value comparison with range
-                        let statusClass = '';
-                        let statusText = '';
-
-                        if (!isNaN(lowerBound) && !isNaN(upperBound)) {
-                            // We have both bounds
-                            if (resultValue < lowerBound) {
-                                statusClass = 'low';
-                                statusText = 'Low';
-                            } else if (resultValue > upperBound) {
-                                statusClass = 'high';
-                                statusText = 'High';
-                            } else {
-                                statusClass = 'normal';
-                                statusText = 'Normal';
-                            }
-                        } else if (!isNaN(lowerBound)) {
-                            // Only lower bound (> value)
-                            if (resultValue < lowerBound) {
-                                statusClass = 'low';
-                                statusText = 'Low';
-                            } else {
-                                statusClass = 'normal';
-                                statusText = 'Normal';
-                            }
-                        } else if (!isNaN(upperBound)) {
-                            // Only upper bound (< value)
-                            if (resultValue > upperBound) {
-                                statusClass = 'high';
-                                statusText = 'High';
-                            } else {
-                                statusClass = 'normal';
-                                statusText = 'Normal';
-                            }
-                        } else {
-                            // Default if no range is defined
-                            statusClass = '';
-                            statusText = '-';
-                        }
-
-                        // Log the determined status
-                        console.log(`Test: ${testName}, Determined Status: ${statusText}`);
-
-                        // Apply consistent styling
-                        if (statusClass) {
-                            // Remove any existing status classes from both result and status cells
-                            resultCell.classList.remove('normal', 'high', 'low', 'abnormal', 'borderline');
-                            statusCell.classList.remove('normal', 'high', 'low', 'abnormal', 'borderline');
-
-                            // Remove any inline styles to ensure our styles take precedence
-                            resultCell.style.color = '';
-                            statusCell.style.color = '';
-
-                            // Add appropriate class
-                            resultCell.classList.add(statusClass);
-                            statusCell.classList.add(statusClass);
-
-                            // Set text content for status cell (overwrite any existing text)
-                            statusCell.textContent = statusText;
-
-                            // Apply appropriate color
-                            if (statusClass === 'high') {
-                                resultCell.style.color = '#dc3545'; // Red for high
-                                statusCell.style.color = '#dc3545';
-                            } else if (statusClass === 'low') {
-                                resultCell.style.color = '#e67e22'; // Orange for low
-                                statusCell.style.color = '#e67e22';
-                            } else if (statusClass === 'normal') {
-                                resultCell.style.color = '#28a745'; // Green for normal
-                                statusCell.style.color = '#28a745';
-                            }
+                        // Apply styling based on the class assigned by Gemini
+                        if (statusCell.classList.contains('high')) {
+                            statusCell.style.color = '#dc3545'; // Red for high
+                        } else if (statusCell.classList.contains('low')) {
+                            statusCell.style.color = '#e67e22'; // Orange for low
+                        } else if (statusCell.classList.contains('normal')) {
+                            statusCell.style.color = '#28a745'; // Green for normal
+                        } else if (statusCell.classList.contains('borderline')) {
+                            statusCell.style.color = '#e67e22'; // Orange for borderline
                         }
                     });
                 });
@@ -867,7 +755,6 @@
                     link.setAttribute('rel', 'noopener noreferrer');
                 });
             }
-
             // Handle analyze button click
 
 
@@ -921,7 +808,6 @@
                     analyzeButton.disabled = false;
                 }
             });
-
             // Handle go back button
             document.getElementById('goBackButton').addEventListener('click', function () {
                 window.location.href = 'home.html'; // Change this to your actual homepage URL
