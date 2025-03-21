@@ -18,26 +18,19 @@
 
         .go-back-button {
             position: fixed;
-            /* Keeps it in the top-left even when scrolling */
             top: 10px;
             left: 10px;
-            background-color: #62a6b8;
-            /* Green button */
+            background-color: #2e7aad;
             color: white;
             border: none;
             padding: 6px 12px;
-            /* Small size */
             font-size: 12px;
-            /* Smaller font */
             font-weight: bold;
             border-radius: 4px;
             cursor: pointer;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
             z-index: 1000;
-            /* Ensures it's above other elements */
             transition: background-color 0.2s, transform 0.1s;
-
-            /* Ensure it doesn't take full width */
             display: inline-block;
             width: auto;
             min-width: unset;
@@ -45,12 +38,9 @@
         }
 
         .go-back-button:hover {
-            background-color: #388E3C;
+            background-color: #1f5f91;
             transform: scale(1.05);
         }
-
-
-
 
         .container {
             max-width: 800px;
@@ -59,7 +49,7 @@
         }
 
         header {
-            background-color: #B5B25C;
+            background-color: #2e7aad;
             color: white;
             padding: 20px 0;
             text-align: center;
@@ -92,16 +82,16 @@
 
         .file-input-label {
             display: inline-block;
-            background-color: #B5B25C;
+            background: linear-gradient(135deg, #2e7aad, #1f5f91);
             color: white;
             padding: 12px 20px;
             border-radius: 4px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background 0.3s;
         }
 
         .file-input-label:hover {
-            background-color: #59572c;
+            background: #143f6b;
         }
 
         .file-name {
@@ -110,7 +100,7 @@
         }
 
         .button {
-            background-color: #2ecc71;
+            background: linear-gradient(135deg, #2e7aad, #1f5f91);
             color: white;
             border: none;
             padding: 12px 20px;
@@ -120,11 +110,11 @@
             display: block;
             width: 100%;
             margin-top: 20px;
-            transition: background-color 0.3s;
+            transition: background 0.3s;
         }
 
         .button:hover {
-            background-color: #27ae60;
+            background: #143f6b;
         }
 
         .button:disabled {
@@ -140,42 +130,11 @@
             display: none;
         }
 
-        .tab-container {
-            margin-top: 20px;
-        }
-
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            border-bottom: none;
-            margin-right: 5px;
-            border-radius: 4px 4px 0 0;
-        }
-
-        .tab.active {
-            background-color: white;
-            border-bottom: 1px solid white;
-            margin-bottom: -1px;
-            font-weight: bold;
-        }
-
-        .tab-content {
-            display: none;
+        #analysisContent {
             padding: 20px;
-            border: 1px solid #ddd;
-            border-top: none;
             background-color: white;
-        }
-
-        .tab-content.active {
-            display: block;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
 
         .loader {
@@ -317,12 +276,12 @@
         }
 
         .progress-button {
-            background-color: #3b637d;
+            background: linear-gradient(135deg, #2e7aad, #1f5f91);
             flex: 1;
         }
 
         .progress-button:hover {
-            background-color: #2a4759;
+            background: #143f6b;
         }
 
         .print-button {
@@ -356,21 +315,10 @@
 
         <div id="results" class="results-section">
             <h2>Analysis Results</h2>
-            <div class="tab-container">
-                <div class="tabs">
-                    <div class="tab active" data-tab="analysis">Analysis</div>
-                    <div class="tab" data-tab="extracted-text">Extracted Text</div>
-                </div>
-                <div id="analysis" class="tab-content active">
-                    <div id="analysisContent"></div>
-                </div>
-                <div id="extracted-text" class="tab-content">
-                    <pre id="extractedTextContent"></pre>
-                </div>
-                <div class="button-container">
-                    <button id="progressButton" class="button progress-button">View Progress Charts</button>
-                    <button id="printButton" class="button print-button">Print Report</button>
-                </div>
+            <div id="analysisContent"></div>
+            <div class="button-container">
+                <button id="progressButton" class="button progress-button">View Progress Charts</button>
+                <button id="printButton" class="button print-button">Print Report</button>
             </div>
         </div>
     </div>
@@ -385,13 +333,10 @@
             const analyzeButton = document.getElementById('analyzeButton');
             const loader = document.getElementById('loader');
             const results = document.getElementById('results');
-            const extractedTextContent = document.getElementById('extractedTextContent');
             const analysisContent = document.getElementById('analysisContent');
             const errorMessage = document.getElementById('errorMessage');
             const printButton = document.getElementById('printButton');
             const progressButton = document.getElementById('progressButton');
-            const tabs = document.querySelectorAll('.tab');
-            const tabContents = document.querySelectorAll('.tab-content');
 
             // API key - replace with your actual key
             const API_KEY = 'AIzaSyA5Mx9lkFnqkQR1oXYvRFAZsphAtsmtmgY';
@@ -428,19 +373,6 @@
                 }
             });
 
-            // Handle tab switching
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function () {
-                    const tabId = this.getAttribute('data-tab');
-
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-
-                    this.classList.add('active');
-                    document.getElementById(tabId).classList.add('active');
-                });
-            });
-
             // Handle print button
             printButton.addEventListener('click', function () {
                 window.print();
@@ -474,35 +406,35 @@
                 return extractedValues;
             }
 
-function saveProcessedReport(rawText, analysisHTML) {
-    try {
-        // Get existing reports or initialize empty array
-        let previousReports = JSON.parse(localStorage.getItem("bloodReports")) || [];
+            function saveProcessedReport(rawText, analysisHTML) {
+                try {
+                    // Get existing reports or initialize empty array
+                    let previousReports = JSON.parse(localStorage.getItem("bloodReports")) || [];
 
-        // Extract test values from the raw text
-        let extractedValues = extractTestValues(rawText);
+                    // Extract test values from the raw text
+                    let extractedValues = extractTestValues(rawText);
 
-        // Create a consistent report structure
-        const newReport = {
-            date: new Date().toISOString(),
-            values: extractedValues,
-            analysisHTML: analysisHTML, // Store the complete HTML analysis from Gemini
-            rawText: rawText // Optionally store the raw text as well
-        };
+                    // Create a consistent report structure
+                    const newReport = {
+                        date: new Date().toISOString(),
+                        values: extractedValues,
+                        analysisHTML: analysisHTML, // Store the complete HTML analysis from Gemini
+                        rawText: rawText // Optionally store the raw text as well
+                    };
 
-        // Add the new report
-        previousReports.push(newReport);
+                    // Add the new report
+                    previousReports.push(newReport);
 
-        // Save to localStorage
-        localStorage.setItem("bloodReports", JSON.stringify(previousReports));
+                    // Save to localStorage
+                    localStorage.setItem("bloodReports", JSON.stringify(previousReports));
 
-        console.log("Processed report saved:", newReport);
-        return newReport; // Return the saved report
-    } catch (error) {
-        console.error("Error in saveProcessedReport():", error);
-        return null;
-    }
-}
+                    console.log("Processed report saved:", newReport);
+                    return newReport; // Return the saved report
+                } catch (error) {
+                    console.error("Error in saveProcessedReport():", error);
+                    return null;
+                }
+            }
 
             // Function to extract text from PDF using PDF.js
             async function extractTextFromPDF(file) {
@@ -571,14 +503,6 @@ function saveProcessedReport(rawText, analysisHTML) {
                 });
             }
 
-            function displayExtractedText(text) {
-                // Get the extracted text element
-                const extractedTextContent = document.getElementById('extractedTextContent');
-
-                // Set the text with proper formatting preserved
-                extractedTextContent.textContent = text;
-            }
-
             // Helper function to convert file to base64
             function fileToBase64(file) {
                 return new Promise((resolve, reject) => {
@@ -590,7 +514,6 @@ function saveProcessedReport(rawText, analysisHTML) {
             }
 
             // Function to send PDF directly to Gemini
-            // Replace the existing sendPDFToGemini function with this improved version
             async function sendPDFToGemini(file) {
                 try {
                     // Create a FormData object to handle the file
@@ -604,40 +527,40 @@ function saveProcessedReport(rawText, analysisHTML) {
 
                     // Construct the prompt with enhanced instructions
                     const instructions = `
-        Analyze this blood test report PDF and provide a detailed, structured analysis following these rules:
-        
-        1. Extract and present patient information first (name, age, ID, etc.)
-        2. Present test results in tables with these columns:
-           - Test Name/Parameter
-           - Result
-           - Reference Range
-           - Status (IMPORTANT: Always include this column with values: Normal, High, Low, or Borderline)
-        3. For abnormal values, mark with appropriate status (High or Low)
-        4. For each abnormal value, provide a brief interpretation (1-2 lines max)
-        5. Provide 3-4 key recommendations based on abnormal findings
-        6. Format your response as HTML - DO NOT include code block markers
-        
-        Use this structure and these HTML classes:
-        - <div class="patient-info"> for patient details
-        - <h3 class="section-title"> for section headers
-        - <table class="results-table"> for test results
-        - <div class="summary-section"> for abnormal findings summary
-        - <div class="recommendations"> for recommendations
-        - For test results, mark with class="normal", class="abnormal" or class="borderline"
-        
-        IMPORTANT: Be thorough in examining all test values. For the blood report I'm giving you, 
-        pay special attention to:
-        - Hemoglobin (HB)
-        - PCV (Hematocrit)
-        - Total Count (TC)
-        - Platelet Count (PLC)
-        - Creatinine
-        - Blood Sugar (Glucose)
-        - HbA1c
-        - Lipid Profile (Cholesterol, Triglycerides, etc.)
-        
-        ALWAYS add a Status column even if one doesn't exist in the original report.
-        `;
+            Analyze this blood test report PDF and provide a detailed, structured analysis following these rules:
+            
+            1. Extract and present patient information first (name, age, ID, etc.)
+            2. Present test results in tables with these columns:
+               - Test Name/Parameter
+               - Result
+               - Reference Range
+               - Status (IMPORTANT: Always include this column with values: Normal, High, Low, or Borderline)
+            3. For abnormal values, mark with appropriate status (High or Low)
+            4. For each abnormal value, provide a brief interpretation (1-2 lines max)
+            5. Provide 3-4 key recommendations based on abnormal findings
+            6. Format your response as HTML - DO NOT include code block markers
+            
+            Use this structure and these HTML classes:
+            - <div class="patient-info"> for patient details
+            - <h3 class="section-title"> for section headers
+            - <table class="results-table"> for test results
+            - <div class="summary-section"> for abnormal findings summary
+            - <div class="recommendations"> for recommendations
+            - For test results, mark with class="normal", class="abnormal" or class="borderline"
+            
+            IMPORTANT: Be thorough in examining all test values. For the blood report I'm giving you, 
+            pay special attention to:
+            - Hemoglobin (HB)
+            - PCV (Hematocrit)
+            - Total Count (TC)
+            - Platelet Count (PLC)
+            - Creatinine
+            - Blood Sugar (Glucose)
+            - HbA1c
+            - Lipid Profile (Cholesterol, Triglycerides, etc.)
+            
+            ALWAYS add a Status column even if one doesn't exist in the original report.
+            `;
 
                     // Create request payload with both text instructions and the PDF file
                     const requestBody = {
@@ -701,6 +624,7 @@ function saveProcessedReport(rawText, analysisHTML) {
 
             // Enhanced function to better extract test values
             function extractTestValues(rawText) {
+
                 let extractedValues = {};
 
                 // Improved regex patterns for extracting test values
@@ -724,13 +648,20 @@ function saveProcessedReport(rawText, analysisHTML) {
                 for (let test in regexPatterns) {
                     let match = rawText.match(regexPatterns[test]);
                     if (match) {
-                        extractedValues[test] = parseFloat(match[1]);
+                        let value = parseFloat(match[1]);
+                        // Special handling for Platelets to account for x1000 multiplier
+                        if (test === "Platelets" && rawText.match(/(?:PLC|PLT|Platelets?)\s+\d+\s*x1000\/cumm/i)) {
+                            value *= 1000; // Multiply by 1000 to get the actual count
+                        }
+                        extractedValues[test] = value;
                     }
                 }
 
                 console.log("Extracted test values:", extractedValues);
                 return extractedValues;
             }
+
+
 
             function displayAnalysisResults(analysis) {
                 // Clean any remaining markdown or code block markers
@@ -792,17 +723,21 @@ function saveProcessedReport(rawText, analysisHTML) {
                         const cells = row.querySelectorAll('td');
                         if (cells.length <= Math.max(resultColIndex, rangeColIndex, statusColIndex)) return;
 
-                        // Get test result and reference range
+                        // Get test name, result, and reference range
+                        const testNameCell = cells[testNameColIndex];
                         const resultCell = cells[resultColIndex];
                         const rangeCell = cells[rangeColIndex];
                         const statusCell = cells[statusColIndex];
 
                         // Skip if cells don't exist
-                        if (!resultCell || !rangeCell || !statusCell) return;
+                        if (!testNameCell || !resultCell || !rangeCell || !statusCell) return;
+
+                        // Get the test name to handle special cases
+                        const testName = testNameCell.textContent.trim().toLowerCase();
 
                         // Extract numeric result value, handling various formats
                         const resultText = resultCell.textContent.trim();
-                        const resultValue = parseFloat(resultText.replace(/[^\d.-]/g, ''));
+                        let resultValue = parseFloat(resultText.replace(/[^\d.-]/g, ''));
                         const rangeText = rangeCell.textContent.trim();
 
                         // Only process if we have a valid numeric result
@@ -833,6 +768,22 @@ function saveProcessedReport(rawText, analysisHTML) {
                                 lowerBound = parseFloat(match[1]);
                             }
                         }
+
+                        // Special handling for Platelet Count (PLC) and Total Leucocyte Count (TLC)
+                        if (testName.includes('plc') || testName.includes('platelet') || testName.includes('tlc')) {
+                            // If the result includes "x1000", adjust the result value
+                            if (resultText.includes('x1000')) {
+                                resultValue *= 1000; // Convert to actual count (e.g., 251 becomes 251000)
+                            }
+                            // Adjust the reference range to be in thousands if necessary
+                            if (!isNaN(lowerBound) && !isNaN(upperBound) && upperBound <= 1000) {
+                                lowerBound *= 1000; // Convert range to thousands (e.g., 150 becomes 150000)
+                                upperBound *= 1000; // Convert range to thousands (e.g., 450 becomes 450000)
+                            }
+                        }
+
+                        // Log the values for debugging
+                        console.log(`Test: ${testName}, Result Value: ${resultValue}, Range: ${lowerBound} - ${upperBound}`);
 
                         // Determine status based on value comparison with range
                         let statusClass = '';
@@ -874,17 +825,24 @@ function saveProcessedReport(rawText, analysisHTML) {
                             statusText = '-';
                         }
 
+                        // Log the determined status
+                        console.log(`Test: ${testName}, Determined Status: ${statusText}`);
+
                         // Apply consistent styling
                         if (statusClass) {
-                            // Remove any existing status classes
+                            // Remove any existing status classes from both result and status cells
                             resultCell.classList.remove('normal', 'high', 'low', 'abnormal', 'borderline');
                             statusCell.classList.remove('normal', 'high', 'low', 'abnormal', 'borderline');
+
+                            // Remove any inline styles to ensure our styles take precedence
+                            resultCell.style.color = '';
+                            statusCell.style.color = '';
 
                             // Add appropriate class
                             resultCell.classList.add(statusClass);
                             statusCell.classList.add(statusClass);
 
-                            // Set text content for status cell
+                            // Set text content for status cell (overwrite any existing text)
                             statusCell.textContent = statusText;
 
                             // Apply appropriate color
@@ -911,11 +869,12 @@ function saveProcessedReport(rawText, analysisHTML) {
             }
 
             // Handle analyze button click
+
+
             analyzeButton.addEventListener('click', async function () {
                 if (pdfFile.files.length === 0) return;
 
                 // Reset previous results
-                extractedTextContent.textContent = '';
                 analysisContent.innerHTML = '';
 
                 // Show loader
@@ -932,23 +891,23 @@ function saveProcessedReport(rawText, analysisHTML) {
                     // Display analysis results
                     displayAnalysisResults(analysisResult);
 
-                    // Optionally also extract and display text
+                    // Extract text for saving to localStorage (but not displaying)
                     const extractedText = await extractTextFromPDF(file);
-                    displayExtractedText(extractedText);
 
                     // Save extracted text and values for progress tracking
                     const savedReport = saveProcessedReport(extractedText, analysisResult);
                     if (savedReport) {
                         // Store the current analysis data in a global variable
                         currentAnalysisData = savedReport;
-                        
+
                         // Also store in sessionStorage for access across pages in the same session
                         sessionStorage.setItem('currentBloodAnalysis', JSON.stringify(currentAnalysisData));
-                        
+
                         console.log("Analysis data saved and ready for use:", currentAnalysisData);
                     } else {
                         console.warn("Failed to save analysis data");
                     }
+
                     // Show results section
                     results.style.display = 'block';
 
