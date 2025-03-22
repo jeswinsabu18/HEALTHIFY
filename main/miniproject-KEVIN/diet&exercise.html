@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,13 +15,13 @@
             --danger-color: #e74c3c;
             --success-color: #2ecc71;
         }
-        
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
@@ -28,7 +29,7 @@
             background-color: var(--light-bg);
             padding: 20px;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -37,7 +38,7 @@
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
-        
+
         header {
             background-color: var(--primary-color);
             color: white;
@@ -46,17 +47,17 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .header-title h1 {
             font-size: 24px;
             margin-bottom: 5px;
         }
-        
+
         .header-title p {
             font-size: 14px;
             opacity: 0.9;
         }
-        
+
         .header-actions button {
             background-color: white;
             color: var(--primary-color);
@@ -68,18 +69,18 @@
             margin-left: 10px;
             transition: all 0.3s ease;
         }
-        
+
         .header-actions button:hover {
             background-color: #f0f0f0;
             transform: translateY(-2px);
         }
-        
+
         .tabs {
             display: flex;
             background-color: #f0f7ff;
             border-bottom: 1px solid var(--border-color);
         }
-        
+
         .tab {
             padding: 15px 25px;
             cursor: pointer;
@@ -88,26 +89,26 @@
             color: var(--secondary-color);
             border-bottom: 3px solid transparent;
         }
-        
+
         .tab:hover {
             background-color: rgba(96, 165, 184, 0.1);
         }
-        
+
         .tab.active {
             color: var(--primary-color);
             border-bottom: 3px solid var(--primary-color);
             font-weight: bold;
         }
-        
+
         .tab-content {
             display: none;
             padding: 30px;
         }
-        
+
         .tab-content.active {
             display: block;
         }
-        
+
         .section-title {
             color: var(--secondary-color);
             margin-bottom: 20px;
@@ -115,7 +116,7 @@
             padding-bottom: 10px;
             border-bottom: 1px solid var(--border-color);
         }
-        
+
         .parameter-card {
             background-color: white;
             border-radius: 8px;
@@ -124,55 +125,55 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             border-left: 4px solid var(--primary-color);
         }
-        
+
         .parameter-card h3 {
             margin-bottom: 10px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
-        
+
         .parameter-status {
             font-size: 12px;
             padding: 3px 8px;
             border-radius: 12px;
             margin-left: 10px;
         }
-        
+
         .status-normal {
             background-color: #e1f5e5;
             color: #2ecc71;
         }
-        
+
         .status-low {
             background-color: #fdebd0;
             color: #e67e22;
         }
-        
+
         .status-high {
             background-color: #f5d9d7;
             color: #e74c3c;
         }
-        
+
         .parameter-card.anemia {
             border-left-color: #e67e22;
         }
-        
+
         .parameter-card.diabetes {
             border-left-color: #e74c3c;
         }
-        
+
         .parameter-card.inflammation {
             border-left-color: #9b59b6;
         }
-        
+
         .food-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
-        
+
         .food-item {
             background-color: white;
             border-radius: 8px;
@@ -182,33 +183,33 @@
             align-items: center;
             border-left: 3px solid var(--primary-color);
         }
-        
+
         .food-icon {
             font-size: 24px;
             margin-right: 15px;
         }
-        
+
         .food-title {
             font-weight: bold;
             margin-bottom: 5px;
         }
-        
+
         .food-description {
             font-size: 13px;
             color: #666;
         }
-        
+
         .guidelines {
             background-color: #f0f7ff;
             padding: 20px;
             border-radius: 8px;
             margin-top: 30px;
         }
-        
+
         .exercise-recommendations {
             margin-top: 30px;
         }
-        
+
         .exercise-item {
             display: flex;
             align-items: center;
@@ -218,7 +219,7 @@
             margin-bottom: 15px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
-        
+
         .exercise-item-icon {
             font-size: 24px;
             margin-right: 15px;
@@ -230,26 +231,26 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .exercise-item-content {
             flex: 1;
         }
-        
+
         .exercise-title {
             font-weight: bold;
             margin-bottom: 5px;
         }
-        
+
         .exercise-description {
             font-size: 14px;
             margin-bottom: 5px;
         }
-        
+
         .exercise-duration {
             font-size: 12px;
             color: var(--secondary-color);
         }
-        
+
         .meal-plan-day {
             background-color: white;
             border-radius: 8px;
@@ -257,36 +258,36 @@
             margin-bottom: 20px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
-        
+
         .meal-plan-day h4 {
             margin-bottom: 15px;
             color: var(--secondary-color);
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
         }
-        
+
         .meal-item {
             margin-bottom: 15px;
             padding-bottom: 15px;
             border-bottom: 1px dashed #eee;
         }
-        
+
         .meal-item:last-child {
             border-bottom: none;
             padding-bottom: 0;
             margin-bottom: 0;
         }
-        
+
         .meal-title {
             font-weight: bold;
             margin-bottom: 5px;
         }
-        
+
         .meal-description {
             font-size: 14px;
             color: #555;
         }
-        
+
         .ai-recommendation {
             background-color: #f0f7ff;
             border-left: 5px solid #62a6b8;
@@ -294,7 +295,7 @@
             margin-bottom: 20px;
             border-radius: 4px;
         }
-        
+
         .spinner {
             display: inline-block;
             width: 20px;
@@ -306,18 +307,20 @@
             vertical-align: middle;
             margin-left: 10px;
         }
-        
+
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
-        
+
         .meal-nutrition {
             font-size: 12px;
             color: #3b637d;
             font-style: italic;
             margin-top: 4px;
         }
-        
+
         .badge-ai {
             display: inline-block;
             background-color: #62a6b8;
@@ -328,51 +331,53 @@
             margin-left: 8px;
             vertical-align: middle;
         }
-        
+
         @media print {
             body {
                 background-color: white;
                 padding: 0;
             }
-            
+
             .container {
                 box-shadow: none;
             }
-            
-            .header-actions, .tabs {
+
+            .header-actions,
+            .tabs {
                 display: none;
             }
-            
+
             .tab-content {
                 display: block !important;
             }
         }
-        
+
         @media (max-width: 768px) {
             .food-list {
                 grid-template-columns: 1fr;
             }
-            
+
             .header-title h1 {
                 font-size: 20px;
             }
-            
+
             .header-actions button {
                 padding: 6px 12px;
                 font-size: 12px;
             }
-            
+
             .tab {
                 padding: 10px 15px;
                 font-size: 14px;
             }
-            
+
             .tab-content {
                 padding: 15px;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -385,59 +390,61 @@
                 <button id="printButton">Print Report</button>
             </div>
         </header>
-        
+
         <div class="tabs">
             <div class="tab active" data-tab="overview">Overview</div>
             <div class="tab" data-tab="diet">Diet</div>
             <div class="tab" data-tab="exercise">Exercise</div>
             <div class="tab" data-tab="mealplan">Meal Plan</div>
         </div>
-        
+
         <div id="overview" class="tab-content active">
             <div id="patientSummary">
                 <!-- Summary content will be populated here -->
             </div>
         </div>
-        
+
         <div id="diet" class="tab-content">
             <h3 class="section-title">Dietary Recommendations</h3>
-            <div id="dietSummary">
-                <!-- Diet summary will be populated here -->
+            <div id="dietLoadingIndicator">
+                <p>Loading dietary recommendations... <span class="spinner"></span></p>
             </div>
-            
-            <h4 class="section-title">Foods to Include</h4>
-            <div id="recommendedFoods" class="food-list">
-                <!-- Recommended foods will be populated here -->
-            </div>
-            
-            <h4 class="section-title">Foods to Limit</h4>
-            <div id="limitFoods" class="food-list">
-                <!-- Foods to limit will be populated here -->
-            </div>
-            
-            <div class="guidelines">
-                <h4>General Nutrition Guidelines</h4>
-                <ul id="nutritionGuidelines">
-                    <!-- Guidelines will be populated here -->
-                </ul>
+            <div id="dietContent" style="display: none;">
+                <div id="dietSummary">
+                    <!-- Diet summary will be populated here -->
+                </div>
+                <h4 class="section-title">Foods to Include</h4>
+                <div id="recommendedFoods" class="food-list">
+                    <!-- Recommended foods will be populated here -->
+                </div>
+                <h4 class="section-title">Foods to Limit</h4>
+                <div id="limitFoods" class="food-list">
+                    <!-- Foods to limit will be populated here -->
+                </div>
+                <div class="guidelines">
+                    <h4>General Nutrition Guidelines</h4>
+                    <ul id="nutritionGuidelines">
+                        <!-- Guidelines will be populated here -->
+                    </ul>
+                </div>
             </div>
         </div>
-        
+
         <div id="exercise" class="tab-content">
             <h3 class="section-title">Exercise Recommendations</h3>
             <div id="exerciseSummary">
                 <!-- Exercise summary will be populated here -->
             </div>
-            
+
             <div id="exerciseRecommendations" class="exercise-recommendations">
                 <!-- Exercise items will be populated here -->
             </div>
-            
+
             <div id="exerciseSchedule">
                 <!-- Exercise schedule will be populated here -->
             </div>
         </div>
-        
+
         <div id="mealplan" class="tab-content">
             <h3 class="section-title">Personalized Meal Plan</h3>
             <div id="mealPlanContainer">
@@ -445,26 +452,131 @@
             </div>
         </div>
     </div>
-    
     <script>
         // Function to get the latest blood report from local storage
         function getLatestBloodReport() {
             const reportsString = localStorage.getItem('bloodReports');
+            console.log('Raw bloodReports from localStorage:', reportsString);
+
             if (!reportsString) {
+                console.log('No bloodReports found in localStorage');
                 return null;
             }
-            
-            const reports = JSON.parse(reportsString);
-            if (!reports || reports.length === 0) {
+
+            let reports;
+            try {
+                reports = JSON.parse(reportsString);
+                console.log('Parsed bloodReports:', reports);
+            } catch (parseError) {
+                console.error('Failed to parse bloodReports from localStorage:', parseError);
                 return null;
             }
-            
+
+            if (!Array.isArray(reports) || reports.length === 0) {
+                console.log('bloodReports is empty or not an array:', reports);
+                return null;
+            }
+
             // Sort by date (newest first)
             reports.sort((a, b) => new Date(b.date) - new Date(a.date));
-            return reports[0];
+            console.log('Sorted bloodReports (newest first):', reports);
+
+            // Find the newest report with at least one expected parameter
+            const expectedParams = ['Hemoglobin', 'Glucose', 'CRP', 'RBC', 'Cholesterol', 'LDL', 'HDL', 'PCV'];
+            let latestValidReport = null;
+
+            for (const report of reports) {
+                if (!report.date || !report.values || !report.analysisHTML) {
+                    console.log('Report is invalid (missing date, values, or analysisHTML):', report);
+                    continue;
+                }
+
+                // Check if the report has at least one expected parameter
+                const hasExpectedParam = expectedParams.some(param => param in report.values && report.values[param] != null);
+                if (hasExpectedParam) {
+                    latestValidReport = report;
+                    break;
+                } else {
+                    console.log('Report lacks expected parameters:', report);
+                }
+            }
+
+            if (!latestValidReport) {
+                console.log('No valid report found with expected parameters');
+                return null;
+            }
+
+            console.log('Selected latest valid report:', latestValidReport);
+            return latestValidReport;
+        }    // Function to show a message when no data is available
+
+        function parseAnalysisHTML(analysisHTML) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(analysisHTML, 'text/html');
+            const testResults = [];
+
+            // Find the results table
+            const table = doc.querySelector('table.results-table');
+            if (!table) {
+                console.warn('No results table found in analysisHTML');
+                return { testResults, patientInfo: {} };
+            }
+
+            // Extract patient info
+            const patientInfoDiv = doc.querySelector('div.patient-info');
+            const patientInfo = {};
+            if (patientInfoDiv) {
+                const items = patientInfoDiv.querySelectorAll('.patient-info-item');
+                items.forEach(item => {
+                    const text = item.textContent.trim();
+                    const [key, value] = text.split(':').map(s => s.trim());
+                    if (key && value) {
+                        patientInfo[key.toLowerCase()] = value;
+                    }
+                });
+            }
+
+            // Extract test results from the table
+            const rows = table.querySelectorAll('tr');
+            const headers = Array.from(rows[0].querySelectorAll('th')).map(th => th.textContent.trim().toLowerCase());
+
+            const testNameIndex = headers.indexOf('test name/parameter');
+            const resultIndex = headers.indexOf('result');
+            const unitIndex = headers.indexOf('unit');
+            const rangeIndex = headers.indexOf('reference range');
+            const statusIndex = headers.indexOf('status');
+
+            if (testNameIndex === -1 || resultIndex === -1 || statusIndex === -1) {
+                console.warn('Required columns not found in results table');
+                return { testResults, patientInfo };
+            }
+
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i].querySelectorAll('td');
+                if (cells.length < headers.length) continue;
+
+                const testName = cells[testNameIndex].textContent.trim();
+                const result = parseFloat(cells[resultIndex].textContent.trim());
+                const unit = unitIndex !== -1 ? cells[unitIndex].textContent.trim() : 'N/A';
+                const referenceRange = rangeIndex !== -1 ? cells[rangeIndex].textContent.trim() : 'N/A';
+                const status = cells[statusIndex].textContent.trim();
+
+                if (isNaN(result)) continue;
+
+                testResults.push({
+                    testName,
+                    result,
+                    unit,
+                    referenceRange,
+                    status
+                });
+            }
+
+            console.log('Parsed test results from analysisHTML:', testResults);
+            console.log('Parsed patient info from analysisHTML:', patientInfo);
+            return { testResults, patientInfo };
         }
-        
-        // Function to show a message when no data is available
+
         function showNoDataMessage() {
             document.getElementById('patientSummary').innerHTML = `
                 <div class="parameter-card">
@@ -473,199 +585,334 @@
                     <button id="uploadButton" style="background-color: var(--primary-color); color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin-top: 15px;">Upload Blood Test</button>
                 </div>
             `;
-            
-            document.getElementById('uploadButton').addEventListener('click', function() {
+
+            document.getElementById('uploadButton').addEventListener('click', function () {
                 window.location.href = 'upld.html';
             });
         }
-        
+
         // Function to send blood data to Gemini API
         async function getGeminiRecommendations(bloodData) {
-            try {
-                const response = await fetch('AIzaSyA5Mx9lkFnqkQR1oXYvRFAZsphAtsmtmgY', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-        prompt: `Analyze the following blood test results and provide detailed diet and exercise recommendations:
-        - Hemoglobin: ${bloodData.values.Hemoglobin} g/dL
-        - Glucose: ${bloodData.values.Glucose} mg/dL
-        - CRP: ${bloodData.values.CRP} mg/L
-        - RBC: ${bloodData.values.RBC} million/μL
-        - Test Date: ${new Date(bloodData.date).toLocaleDateString()}
-
-        Provide the response in JSON format with the following structure:
-        {
-            "diet": {
-                "summary": "A brief summary of dietary recommendations.",
-                "recommendedFoods": [
-                    {"name": "Food 1", "description": "Why this is recommended.", "icon": "🍎"},
-                    {"name": "Food 2", "description": "Why this is recommended.", "icon": "🥦"}
-                ],
-                "foodsToLimit": [
-                    {"name": "Food 1", "description": "Why this should be limited.", "icon": "🍩"},
-                    {"name": "Food 2", "description": "Why this should be limited.", "icon": "🍟"}
-                ]
-            },
-            "exercise": {
-                "summary": "A brief summary of exercise recommendations.",
-                "exercises": [
-                    {"name": "Exercise 1", "description": "Why this is recommended.", "duration": "20 mins", "icon": "🏃‍♂️"},
-                    {"name": "Exercise 2", "description": "Why this is recommended.", "duration": "30 mins", "icon": "🧘‍♀️"}
-                ]
+            if (!bloodData || !bloodData.analysisHTML) {
+                console.error('Invalid blood data provided to Gemini API: missing analysisHTML');
+                return null;
             }
-        }`
-    })
-});;
-                
+
+            // Parse the analysisHTML to get all test results and patient info
+            const { testResults, patientInfo } = parseAnalysisHTML(bloodData.analysisHTML);
+            const testDate = new Date(bloodData.date).toLocaleDateString();
+
+            // Construct a detailed prompt with all test results
+            let testResultsText = testResults.map(result => {
+                return `- ${result.testName}: ${result.result} ${result.unit} (${result.status}, Reference: ${result.referenceRange})`;
+            }).join('\n');
+
+            if (!testResultsText) {
+                testResultsText = 'No test results available.';
+            }
+
+            // Include patient info in the prompt
+            const patientInfoText = Object.entries(patientInfo).map(([key, value]) => {
+                return `${key}: ${value}`;
+            }).join(', ');
+
+            const apiKey = 'AIzaSyA5Mx9lkFnqkQR1oXYvRFAZsphAtsmtmgY';
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
+
+            const promptText = `Analyze the following blood test report and provide detailed diet, exercise, and meal plan recommendations based on all parameters:
+
+Patient Information:
+${patientInfoText || 'Not provided'}
+
+Test Results (including status and reference ranges):
+${testResultsText}
+
+Test Date: ${testDate}
+
+Return the response as a JSON object (and ONLY the JSON object, with no additional text, Markdown, or code block formatting) in the following format:
+{
+    "diet": {
+        "summary": "A brief summary of dietary recommendations.",
+        "recommendedFoods": [
+            {"name": "Food 1", "description": "Why this is recommended.", "icon": "🍎"},
+            {"name": "Food 2", "description": "Why this is recommended.", "icon": "🥦"}
+        ],
+        "foodsToLimit": [
+            {"name": "Food 1", "description": "Why this should be limited.", "icon": "🍩"},
+            {"name": "Food 2", "description": "Why this should be limited.", "icon": "🍟"}
+        ],
+        "nutritionGuidelines": [
+            "Guideline 1",
+            "Guideline 2"
+        ]
+    },
+    "exercise": {
+        "summary": "A brief summary of exercise recommendations.",
+        "exercises": [
+            {"name": "Exercise 1", "description": "Why this is recommended.", "duration": "20 mins", "icon": "🏃‍♂️"},
+            {"name": "Exercise 2", "description": "Why this is recommended.", "duration": "30 mins", "icon": "🧘‍♀️"}
+        ]
+    },
+    "mealPlan": [
+        {
+            "day": "Day 1",
+            "meals": [
+                {"name": "Breakfast", "description": "Description of meal", "nutrition": "Nutritional info"},
+                {"name": "Lunch", "description": "Description of meal", "nutrition": "Nutritional info"}
+            ]
+        }
+    ]
+}`;
+
+            console.log('Gemini API prompt:', promptText);
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [
+                            {
+                                parts: [
+                                    { text: promptText }
+                                ]
+                            }
+                        ],
+                        safetySettings: [
+                            {
+                                category: 'HARM_CATEGORY_HARASSMENT',
+                                threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+                            },
+                            {
+                                category: 'HARM_CATEGORY_HATE_SPEECH',
+                                threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+                            },
+                            {
+                                category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+                                threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+                            },
+                            {
+                                category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+                                threshold: 'BLOCK_MEDIUM_AND_ABOVE'
+                            }
+                        ]
+                    })
+                });
+
                 if (!response.ok) {
-                    throw new Error('Failed to get AI recommendations');
+                    const errorText = await response.text();
+                    throw new Error(`Gemini API request failed: ${response.status} - ${errorText}`);
                 }
-                
-                return await response.json();
+
+                const data = await response.json();
+
+                if (data.candidates && data.candidates.length > 0) {
+                    let generatedText = data.candidates[0].content.parts[0].text;
+                    console.log('Raw Gemini API response:', generatedText);
+
+                    // Clean the response
+                    generatedText = generatedText.trim();
+                    generatedText = generatedText.replace(/^```json\n|\n```$/g, '');
+                    const jsonMatch = generatedText.match(/{[\s\S]*}/);
+                    if (jsonMatch) {
+                        generatedText = jsonMatch[0];
+                    }
+
+                    console.log('Cleaned Gemini API response:', generatedText);
+
+                    try {
+                        const recommendations = JSON.parse(generatedText);
+                        console.log('Parsed Gemini API recommendations:', recommendations);
+
+                        // Ensure all sections exist, even if empty
+                        return {
+                            diet: recommendations.diet || { summary: '', recommendedFoods: [], foodsToLimit: [], nutritionGuidelines: [] },
+                            exercise: recommendations.exercise || { summary: '', exercises: [] },
+                            mealPlan: recommendations.mealPlan || []
+                        };
+                    } catch (parseError) {
+                        console.error('Failed to parse Gemini API response as JSON:', parseError);
+                        return null;
+                    }
+                } else {
+                    console.error('No candidates found in Gemini API response:', data);
+                    return null;
+                }
             } catch (error) {
-                console.error('Error getting AI recommendations:', error);
+                console.error('Error getting AI recommendations from Gemini API:', error);
                 return null;
             }
         }
-        
-        // Function to generate recommendations based on blood data
+
         async function generateRecommendations(bloodData) {
-            if (!bloodData || !bloodData.values) {
+            if (!bloodData || !bloodData.analysisHTML) {
                 showNoDataMessage();
                 return;
             }
-            
-            const values = bloodData.values;
+
+            // Parse the analysisHTML to get test results and patient info
+            const { testResults, patientInfo } = parseAnalysisHTML(bloodData.analysisHTML);
             const date = new Date(bloodData.date).toLocaleDateString();
-            
+
             // Populate patient summary
-            document.getElementById('patientSummary').innerHTML = `
-                <h3 class="section-title">Health Profile</h3>
-                <p>Recommendations based on your blood test from ${date}</p>
-                <div id="loadingIndicator">
-                    <p>Generating personalized AI recommendations... <span class="spinner"></span></p>
-                </div>
-                <div id="abnormalParameters"></div>
-            `;
-            
+            const patientSummary = document.getElementById('patientSummary');
+            patientSummary.innerHTML = `
+        <h3 class="section-title">Health Profile</h3>
+        <p>Recommendations based on your blood test from ${date}</p>
+        <div class="parameter-card">
+            <h3>Patient Information</h3>
+            <p>${Object.entries(patientInfo).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join('<br>') || 'Not provided'}</p>
+        </div>
+        <div id="loadingIndicator">
+            <p>Generating personalized AI recommendations... <span class="spinner"></span></p>
+        </div>
+        <div id="abnormalParameters"></div>
+    `;
+
             // Track parameters for recommendations
             const parameters = {
                 lowHemoglobin: false,
                 highGlucose: false,
                 highCRP: false,
-                lowRBC: false
+                lowRBC: false,
+                highCholesterol: false,
+                highLDL: false,
+                lowHDL: false,
+                highPCV: false
             };
-            
+
             const abnormalParamsContainer = document.getElementById('abnormalParameters');
-            
-            // Check hemoglobin (g/dL)
-            if (values.Hemoglobin !== undefined) {
-                const hemoglobin = values.Hemoglobin;
-                let status = '', statusClass = '';
-                
-                if (hemoglobin < 12) {
-                    status = 'Low';
-                    statusClass = 'status-low';
-                    parameters.lowHemoglobin = true;
-                    
-                    const elem = document.createElement('div');
-                    elem.className = 'parameter-card anemia';
-                    elem.innerHTML = `
-                        <h3>Hemoglobin <span class="parameter-status ${statusClass}">${status}</span></h3>
-                        <p>Your hemoglobin level of ${hemoglobin} g/dL is below the normal range, which may indicate anemia or low iron levels.</p>
-                    `;
-                    abnormalParamsContainer.appendChild(elem);
+
+            // Analyze all test results
+            testResults.forEach(result => {
+                const testName = result.testName.toLowerCase();
+                const value = result.result;
+                const status = result.status.toLowerCase();
+
+                if (testName.includes('hemoglobin') || testName.includes('hb')) {
+                    if (status === 'low') {
+                        parameters.lowHemoglobin = true;
+                        const elem = document.createElement('div');
+                        elem.className = 'parameter-card anemia';
+                        elem.innerHTML = `
+                    <h3>Hemoglobin <span class="parameter-status status-low">${status}</span></h3>
+                    <p>Your hemoglobin level of ${value} ${result.unit} is below the normal range (${result.referenceRange}), which may indicate anemia or low iron levels.</p>
+                `;
+                        abnormalParamsContainer.appendChild(elem);
+                    }
+                } else if (testName.includes('glucose')) {
+                    if (status === 'high') {
+                        parameters.highGlucose = true;
+                        const elem = document.createElement('div');
+                        elem.className = 'parameter-card diabetes';
+                        elem.innerHTML = `
+                    <h3>Glucose <span class="parameter-status status-high">${status}</span></h3>
+                    <p>Your glucose level of ${value} ${result.unit} is above the normal range (${result.referenceRange}), which may indicate prediabetes or diabetes.</p>
+                `;
+                        abnormalParamsContainer.appendChild(elem);
+                    }
+                } else if (testName.includes('crp')) {
+                    if (status === 'high') {
+                        parameters.highCRP = true;
+                        const elem = document.createElement('div');
+                        elem.className = 'parameter-card inflammation';
+                        elem.innerHTML = `
+                    <h3>C-Reactive Protein <span class="parameter-status status-high">${status}</span></h3>
+                    <p>Your CRP level of ${value} ${result.unit} is elevated (${result.referenceRange}), which may indicate inflammation in your body.</p>
+                `;
+                        abnormalParamsContainer.appendChild(elem);
+                    }
+                } else if (testName.includes('rbc')) {
+                    if (status === 'low') {
+                        parameters.lowRBC = true;
+                        const elem = document.createElement('div');
+                        elem.className = 'parameter-card anemia';
+                        elem.innerHTML = `
+                    <h3>Red Blood Cell Count <span class="parameter-status status-low">${status}</span></h3>
+                    <p>Your RBC count of ${value} ${result.unit} is below the normal range (${result.referenceRange}), which may indicate anemia.</p>
+                `;
+                        abnormalParamsContainer.appendChild(elem);
+                    }
+                } else if (testName.includes('cholesterol')) {
+                    if (status === 'high') {
+                        parameters.highCholesterol = true;
+                        const elem = document.createElement('div');
+                        elem.className = 'parameter-card';
+                        elem.innerHTML = `
+                    <h3>Cholesterol <span class="parameter-status status-high">${status}</span></h3>
+                    <p>Your cholesterol level of ${value} ${result.unit} is above the normal range (${result.referenceRange}), which may increase cardiovascular risk.</p>
+                `;
+                        abnormalParamsContainer.appendChild(elem);
+                    }
+                } else if (testName.includes('ldl')) {
+                    if (status === 'high') {
+                        parameters.highLDL = true;
+                        const elem = document.createElement('div');
+                        elem.className = 'parameter-card';
+                        elem.innerHTML = `
+                    <h3>LDL Cholesterol <span class="parameter-status status-high">${status}</span></h3>
+                    <p>Your LDL level of ${value} ${result.unit} is above the normal range (${result.referenceRange}), which may increase cardiovascular risk.</p>
+                `;
+                        abnormalParamsContainer.appendChild(elem);
+                    }
+                } else if (testName.includes('hdl')) {
+                    if (status === 'low') {
+                        parameters.lowHDL = true;
+                        const elem = document.createElement('div');
+                        elem.className = 'parameter-card';
+                        elem.innerHTML = `
+                    <h3>HDL Cholesterol <span class="parameter-status status-low">${status}</span></h3>
+                    <p>Your HDL level of ${value} ${result.unit} is below the normal range (${result.referenceRange}), which may increase cardiovascular risk.</p>
+                `;
+                        abnormalParamsContainer.appendChild(elem);
+                    }
+                } else if (testName.includes('pcv') || testName.includes('hematocrit')) {
+                    if (status === 'high') {
+                        parameters.highPCV = true;
+                        const elem = document.createElement('div');
+                        elem.className = 'parameter-card';
+                        elem.innerHTML = `
+                    <h3>PCV/Hematocrit <span class="parameter-status status-high">${status}</span></h3>
+                    <p>Your PCV level of ${value} ${result.unit} is above the normal range (${result.referenceRange}), which may indicate dehydration or other conditions.</p>
+                `;
+                        abnormalParamsContainer.appendChild(elem);
+                    }
                 }
-            }
-            
-            // Check glucose (mg/dL)
-            if (values.Glucose !== undefined) {
-                const glucose = values.Glucose;
-                let status = '', statusClass = '';
-                
-                if (glucose > 100) {
-                    status = 'High';
-                    statusClass = 'status-high';
-                    parameters.highGlucose = true;
-                    
-                    const elem = document.createElement('div');
-                    elem.className = 'parameter-card diabetes';
-                    elem.innerHTML = `
-                        <h3>Glucose <span class="parameter-status ${statusClass}">${status}</span></h3>
-                        <p>Your glucose level of ${glucose} mg/dL is above the normal range, which may indicate prediabetes or diabetes.</p>
-                    `;
-                    abnormalParamsContainer.appendChild(elem);
-                }
-            }
-            
-            // Check C-Reactive Protein (mg/L)
-            if (values.CRP !== undefined) {
-                const crp = values.CRP;
-                let status = '', statusClass = '';
-                
-                if (crp > 3) {
-                    status = 'High';
-                    statusClass = 'status-high';
-                    parameters.highCRP = true;
-                    
-                    const elem = document.createElement('div');
-                    elem.className = 'parameter-card inflammation';
-                    elem.innerHTML = `
-                        <h3>C-Reactive Protein <span class="parameter-status ${statusClass}">${status}</span></h3>
-                        <p>Your CRP level of ${crp} mg/L is elevated, which may indicate inflammation in your body.</p>
-                    `;
-                    abnormalParamsContainer.appendChild(elem);
-                }
-            }
-            
-            // Check Red Blood Cell Count (millions/μL)
-            if (values.RBC !== undefined) {
-                const rbc = values.RBC;
-                let status = '', statusClass = '';
-                
-                if (rbc < 4.2) {
-                    status = 'Low';
-                    statusClass = 'status-low';
-                    parameters.lowRBC = true;
-                    
-                    const elem = document.createElement('div');
-                    elem.className = 'parameter-card anemia';
-                    elem.innerHTML = `
-                        <h3>Red Blood Cell Count <span class="parameter-status ${statusClass}">${status}</span></h3>
-                        <p>Your RBC count of ${rbc} million/μL is below the normal range, which may indicate anemia.</p>
-                    `;
-                    abnormalParamsContainer.appendChild(elem);
-                }
-            }
-            
-            // If no abnormal parameters, show normal message
+            });
+
             if (abnormalParamsContainer.children.length === 0) {
                 abnormalParamsContainer.innerHTML = `
-                    <div class="parameter-card">
-                        <h3>Overall Health <span class="parameter-status status-normal">Normal</span></h3>
-                        <p>Your blood test results appear to be within normal ranges. The following recommendations are for general health maintenance.</p>
-                    </div>
-                `;
+            <div class="parameter-card">
+                <h3>Overall Health <span class="parameter-status status-normal">Normal</span></h3>
+                <p>Your blood test results appear to be within normal ranges. The following recommendations are for general health maintenance.</p>
+            </div>
+        `;
             }
-            
+
             // Get AI-powered recommendations from Gemini
             try {
+                console.log('Starting API call to Gemini...');
+                const startTime = Date.now();
                 const aiRecommendations = await getGeminiRecommendations(bloodData);
+                const endTime = Date.now();
+                console.log(`API call completed in ${endTime - startTime}ms`);
+                console.log('AI Recommendations:', aiRecommendations);
+
                 document.getElementById('loadingIndicator').style.display = 'none';
-                
+
                 if (aiRecommendations) {
-                    // Generate diet recommendations with AI data
-                    generateDietRecommendations(parameters, aiRecommendations.diet);
-                    
-                    // Generate exercise recommendations with AI data
-                    generateExerciseRecommendations(parameters, aiRecommendations.exercise);
-                    
-                    // Generate meal plan with AI data
-                    generateMealPlan(parameters, aiRecommendations.mealPlan);
+                    console.log('Generating diet recommendations with AI data');
+                    generateDietRecommendations(parameters, aiRecommendations);
+
+                    console.log('Generating exercise recommendations with AI data');
+                    generateExerciseRecommendations(parameters, aiRecommendations);
+
+                    console.log('Generating meal plan with AI data');
+                    generateMealPlan(parameters, aiRecommendations);
                 } else {
-                    // Fallback to standard recommendations if AI fails
+                    console.warn('No AI recommendations received, falling back to default.');
                     generateDietRecommendations(parameters);
                     generateExerciseRecommendations(parameters);
                     generateMealPlan(parameters);
@@ -673,243 +920,311 @@
             } catch (error) {
                 document.getElementById('loadingIndicator').style.display = 'none';
                 console.error('Error with AI recommendations:', error);
-                
+
                 // Fallback to standard recommendations
                 generateDietRecommendations(parameters);
                 generateExerciseRecommendations(parameters);
                 generateMealPlan(parameters);
             }
         }
-        
-        // Function to generate diet recommendations
+
         function generateDietRecommendations(parameters, aiRecommendations = null) {
+            const dietLoadingIndicator = document.getElementById('dietLoadingIndicator');
+            const dietContent = document.getElementById('dietContent');
             const dietSummary = document.getElementById('dietSummary');
             const recommendedFoods = document.getElementById('recommendedFoods');
             const limitFoods = document.getElementById('limitFoods');
-            
+
+            console.log('Generating diet recommendations with aiRecommendations:', aiRecommendations);
+
             // If we have AI recommendations, use them
-            if (aiRecommendations) {
-                // Display AI-generated diet summary
+            if (aiRecommendations && aiRecommendations.diet && aiRecommendations.diet.summary) {
                 dietSummary.innerHTML = `
-                    <div class="ai-recommendation">
-                        <p>${aiRecommendations.summary}</p>
-                    </div>
-                `;
-                
-                // Generate recommended foods from AI
+            <div class="ai-recommendation">
+                <p>${aiRecommendations.diet.summary}</p>
+            </div>
+        `;
+
                 recommendedFoods.innerHTML = '';
-                aiRecommendations.recommendedFoods.forEach(food => {
+                aiRecommendations.diet.recommendedFoods.forEach(food => {
                     const foodItem = document.createElement('div');
                     foodItem.className = 'food-item';
                     foodItem.innerHTML = `
-                        <div class="food-icon">${food.icon || '🥗'}</div>
-                        <div class="food-title">${food.name}</div>
-                        <div class="food-description">${food.description}</div>
-                    `;
+                <div class="food-icon">${food.icon || '🥗'}</div>
+                <div class="food-title">${food.name}</div>
+                <div class="food-description">${food.description}</div>
+            `;
                     recommendedFoods.appendChild(foodItem);
                 });
-                
-                // Generate foods to limit from AI
+
                 limitFoods.innerHTML = '';
-                aiRecommendations.foodsToLimit.forEach(food => {
+                aiRecommendations.diet.foodsToLimit.forEach(food => {
                     const foodItem = document.createElement('div');
                     foodItem.className = 'food-item';
                     foodItem.innerHTML = `
-                        <div class="food-icon">${food.icon || '⚠️'}</div>
-                        <div class="food-title">${food.name}</div>
-                        <div class="food-description">${food.description}</div>
-                    `;
+                <div class="food-icon">${food.icon || '⚠️'}</div>
+                <div class="food-title">${food.name}</div>
+                <div class="food-description">${food.description}</div>
+            `;
                     limitFoods.appendChild(foodItem);
                 });
-                
-                // Update nutrition guidelines
+
                 document.getElementById('nutritionGuidelines').innerHTML = '';
-                aiRecommendations.nutritionGuidelines.forEach(guideline => {
+                aiRecommendations.diet.nutritionGuidelines.forEach(guideline => {
                     const li = document.createElement('li');
                     li.textContent = guideline;
                     document.getElementById('nutritionGuidelines').appendChild(li);
                 });
-                
-                return;
-            }
-            
-            // Fallback diet recommendations
-            dietSummary.innerHTML = `
-                <div class="parameter-card">
-                    <h3>Dietary Focus</h3>
-                    <p>${parameters.lowHemoglobin ? 'Focus on iron-rich foods to address low hemoglobin levels.' : ''}
-                    ${parameters.highGlucose ? 'Reduce simple carbohydrates and focus on low glycemic index foods.' : ''}
-                    ${parameters.highCRP ? 'Include anti-inflammatory foods to help reduce inflammation.' : ''}
-                    ${!parameters.lowHemoglobin && !parameters.highGlucose && !parameters.highCRP ? 'Maintain a balanced diet with plenty of fruits, vegetables, lean proteins, and whole grains.' : ''}</p>
-                </div>
-            `;
-            
-            // Generate recommended foods based on parameters
-            recommendedFoods.innerHTML = '';
-            
-            if (parameters.lowHemoglobin || parameters.lowRBC) {
-                const ironFoods = [
-                    {icon: '🥩', name: 'Lean Red Meat', description: 'High in heme iron, which is more easily absorbed by the body.'},
-                    {icon: '🫘', name: 'Beans & Lentils', description: 'Excellent plant-based source of iron and fiber.'},
-                    {icon: '🥬', name: 'Leafy Greens', description: 'Spinach and kale are rich in iron and other nutrients.'},
-                    {icon: '🍊', name: 'Vitamin C Foods', description: 'Oranges, strawberries, and bell peppers help with iron absorption.'}
+            } else {
+                // Fallback diet recommendations
+                dietSummary.innerHTML = `
+            <div class="parameter-card">
+                <h3>Dietary Focus</h3>
+                <p>
+                    ${parameters.lowHemoglobin ? 'Focus on iron-rich foods to address low hemoglobin levels. ' : ''}
+                    ${parameters.highGlucose ? 'Reduce simple carbohydrates and focus on low glycemic index foods. ' : ''}
+                    ${parameters.highCRP ? 'Include anti-inflammatory foods to help reduce inflammation. ' : ''}
+                    ${parameters.highCholesterol || parameters.highLDL ? 'Limit saturated fats and cholesterol-rich foods to improve lipid profile. ' : ''}
+                    ${parameters.lowHDL ? 'Incorporate healthy fats to boost HDL levels. ' : ''}
+                    ${parameters.highPCV ? 'Stay hydrated and avoid high-sodium foods to manage high PCV. ' : ''}
+                    ${!parameters.lowHemoglobin && !parameters.highGlucose && !parameters.highCRP && !parameters.highCholesterol && !parameters.highLDL && !parameters.lowHDL && !parameters.highPCV ? 'Maintain a balanced diet with plenty of fruits, vegetables, lean proteins, and whole grains.' : ''}
+                </p>
+            </div>
+        `;
+
+                recommendedFoods.innerHTML = '';
+
+                if (parameters.lowHemoglobin || parameters.lowRBC) {
+                    const ironFoods = [
+                        { icon: '🥩', name: 'Lean Red Meat', description: 'High in heme iron, which is more easily absorbed by the body.' },
+                        { icon: '🫘', name: 'Beans & Lentils', description: 'Excellent plant-based source of iron and fiber.' },
+                        { icon: '🥬', name: 'Leafy Greens', description: 'Spinach and kale are rich in iron and other nutrients.' },
+                        { icon: '🍊', name: 'Vitamin C Foods', description: 'Oranges, strawberries, and bell peppers help with iron absorption.' }
+                    ];
+                    ironFoods.forEach(food => {
+                        const foodItem = document.createElement('div');
+                        foodItem.className = 'food-item';
+                        foodItem.innerHTML = `
+                    <div class="food-icon">${food.icon}</div>
+                    <div class="food-title">${food.name}</div>
+                    <div class="food-description">${food.description}</div>
+                `;
+                        recommendedFoods.appendChild(foodItem);
+                    });
+                }
+
+                if (parameters.highGlucose) {
+                    const lowGlycemicFoods = [
+                        { icon: '🥦', name: 'Non-starchy Vegetables', description: 'Low in carbs and high in fiber and nutrients.' },
+                        { icon: '🍎', name: 'Low-glycemic Fruits', description: 'Berries, apples, and pears have less impact on blood sugar.' },
+                        { icon: '🐟', name: 'Fatty Fish', description: 'Salmon and mackerel are high in protein and healthy fats.' },
+                        { icon: '🥜', name: 'Nuts & Seeds', description: 'Provide healthy fats, protein, and fiber without raising blood sugar.' }
+                    ];
+                    lowGlycemicFoods.forEach(food => {
+                        const foodItem = document.createElement('div');
+                        foodItem.className = 'food-item';
+                        foodItem.innerHTML = `
+                    <div class="food-icon">${food.icon}</div>
+                    <div class="food-title">${food.name}</div>
+                    <div class="food-description">${food.description}</div>
+                `;
+                        recommendedFoods.appendChild(foodItem);
+                    });
+                }
+
+                if (parameters.highCRP) {
+                    const antiInflammatoryFoods = [
+                        { icon: '🐟', name: 'Fatty Fish', description: 'Rich in omega-3 fatty acids that fight inflammation.' },
+                        { icon: '🫒', name: 'Olive Oil', description: 'Contains oleocanthal, which has anti-inflammatory properties.' },
+                        { icon: '🍓', name: 'Berries', description: 'High in antioxidants that reduce inflammation.' },
+                        { icon: '🥕', name: 'Colorful Vegetables', description: 'Contain antioxidants and phytonutrients that fight inflammation.' }
+                    ];
+                    antiInflammatoryFoods.forEach(food => {
+                        const foodItem = document.createElement('div');
+                        foodItem.className = 'food-item';
+                        foodItem.innerHTML = `
+                    <div class="food-icon">${food.icon}</div>
+                    <div class="food-title">${food.name}</div>
+                    <div class="food-description">${food.description}</div>
+                `;
+                        recommendedFoods.appendChild(foodItem);
+                    });
+                }
+
+                if (parameters.highCholesterol || parameters.highLDL || parameters.lowHDL) {
+                    const heartHealthyFoods = [
+                        { icon: '🥑', name: 'Avocado', description: 'Rich in monounsaturated fats to improve HDL levels.' },
+                        { icon: '🐟', name: 'Fatty Fish', description: 'High in omega-3s to lower LDL cholesterol.' },
+                        { icon: '🥜', name: 'Nuts', description: 'Almonds and walnuts can help improve cholesterol levels.' },
+                        { icon: '🫒', name: 'Olive Oil', description: 'A healthy fat to replace saturated fats.' }
+                    ];
+                    heartHealthyFoods.forEach(food => {
+                        const foodItem = document.createElement('div');
+                        foodItem.className = 'food-item';
+                        foodItem.innerHTML = `
+                    <div class="food-icon">${food.icon}</div>
+                    <div class="food-title">${food.name}</div>
+                    <div class="food-description">${food.description}</div>
+                `;
+                        recommendedFoods.appendChild(foodItem);
+                    });
+                }
+
+                if (parameters.highPCV) {
+                    const hydrationFoods = [
+                        { icon: '💧', name: 'Water', description: 'Stay hydrated to manage high PCV levels.' },
+                        { icon: '🍉', name: 'Watermelon', description: 'High water content to support hydration.' },
+                        { icon: '🥒', name: 'Cucumber', description: 'Hydrating and low in sodium.' },
+                        { icon: '🍊', name: 'Oranges', description: 'Provide hydration and vitamin C.' }
+                    ];
+                    hydrationFoods.forEach(food => {
+                        const foodItem = document.createElement('div');
+                        foodItem.className = 'food-item';
+                        foodItem.innerHTML = `
+                    <div class="food-icon">${food.icon}</div>
+                    <div class="food-title">${food.name}</div>
+                    <div class="food-description">${food.description}</div>
+                `;
+                        recommendedFoods.appendChild(foodItem);
+                    });
+                }
+
+                if (!parameters.lowHemoglobin && !parameters.highGlucose && !parameters.highCRP && !parameters.highCholesterol && !parameters.highLDL && !parameters.lowHDL && !parameters.highPCV) {
+                    const healthyFoods = [
+                        { icon: '🥗', name: 'Leafy Greens', description: 'Rich in vitamins, minerals, and fiber.' },
+                        { icon: '🐟', name: 'Fatty Fish', description: 'High in omega-3 fatty acids and protein.' },
+                        { icon: '🫘', name: 'Legumes', description: 'Excellent source of plant protein and fiber.' },
+                        { icon: '🥜', name: 'Nuts & Seeds', description: 'Provide healthy fats, protein, and various nutrients.' }
+                    ];
+                    healthyFoods.forEach(food => {
+                        const foodItem = document.createElement('div');
+                        foodItem.className = 'food-item';
+                        foodItem.innerHTML = `
+                    <div class="food-icon">${food.icon}</div>
+                    <div class="food-title">${food.name}</div>
+                    <div class="food-description">${food.description}</div>
+                `;
+                        recommendedFoods.appendChild(foodItem);
+                    });
+                }
+
+                limitFoods.innerHTML = '';
+
+                if (parameters.highGlucose) {
+                    const highGlycemicFoods = [
+                        { icon: '🍰', name: 'Sugary Foods', description: 'Cakes, cookies, and candy can cause blood sugar spikes.' },
+                        { icon: '🥖', name: 'Refined Carbs', description: 'White bread, white rice, and pasta can raise blood sugar quickly.' },
+                        { icon: '🥤', name: 'Sugary Drinks', description: 'Soda, fruit juices, and sweetened beverages have high sugar content.' },
+                        { icon: '🍯', name: 'Added Sugars', description: 'Honey, maple syrup, and other sweeteners should be limited.' }
+                    ];
+                    highGlycemicFoods.forEach(food => {
+                        const foodItem = document.createElement('div');
+                        foodItem.className = 'food-item';
+                        foodItem.innerHTML = `
+                    <div class="food-icon">${food.icon}</div>
+                    <div class="food-title">${food.name}</div>
+                    <div class="food-description">${food.description}</div>
+                `;
+                        limitFoods.appendChild(foodItem);
+                    });
+                }
+
+                if (parameters.highCRP) {
+                    const inflammatoryFoods = [
+                        { icon: '🍟', name: 'Fried Foods', description: 'High in trans fats, which can increase inflammation.' },
+                        { icon: '🍔', name: 'Processed Meats', description: 'Sausages, bacon, and deli meats are linked to inflammation.' },
+                        { icon: '🍩', name: 'Sugary Snacks', description: 'Candies, pastries, and desserts can worsen inflammation.' },
+                        { icon: '🥤', name: 'Sugary Drinks', description: 'Soda and energy drinks can contribute to inflammation.' }
+                    ];
+                    inflammatoryFoods.forEach(food => {
+                        const foodItem = document.createElement('div');
+                        foodItem.className = 'food-item';
+                        foodItem.innerHTML = `
+                    <div class="food-icon">${food.icon}</div>
+                    <div class="food-title">${food.name}</div>
+                    <div class="food-description">${food.description}</div>
+                `;
+                        limitFoods.appendChild(foodItem);
+                    });
+                }
+
+                if (parameters.highCholesterol || parameters.highLDL) {
+                    const highFatFoods = [
+                        { icon: '🧀', name: 'High-Fat Dairy', description: 'Full-fat cheese and butter can increase LDL cholesterol.' },
+                        { icon: '🍔', name: 'Red Meat', description: 'High in saturated fats that raise cholesterol levels.' },
+                        { icon: '🍟', name: 'Fried Foods', description: 'Contain trans fats that increase LDL cholesterol.' },
+                        { icon: '🥚', name: 'Egg Yolks', description: 'Limit intake due to high cholesterol content.' }
+                    ];
+                    highFatFoods.forEach(food => {
+                        const foodItem = document.createElement('div');
+                        foodItem.className = 'food-item';
+                        foodItem.innerHTML = `
+                    <div class="food-icon">${food.icon}</div>
+                    <div class="food-title">${food.name}</div>
+                    <div class="food-description">${food.description}</div>
+                `;
+                        limitFoods.appendChild(foodItem);
+                    });
+                }
+
+                if (parameters.highPCV) {
+                    const highSodiumFoods = [
+                        { icon: '🥓', name: 'Processed Meats', description: 'High in sodium, which can contribute to dehydration.' },
+                        { icon: '🥨', name: 'Salty Snacks', description: 'Chips and pretzels can increase sodium intake.' },
+                        { icon: '🥤', name: 'Sugary Drinks', description: 'Can contribute to dehydration.' },
+                        { icon: '🍕', name: 'Fast Food', description: 'Often high in sodium and unhealthy fats.' }
+                    ];
+                    highSodiumFoods.forEach(food => {
+                        const foodItem = document.createElement('div');
+                        foodItem.className = 'food-item';
+                        foodItem.innerHTML = `
+                    <div class="food-icon">${food.icon}</div>
+                    <div class="food-title">${food.name}</div>
+                    <div class="food-description">${food.description}</div>
+                `;
+                        limitFoods.appendChild(foodItem);
+                    });
+                }
+
+                if (!parameters.highGlucose && !parameters.highCRP && !parameters.highCholesterol && !parameters.highLDL) {
+                    const generalLimitFoods = [
+                        { icon: '🍟', name: 'Fried Foods', description: 'High in unhealthy fats and calories.' },
+                        { icon: '🍔', name: 'Processed Meats', description: 'Linked to increased health risks.' },
+                        { icon: '🍩', name: 'Sugary Snacks', description: 'High in added sugars and empty calories.' },
+                        { icon: '🥤', name: 'Sugary Drinks', description: 'Contribute to weight gain and poor health.' }
+                    ];
+                    generalLimitFoods.forEach(food => {
+                        const foodItem = document.createElement('div');
+                        foodItem.className = 'food-item';
+                        foodItem.innerHTML = `
+                    <div class="food-icon">${food.icon}</div>
+                    <div class="food-title">${food.name}</div>
+                    <div class="food-description">${food.description}</div>
+                `;
+                        limitFoods.appendChild(foodItem);
+                    });
+                }
+
+                const guidelines = [
+                    'Eat a variety of fruits and vegetables daily.',
+                    'Choose whole grains over refined grains.',
+                    'Limit intake of added sugars and saturated fats.',
+                    'Stay hydrated by drinking plenty of water.',
+                    'Include lean protein sources in your diet.'
                 ];
-                
-                ironFoods.forEach(food => {
-                    const foodItem = document.createElement('div');
-                    foodItem.className = 'food-item';
-                    foodItem.innerHTML = `
-                        <div class="food-icon">${food.icon}</div>
-                        <div class="food-title">${food.name}</div>
-                        <div class="food-description">${food.description}</div>
-                    `;
-                    recommendedFoods.appendChild(foodItem);
-                });
-            }
-            
-            if (parameters.highGlucose) {
-                const lowGlycemicFoods = [
-                    {icon: '🥦', name: 'Non-starchy Vegetables', description: 'Low in carbs and high in fiber and nutrients.'},
-                    {icon: '🍎', name: 'Low-glycemic Fruits', description: 'Berries, apples, and pears have less impact on blood sugar.'},
-                    {icon: '🐟', name: 'Fatty Fish', description: 'Salmon and mackerel are high in protein and healthy fats.'},
-                    {icon: '🥜', name: 'Nuts & Seeds', description: 'Provide healthy fats, protein, and fiber without raising blood sugar.'}
-                ];
-                
-                lowGlycemicFoods.forEach(food => {
-                    const foodItem = document.createElement('div');
-                    foodItem.className = 'food-item';
-                    foodItem.innerHTML = `
-                        <div class="food-icon">${food.icon}</div>
-                        <div class="food-title">${food.name}</div>
-                        <div class="food-description">${food.description}</div>
-                    `;
-                    recommendedFoods.appendChild(foodItem);
-                });
-            }
-            
-            if (parameters.highCRP) {
-                const antiInflammatoryFoods = [
-                    {icon: '🐟', name: 'Fatty Fish', description: 'Rich in omega-3 fatty acids that fight inflammation.'},
-                    {icon: '🫒', name: 'Olive Oil', description: 'Contains oleocanthal, which has anti-inflammatory properties.'},
-                    {icon: '🍓', name: 'Berries', description: 'High in antioxidants that reduce inflammation.'},
-                    {icon: '🥕', name: 'Colorful Vegetables', description: 'Contain antioxidants and phytonutrients that fight inflammation.'}
-                ];
-                
-                antiInflammatoryFoods.forEach(food => {
-                    const foodItem = document.createElement('div');
-                    foodItem.className = 'food-item';
-                    foodItem.innerHTML = `
-                        <div class="food-icon">${food.icon}</div>
-                        <div class="food-title">${food.name}</div>
-                        <div class="food-description">${food.description}</div>
-                    `;
-                    recommendedFoods.appendChild(foodItem);
-                });
-            }
-            
-            // If no specific parameters, provide general healthy foods
-            if (!parameters.lowHemoglobin && !parameters.highGlucose && !parameters.highCRP && !parameters.lowRBC) {
-                const healthyFoods = [
-                    {icon: '🥗', name: 'Leafy Greens', description: 'Rich in vitamins, minerals, and fiber.'},
-                    {icon: '🐟', name: 'Fatty Fish', description: 'High in omega-3 fatty acids and protein.'},
-                    {icon: '🫘', name: 'Legumes', description: 'Excellent source of plant protein and fiber.'},
-                    {icon: '🥜', name: 'Nuts & Seeds', description: 'Provide healthy fats, protein, and various nutrients.'},
-                    {icon: '🍎', name: 'Fruits', description: 'Rich in vitamins, antioxidants, and fiber.'},
-                    {icon: '🥦', name: 'Vegetables', description: 'Low in calories and high in nutrients.'}
-                ];
-                
-                healthyFoods.forEach(food => {
-                    const foodItem = document.createElement('div');
-                    foodItem.className = 'food-item';
-                    foodItem.innerHTML = `
-                        <div class="food-icon">${food.icon}</div>
-                        <div class="food-title">${food.name}</div>
-                        <div class="food-description">${food.description}</div>
-                    `;
-                    recommendedFoods.appendChild(foodItem);
-                });
-            }
-            
-            // Generate foods to limit
-            limitFoods.innerHTML = '';
-            
-            if (parameters.highGlucose) {
-                const highGlycemicFoods = [
-                    {icon: '🍰', name: 'Sugary Foods', description: 'Cakes, cookies, and candy can cause blood sugar spikes.'},
-                    {icon: '🥖', name: 'Refined Carbs', description: 'White bread, white rice, and pasta can raise blood sugar quickly.'},
-                    {icon: '🥤', name: 'Sugary Drinks', description: 'Soda, fruit juices, and sweetened beverages have high sugar content.'},
-                    {icon: '🍯', name: 'Added Sugars', description: 'Honey, maple syrup, and other sweeteners should be limited.'}
-                ];
-                
-                highGlycemicFoods.forEach(food => {
-                    const foodItem = document.createElement('div');
-                    foodItem.className = 'food-item';
-                    foodItem.innerHTML = `
-                        <div class="food-icon">${food.icon}</div>
-                        <div class="food-title">${food.name}</div>
-                        <div class="food-description">${food.description}</div>
-                    `;
-                    limitFoods.appendChild(foodItem);
+
+                const guidelinesList = document.getElementById('nutritionGuidelines');
+                guidelinesList.innerHTML = '';
+                guidelines.forEach(guideline => {
+                    const li = document.createElement('li');
+                    li.textContent = guideline;
+                    guidelinesList.appendChild(li);
                 });
             }
 
-            if (parameters.highCRP) {
-                const inflammatoryFoods = [
-                    {icon: '🍟', name: 'Fried Foods', description: 'High in trans fats, which can increase inflammation.'},
-                    {icon: '🍔', name: 'Processed Meats', description: 'Sausages, bacon, and deli meats are linked to inflammation.'},
-                    {icon: '🍩', name: 'Sugary Snacks', description: 'Candies, pastries, and desserts can worsen inflammation.'},
-                    {icon: '🥤', name: 'Sugary Drinks', description: 'Soda and energy drinks can contribute to inflammation.'}
-                ];
-
-                inflammatoryFoods.forEach(food => {
-                    const foodItem = document.createElement('div');
-                    foodItem.className = 'food-item';
-                    foodItem.innerHTML = `
-                        <div class="food-icon">${food.icon}</div>
-                        <div class="food-title">${food.name}</div>
-                        <div class="food-description">${food.description}</div>
-                    `;
-                    limitFoods.appendChild(foodItem);
-                });
-            }
-
-            // If no specific parameters, provide general foods to limit
-            if (!parameters.highGlucose && !parameters.highCRP) {
-                const generalLimitFoods = [
-                    {icon: '🍟', name: 'Fried Foods', description: 'High in unhealthy fats and calories.'},
-                    {icon: '🍔', name: 'Processed Meats', description: 'Linked to increased health risks.'},
-                    {icon: '🍩', name: 'Sugary Snacks', description: 'High in added sugars and empty calories.'},
-                    {icon: '🥤', name: 'Sugary Drinks', description: 'Contribute to weight gain and poor health.'}
-                ];
-
-                generalLimitFoods.forEach(food => {
-                    const foodItem = document.createElement('div');
-                    foodItem.className = 'food-item';
-                    foodItem.innerHTML = `
-                        <div class="food-icon">${food.icon}</div>
-                        <div class="food-title">${food.name}</div>
-                        <div class="food-description">${food.description}</div>
-                    `;
-                    limitFoods.appendChild(foodItem);
-                });
-            }
-
-            // Update nutrition guidelines
-            const guidelines = [
-                'Eat a variety of fruits and vegetables daily.',
-                'Choose whole grains over refined grains.',
-                'Limit intake of added sugars and saturated fats.',
-                'Stay hydrated by drinking plenty of water.',
-                'Include lean protein sources in your diet.'
-            ];
-
-            const guidelinesList = document.getElementById('nutritionGuidelines');
-            guidelinesList.innerHTML = '';
-            guidelines.forEach(guideline => {
-                const li = document.createElement('li');
-                li.textContent = guideline;
-                guidelinesList.appendChild(li);
-            });
+            // Hide the loading indicator and show the content
+            dietLoadingIndicator.style.display = 'none';
+            dietContent.style.display = 'block';
         }
 
         // Function to generate exercise recommendations
@@ -917,26 +1232,25 @@
             const exerciseSummary = document.getElementById('exerciseSummary');
             const exerciseRecommendations = document.getElementById('exerciseRecommendations');
 
-            // If we have AI recommendations, use them
-            if (aiRecommendations) {
+            if (aiRecommendations && aiRecommendations.exercise && aiRecommendations.exercise.summary) {
                 exerciseSummary.innerHTML = `
-                    <div class="ai-recommendation">
-                        <p>${aiRecommendations.summary}</p>
-                    </div>
-                `;
+            <div class="ai-recommendation">
+                <p>${aiRecommendations.exercise.summary}</p>
+            </div>
+        `;
 
                 exerciseRecommendations.innerHTML = '';
-                aiRecommendations.exercises.forEach(exercise => {
+                aiRecommendations.exercise.exercises.forEach(exercise => {
                     const exerciseItem = document.createElement('div');
                     exerciseItem.className = 'exercise-item';
                     exerciseItem.innerHTML = `
-                        <div class="exercise-item-icon">${exercise.icon || '🏃‍♂️'}</div>
-                        <div class="exercise-item-content">
-                            <div class="exercise-title">${exercise.name}</div>
-                            <div class="exercise-description">${exercise.description}</div>
-                            <div class="exercise-duration">Duration: ${exercise.duration}</div>
-                        </div>
-                    `;
+                <div class="exercise-item-icon">${exercise.icon || '🏃‍♂️'}</div>
+                <div class="exercise-item-content">
+                    <div class="exercise-title">${exercise.name}</div>
+                    <div class="exercise-description">${exercise.description}</div>
+                    <div class="exercise-duration">Duration: ${exercise.duration}</div>
+                </div>
+            `;
                     exerciseRecommendations.appendChild(exerciseItem);
                 });
 
@@ -945,103 +1259,143 @@
 
             // Fallback exercise recommendations
             exerciseSummary.innerHTML = `
-                <div class="parameter-card">
-                    <h3>Exercise Focus</h3>
-                    <p>${parameters.lowHemoglobin ? 'Focus on low-intensity exercises to avoid fatigue.' : ''}
-                    ${parameters.highGlucose ? 'Incorporate aerobic exercises to help regulate blood sugar levels.' : ''}
-                    ${parameters.highCRP ? 'Include low-impact exercises to reduce inflammation.' : ''}
-                    ${!parameters.lowHemoglobin && !parameters.highGlucose && !parameters.highCRP ? 'Engage in a mix of aerobic and strength-training exercises for overall health.' : ''}</p>
-                </div>
-            `;
+        <div class="parameter-card">
+            <h3>Exercise Focus</h3>
+            <p>
+                ${parameters.lowHemoglobin ? 'Focus on low-intensity exercises to avoid fatigue. ' : ''}
+                ${parameters.highGlucose ? 'Incorporate aerobic exercises to help regulate blood sugar levels. ' : ''}
+                ${parameters.highCRP ? 'Include low-impact exercises to reduce inflammation. ' : ''}
+                ${parameters.highCholesterol || parameters.highLDL || parameters.lowHDL ? 'Engage in cardio exercises to improve cardiovascular health. ' : ''}
+                ${parameters.highPCV ? 'Opt for low-intensity exercises and stay hydrated during workouts. ' : ''}
+                ${!parameters.lowHemoglobin && !parameters.highGlucose && !parameters.highCRP && !parameters.highCholesterol && !parameters.highLDL && !parameters.lowHDL && !parameters.highPCV ? 'Engage in a mix of aerobic and strength-training exercises for overall health.' : ''}
+            </p>
+        </div>
+    `;
 
             exerciseRecommendations.innerHTML = '';
 
             if (parameters.lowHemoglobin) {
                 const exercises = [
-                    {icon: '🚶‍♀️', name: 'Walking', description: 'Low-intensity walking for 30 minutes daily.', duration: '30 mins'},
-                    {icon: '🧘‍♀️', name: 'Yoga', description: 'Gentle yoga to improve circulation and reduce fatigue.', duration: '20-30 mins'},
-                    {icon: '🏊‍♀️', name: 'Swimming', description: 'Low-impact swimming to build endurance.', duration: '20-30 mins'}
+                    { icon: '🚶‍♀️', name: 'Walking', description: 'Low-intensity walking for 30 minutes daily.', duration: '30 mins' },
+                    { icon: '🧘‍♀️', name: 'Yoga', description: 'Gentle yoga to improve circulation and reduce fatigue.', duration: '20-30 mins' },
+                    { icon: '🏊‍♀️', name: 'Swimming', description: 'Low-impact swimming to build endurance.', duration: '20-30 mins' }
                 ];
-
                 exercises.forEach(exercise => {
                     const exerciseItem = document.createElement('div');
                     exerciseItem.className = 'exercise-item';
                     exerciseItem.innerHTML = `
-                        <div class="exercise-item-icon">${exercise.icon}</div>
-                        <div class="exercise-item-content">
-                            <div class="exercise-title">${exercise.name}</div>
-                            <div class="exercise-description">${exercise.description}</div>
-                            <div class="exercise-duration">Duration: ${exercise.duration}</div>
-                        </div>
-                    `;
+                <div class="exercise-item-icon">${exercise.icon}</div>
+                <div class="exercise-item-content">
+                    <div class="exercise-title">${exercise.name}</div>
+                    <div class="exercise-description">${exercise.description}</div>
+                    <div class="exercise-duration">Duration: ${exercise.duration}</div>
+                </div>
+            `;
                     exerciseRecommendations.appendChild(exerciseItem);
                 });
             }
 
             if (parameters.highGlucose) {
                 const exercises = [
-                    {icon: '🏃‍♂️', name: 'Running', description: 'Moderate-intensity running to improve insulin sensitivity.', duration: '20-30 mins'},
-                    {icon: '🚴‍♂️', name: 'Cycling', description: 'Cycling at a steady pace to regulate blood sugar.', duration: '30-45 mins'},
-                    {icon: '🏋️‍♀️', name: 'Strength Training', description: 'Weight lifting to build muscle and improve glucose metabolism.', duration: '20-30 mins'}
+                    { icon: '🏃‍♂️', name: 'Running', description: 'Moderate-intensity running to improve insulin sensitivity.', duration: '20-30 mins' },
+                    { icon: '🚴‍♂️', name: 'Cycling', description: 'Cycling at a steady pace to regulate blood sugar.', duration: '30-45 mins' },
+                    { icon: '🏋️‍♀️', name: 'Strength Training', description: 'Weight lifting to build muscle and improve glucose metabolism.', duration: '20-30 mins' }
                 ];
-
                 exercises.forEach(exercise => {
                     const exerciseItem = document.createElement('div');
                     exerciseItem.className = 'exercise-item';
                     exerciseItem.innerHTML = `
-                        <div class="exercise-item-icon">${exercise.icon}</div>
-                        <div class="exercise-item-content">
-                            <div class="exercise-title">${exercise.name}</div>
-                            <div class="exercise-description">${exercise.description}</div>
-                            <div class="exercise-duration">Duration: ${exercise.duration}</div>
-                        </div>
-                    `;
+                <div class="exercise-item-icon">${exercise.icon}</div>
+                <div class="exercise-item-content">
+                    <div class="exercise-title">${exercise.name}</div>
+                    <div class="exercise-description">${exercise.description}</div>
+                    <div class="exercise-duration">Duration: ${exercise.duration}</div>
+                </div>
+            `;
                     exerciseRecommendations.appendChild(exerciseItem);
                 });
             }
 
             if (parameters.highCRP) {
                 const exercises = [
-                    {icon: '🧘‍♂️', name: 'Yoga', description: 'Gentle yoga to reduce stress and inflammation.', duration: '20-30 mins'},
-                    {icon: '🚶‍♂️', name: 'Walking', description: 'Low-impact walking to improve circulation.', duration: '30 mins'},
-                    {icon: '🏊‍♂️', name: 'Swimming', description: 'Swimming to reduce joint stress and inflammation.', duration: '20-30 mins'}
+                    { icon: '🧘‍♂️', name: 'Yoga', description: 'Gentle yoga to reduce stress and inflammation.', duration: '20-30 mins' },
+                    { icon: '🚶‍♂️', name: 'Walking', description: 'Low-impact walking to improve circulation.', duration: '30 mins' },
+                    { icon: '🏊‍♂️', name: 'Swimming', description: 'Swimming to reduce joint stress and inflammation.', duration: '20-30 mins' }
                 ];
-
                 exercises.forEach(exercise => {
                     const exerciseItem = document.createElement('div');
                     exerciseItem.className = 'exercise-item';
                     exerciseItem.innerHTML = `
-                        <div class="exercise-item-icon">${exercise.icon}</div>
-                        <div class="exercise-item-content">
-                            <div class="exercise-title">${exercise.name}</div>
-                            <div class="exercise-description">${exercise.description}</div>
-                            <div class="exercise-duration">Duration: ${exercise.duration}</div>
-                        </div>
-                    `;
+                <div class="exercise-item-icon">${exercise.icon}</div>
+                <div class="exercise-item-content">
+                    <div class="exercise-title">${exercise.name}</div>
+                    <div class="exercise-description">${exercise.description}</div>
+                    <div class="exercise-duration">Duration: ${exercise.duration}</div>
+                </div>
+            `;
                     exerciseRecommendations.appendChild(exerciseItem);
                 });
             }
 
-            // If no specific parameters, provide general exercises
-            if (!parameters.lowHemoglobin && !parameters.highGlucose && !parameters.highCRP) {
+            if (parameters.highCholesterol || parameters.highLDL || parameters.lowHDL) {
                 const exercises = [
-                    {icon: '🏃‍♀️', name: 'Running', description: 'Moderate-intensity running for cardiovascular health.', duration: '20-30 mins'},
-                    {icon: '🏋️‍♂️', name: 'Strength Training', description: 'Weight lifting to build muscle and strength.', duration: '20-30 mins'},
-                    {icon: '🧘‍♀️', name: 'Yoga', description: 'Yoga for flexibility and stress relief.', duration: '20-30 mins'},
-                    {icon: '🚴‍♀️', name: 'Cycling', description: 'Cycling for endurance and leg strength.', duration: '30-45 mins'}
+                    { icon: '🏃‍♀️', name: 'Running', description: 'Improves cardiovascular health and HDL levels.', duration: '30 mins' },
+                    { icon: '🚴‍♀️', name: 'Cycling', description: 'Helps lower LDL cholesterol and improve heart health.', duration: '30-45 mins' },
+                    { icon: '🏊‍♀️', name: 'Swimming', description: 'Aerobic exercise to improve lipid profile.', duration: '20-30 mins' }
                 ];
-
                 exercises.forEach(exercise => {
                     const exerciseItem = document.createElement('div');
                     exerciseItem.className = 'exercise-item';
                     exerciseItem.innerHTML = `
-                        <div class="exercise-item-icon">${exercise.icon}</div>
-                        <div class="exercise-item-content">
-                            <div class="exercise-title">${exercise.name}</div>
-                            <div class="exercise-description">${exercise.description}</div>
-                            <div class="exercise-duration">Duration: ${exercise.duration}</div>
-                        </div>
-                    `;
+                <div class="exercise-item-icon">${exercise.icon}</div>
+                <div class="exercise-item-content">
+                    <div class="exercise-title">${exercise.name}</div>
+                    <div class="exercise-description">${exercise.description}</div>
+                    <div class="exercise-duration">Duration: ${exercise.duration}</div>
+                </div>
+            `;
+                    exerciseRecommendations.appendChild(exerciseItem);
+                });
+            }
+
+            if (parameters.highPCV) {
+                const exercises = [
+                    { icon: '🚶‍♀️', name: 'Walking', description: 'Low-intensity walking to avoid overexertion.', duration: '30 mins' },
+                    { icon: '🧘‍♀️', name: 'Yoga', description: 'Gentle yoga to improve circulation without strain.', duration: '20-30 mins' },
+                    { icon: '🏊‍♀️', name: 'Swimming', description: 'Low-impact exercise to stay active while staying hydrated.', duration: '20-30 mins' }
+                ];
+                exercises.forEach(exercise => {
+                    const exerciseItem = document.createElement('div');
+                    exerciseItem.className = 'exercise-item';
+                    exerciseItem.innerHTML = `
+                <div class="exercise-item-icon">${exercise.icon}</div>
+                <div class="exercise-item-content">
+                    <div class="exercise-title">${exercise.name}</div>
+                    <div class="exercise-description">${exercise.description}</div>
+                    <div class="exercise-duration">Duration: ${exercise.duration}</div>
+                </div>
+            `;
+                    exerciseRecommendations.appendChild(exerciseItem);
+                });
+            }
+
+            if (!parameters.lowHemoglobin && !parameters.highGlucose && !parameters.highCRP && !parameters.highCholesterol && !parameters.highLDL && !parameters.lowHDL && !parameters.highPCV) {
+                const exercises = [
+                    { icon: '🏃‍♀️', name: 'Running', description: 'Moderate-intensity running for cardiovascular health.', duration: '20-30 mins' },
+                    { icon: '🏋️‍♂️', name: 'Strength Training', description: 'Weight lifting to build muscle and strength.', duration: '20-30 mins' },
+                    { icon: '🧘‍♀️', name: 'Yoga', description: 'Yoga for flexibility and stress relief.', duration: '20-30 mins' }
+                ];
+                exercises.forEach(exercise => {
+                    const exerciseItem = document.createElement('div');
+                    exerciseItem.className = 'exercise-item';
+                    exerciseItem.innerHTML = `
+                <div class="exercise-item-icon">${exercise.icon}</div>
+                <div class="exercise-item-content">
+                    <div class="exercise-title">${exercise.name}</div>
+                    <div class="exercise-description">${exercise.description}</div>
+                    <div class="exercise-duration">Duration: ${exercise.duration}</div>
+                </div>
+            `;
                     exerciseRecommendations.appendChild(exerciseItem);
                 });
             }
@@ -1051,27 +1405,22 @@
         function generateMealPlan(parameters, aiRecommendations = null) {
             const mealPlanContainer = document.getElementById('mealPlanContainer');
 
-            // If we have AI recommendations, use them
-            if (aiRecommendations) {
-                mealPlanContainer.innerHTML = `
-                    <div class="ai-recommendation">
-                        <p>${aiRecommendations.summary}</p>
-                    </div>
-                `;
+            if (aiRecommendations && aiRecommendations.mealPlan && aiRecommendations.mealPlan.length > 0) {
+                mealPlanContainer.innerHTML = ''; // Remove any summary since mealPlan doesn't have one
 
                 aiRecommendations.mealPlan.forEach(day => {
                     const dayElement = document.createElement('div');
                     dayElement.className = 'meal-plan-day';
                     dayElement.innerHTML = `
-                        <h4>${day.day}</h4>
-                        ${day.meals.map(meal => `
-                            <div class="meal-item">
-                                <div class="meal-title">${meal.name}</div>
-                                <div class="meal-description">${meal.description}</div>
-                                <div class="meal-nutrition">Nutrition: ${meal.nutrition}</div>
-                            </div>
-                        `).join('')}
-                    `;
+                <h4>${day.day}</h4>
+                ${day.meals.map(meal => `
+                    <div class="meal-item">
+                        <div class="meal-title">${meal.name}</div>
+                        <div class="meal-description">${meal.description}</div>
+                        <div class="meal-nutrition">Nutrition: ${meal.nutrition}</div>
+                    </div>
+                `).join('')}
+            `;
                     mealPlanContainer.appendChild(dayElement);
                 });
 
@@ -1080,59 +1429,100 @@
 
             // Fallback meal plan
             mealPlanContainer.innerHTML = `
-                <div class="parameter-card">
-                    <h3>Meal Plan Focus</h3>
-                    <p>${parameters.lowHemoglobin ? 'Include iron-rich foods in every meal.' : ''}
-                    ${parameters.highGlucose ? 'Focus on low-carb, high-fiber meals.' : ''}
-                    ${parameters.highCRP ? 'Incorporate anti-inflammatory foods into your diet.' : ''}
-                    ${!parameters.lowHemoglobin && !parameters.highGlucose && !parameters.highCRP ? 'Follow a balanced meal plan with a mix of macronutrients.' : ''}</p>
-                </div>
-            `;
+        <div class="parameter-card">
+            <h3>Meal Plan Focus</h3>
+            <p>
+                ${parameters.lowHemoglobin ? 'Include iron-rich foods in every meal. ' : ''}
+                ${parameters.highGlucose ? 'Focus on low-carb, high-fiber meals. ' : ''}
+                ${parameters.highCRP ? 'Incorporate anti-inflammatory foods into your diet. ' : ''}
+                ${parameters.highCholesterol || parameters.highLDL ? 'Choose meals low in saturated fats and cholesterol. ' : ''}
+                ${parameters.lowHDL ? 'Include healthy fats to boost HDL levels. ' : ''}
+                ${parameters.highPCV ? 'Focus on hydrating foods and low-sodium meals. ' : ''}
+                ${!parameters.lowHemoglobin && !parameters.highGlucose && !parameters.highCRP && !parameters.highCholesterol && !parameters.highLDL && !parameters.lowHDL && !parameters.highPCV ? 'Follow a balanced meal plan with a mix of macronutrients.' : ''}
+            </p>
+        </div>
+    `;
 
             const mealPlan = [
                 {
                     day: 'Day 1',
                     meals: [
-                        {name: 'Breakfast', description: 'Oatmeal with berries and a boiled egg.', nutrition: 'High in fiber and protein.'},
-                        {name: 'Lunch', description: 'Grilled chicken salad with mixed greens and olive oil dressing.', nutrition: 'Rich in protein and healthy fats.'},
-                        {name: 'Dinner', description: 'Baked salmon with quinoa and steamed broccoli.', nutrition: 'High in omega-3 and fiber.'}
+                        { name: 'Breakfast', description: 'Oatmeal with berries and a boiled egg.', nutrition: 'High in fiber and protein.' },
+                        { name: 'Lunch', description: 'Grilled chicken salad with mixed greens and olive oil dressing.', nutrition: 'Rich in protein and healthy fats.' },
+                        { name: 'Dinner', description: 'Baked salmon with quinoa and steamed broccoli.', nutrition: 'High in omega-3 and fiber.' }
                     ]
                 },
                 {
                     day: 'Day 2',
                     meals: [
-                        {name: 'Breakfast', description: 'Greek yogurt with honey and walnuts.', nutrition: 'High in protein and healthy fats.'},
-                        {name: 'Lunch', description: 'Quinoa and black bean bowl with avocado.', nutrition: 'Rich in plant protein and fiber.'},
-                        {name: 'Dinner', description: 'Stir-fried tofu with vegetables and brown rice.', nutrition: 'High in protein and antioxidants.'}
+                        { name: 'Breakfast', description: 'Greek yogurt with honey and walnuts.', nutrition: 'High in protein and healthy fats.' },
+                        { name: 'Lunch', description: 'Quinoa and black bean bowl with avocado.', nutrition: 'Rich in plant protein and fiber.' },
+                        { name: 'Dinner', description: 'Stir-fried tofu with vegetables and brown rice.', nutrition: 'High in protein and antioxidants.' }
                     ]
                 }
             ];
+
+            if (parameters.lowHemoglobin) {
+                mealPlan[0].meals[0].description = 'Oatmeal with spinach, berries, and a boiled egg.';
+                mealPlan[0].meals[1].description = 'Grilled chicken salad with spinach, kale, and olive oil dressing.';
+                mealPlan[0].meals[2].description = 'Baked salmon with quinoa, steamed broccoli, and a side of lentils.';
+            }
+
+            if (parameters.highGlucose) {
+                mealPlan[0].meals[0].description = 'Chia seed pudding with berries and almonds.';
+                mealPlan[0].meals[1].description = 'Grilled chicken with a side of non-starchy vegetables and olive oil dressing.';
+                mealPlan[0].meals[2].description = 'Baked salmon with cauliflower rice and steamed broccoli.';
+            }
+
+            if (parameters.highCRP) {
+                mealPlan[0].meals[0].description = 'Oatmeal with turmeric, berries, and walnuts.';
+                mealPlan[0].meals[1].description = 'Grilled salmon salad with mixed greens, berries, and olive oil dressing.';
+                mealPlan[0].meals[2].description = 'Baked salmon with quinoa, steamed broccoli, and a side of colorful vegetables.';
+            }
+
+            if (parameters.highCholesterol || parameters.highLDL) {
+                mealPlan[0].meals[0].description = 'Oatmeal with berries and flaxseeds.';
+                mealPlan[0].meals[1].description = 'Grilled fish salad with mixed greens and olive oil dressing.';
+                mealPlan[0].meals[2].description = 'Baked salmon with quinoa and steamed broccoli.';
+            }
+
+            if (parameters.lowHDL) {
+                mealPlan[0].meals[0].description = 'Oatmeal with avocado and a boiled egg.';
+                mealPlan[0].meals[1].description = 'Grilled chicken salad with avocado, nuts, and olive oil dressing.';
+                mealPlan[0].meals[2].description = 'Baked salmon with quinoa, steamed broccoli, and a side of almonds.';
+            }
+
+            if (parameters.highPCV) {
+                mealPlan[0].meals[0].description = 'Oatmeal with watermelon and a boiled egg.';
+                mealPlan[0].meals[1].description = 'Grilled chicken salad with cucumber, mixed greens, and olive oil dressing.';
+                mealPlan[0].meals[2].description = 'Baked salmon with quinoa, steamed broccoli, and a side of oranges.';
+            }
 
             mealPlan.forEach(day => {
                 const dayElement = document.createElement('div');
                 dayElement.className = 'meal-plan-day';
                 dayElement.innerHTML = `
-                    <h4>${day.day}</h4>
-                    ${day.meals.map(meal => `
-                        <div class="meal-item">
-                            <div class="meal-title">${meal.name}</div>
-                            <div class="meal-description">${meal.description}</div>
-                            <div class="meal-nutrition">Nutrition: ${meal.nutrition}</div>
-                        </div>
-                    `).join('')}
-                `;
+            <h4>${day.day}</h4>
+            ${day.meals.map(meal => `
+                <div class="meal-item">
+                    <div class="meal-title">${meal.name}</div>
+                    <div class="meal-description">${meal.description}</div>
+                    <div class="meal-nutrition">Nutrition: ${meal.nutrition}</div>
+                </div>
+            `).join('')}
+        `;
                 mealPlanContainer.appendChild(dayElement);
             });
-        }
+        }  // Initialize on document load
 
-        // Initialize on document load
-        document.addEventListener('DOMContentLoaded', function() {
+
+        document.addEventListener('DOMContentLoaded', function () {
             // Tab switching functionality
             const tabs = document.querySelectorAll('.tab');
             const tabContents = document.querySelectorAll('.tab-content');
 
             tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
+                tab.addEventListener('click', function () {
                     const tabId = this.getAttribute('data-tab');
 
                     tabs.forEach(t => t.classList.remove('active'));
@@ -1144,12 +1534,12 @@
             });
 
             // Go back button
-            document.getElementById('goBackButton').addEventListener('click', function() {
+            document.getElementById('goBackButton').addEventListener('click', function () {
                 window.location.href = 'upld.html';
             });
 
             // Print button
-            document.getElementById('printButton').addEventListener('click', function() {
+            document.getElementById('printButton').addEventListener('click', function () {
                 window.print();
             });
 
@@ -1162,5 +1552,7 @@
             }
         });
     </script>
+    <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'92432cd27b040694',t:'MTc0MjYyMDE0Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
 </body>
+
 </html>

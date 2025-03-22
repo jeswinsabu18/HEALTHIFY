@@ -1,379 +1,348 @@
 <!DOCTYPE html>
-<html lang="en">
+<htm lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blood Report Analyzer</title>
-    <!-- PDF.js library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #F9F9F9;
-            color: #333;
-        }
-
-        .go-back-button {
-            position: fixed;
-            /* Keeps it in the top-left even when scrolling */
-            top: 10px;
-            left: 10px;
-            background-color: #62a6b8;
-            /* Green button */
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            /* Small size */
-            font-size: 12px;
-            /* Smaller font */
-            font-weight: bold;
-            border-radius: 4px;
-            cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            /* Ensures it's above other elements */
-            transition: background-color 0.2s, transform 0.1s;
-
-            /* Ensure it doesn't take full width */
-            display: inline-block;
-            width: auto;
-            min-width: unset;
-            max-width: fit-content;
-        }
-
-        .go-back-button:hover {
-            background-color: #388E3C;
-            transform: scale(1.05);
-        }
-
-
-
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        header {
-            background-color: #B5B25C;
-            color: white;
-            padding: 20px 0;
-            text-align: center;
-            border-radius: 8px 8px 0 0;
-            margin-bottom: 30px;
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 28px;
-        }
-
-        .upload-section {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
-
-        .file-input-wrapper {
-            position: relative;
-            margin: 20px 0;
-            text-align: center;
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        .file-input-label {
-            display: inline-block;
-            background-color: #B5B25C;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .file-input-label:hover {
-            background-color: #59572c;
-        }
-
-        .file-name {
-            margin-top: 10px;
-            font-size: 14px;
-        }
-
-        .button {
-            background-color: #2ecc71;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            display: block;
-            width: 100%;
-            margin-top: 20px;
-            transition: background-color 0.3s;
-        }
-
-        .button:hover {
-            background-color: #27ae60;
-        }
-
-        .button:disabled {
-            background-color: #95a5a6;
-            cursor: not-allowed;
-        }
-
-        .results-section {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            display: none;
-        }
-
-        .tab-container {
-            margin-top: 20px;
-        }
-
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            border-bottom: none;
-            margin-right: 5px;
-            border-radius: 4px 4px 0 0;
-        }
-
-        .tab.active {
-            background-color: white;
-            border-bottom: 1px solid white;
-            margin-bottom: -1px;
-            font-weight: bold;
-        }
-
-        .tab-content {
-            display: none;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-top: none;
-            background-color: white;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 2s linear infinite;
-            margin: 20px auto;
-            display: none;
-        }
-
-        pre#extractedTextContent {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            font-family: monospace;
-            line-height: 1.5;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Blood Report Analyzer</title>
+        <!-- PDF.js library -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #F9F9F9;
+                color: #333;
             }
 
-            100% {
-                transform: rotate(360deg);
+            .go-back-button {
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                background-color: #2e7aad;
+                color: white;
+                border: none;
+                padding: 6px 12px;
+                font-size: 12px;
+                font-weight: bold;
+                border-radius: 4px;
+                cursor: pointer;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+                z-index: 1000;
+                transition: background-color 0.2s, transform 0.1s;
+                display: inline-block;
+                width: auto;
+                min-width: unset;
+                max-width: fit-content;
             }
-        }
 
-        /* Enhanced styling for analysis results */
-        .patient-info {
-            background-color: #e8f4f8;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 5px solid #3498db;
-        }
+            .go-back-button:hover {
+                background-color: #1f5f91;
+                transform: scale(1.05);
+            }
 
-        .patient-info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
-        }
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+            }
 
-        .patient-info-item {
-            margin-bottom: 5px;
-        }
+            header {
+                background-color: #3b637d;
+                color: white;
+                padding: 1rem;
+                text-align: center;
+            }
 
-        .results-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
+            h1 {
+                margin: 0;
+                font-size: 28px;
+            }
 
-        .results-table th {
-            background-color: #f8f9fa;
-            padding: 10px;
-            text-align: left;
-            border-bottom: 2px solid #ddd;
-        }
+            /* Navigation bar styles (updated to center buttons) */
+            nav {
+                background-color: #87bdd8;
+                padding: 1rem;
+                text-align: center;
+                /* Added to center the buttons */
+            }
 
-        .results-table td {
-            padding: 8px 10px;
-            border-bottom: 1px solid #ddd;
-        }
+            nav a {
+                color: white;
+                margin: 0 1rem;
+                text-decoration: none;
+                font-weight: bold;
+                font-family: Arial, sans-serif;
+            }
 
+            .upload-section {
+                background-color: white;
+                padding: 30px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                margin-bottom: 30px;
+            }
 
-        .normal {
-            color: #28a745 !important;
-            /* Green color */
-        }
+            .file-input-wrapper {
+                position: relative;
+                margin: 20px 0;
+                text-align: center;
+            }
 
-        .high {
-            color: #dc3545 !important;
-            /* Red for high */
-            font-weight: bold !important;
-        }
+            .file-input {
+                display: none;
+            }
 
-        .low {
-            color: #e67e22 !important;
-            /* Orange for low */
-            font-weight: bold !important;
-        }
+            .file-input-label {
+                display: inline-block;
+                background: linear-gradient(135deg, #2e7aad, #1f5f91);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background 0.3s;
+            }
 
-        .section-title {
-            margin-top: 25px;
-            margin-bottom: 15px;
-            color: #2c3e50;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 5px;
-        }
+            .file-input-label:hover {
+                background: #143f6b;
+            }
 
-        .summary-section {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-        }
+            .file-name {
+                margin-top: 10px;
+                font-size: 14px;
+            }
 
-        .recommendations {
-            background-color: #e8f8f5;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-            border-left: 5px solid #2ecc71;
-        }
+            .button {
+                background: linear-gradient(135deg, #2e7aad, #1f5f91);
+                color: white;
+                border: none;
+                padding: 12px 20px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 16px;
+                display: block;
+                width: 100%;
+                margin-top: 20px;
+                transition: background 0.3s;
+            }
 
-        .disclaimer {
-            font-size: 12px;
-            color: #6c757d;
-            margin-top: 20px;
-            padding-top: 10px;
-            border-top: 1px solid #ddd;
-        }
+            .button:hover {
+                background: #143f6b;
+            }
 
-        .info-message {
-            text-align: center;
-            color: #6c757d;
-        }
+            .button:disabled {
+                background-color: #95a5a6;
+                cursor: not-allowed;
+            }
 
-        .error-message {
-            color: #dc3545;
-            margin-top: 10px;
-            display: none;
-        }
+            .results-section {
+                background-color: white;
+                padding: 30px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                display: none;
+            }
 
-        /* Button styles for the progress button */
-        .button-container {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
+            #analysisContent {
+                padding: 20px;
+                background-color: white;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
 
-        .progress-button {
-            background-color: #3b637d;
-            flex: 1;
-        }
+            .loader {
+                border: 4px solid #f3f3f3;
+                border-top: 4px solid #3498db;
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+                animation: spin 2s linear infinite;
+                margin: 20px auto;
+                display: none;
+            }
 
-        .progress-button:hover {
-            background-color: #2a4759;
-        }
+            pre#extractedTextContent {
+                white-space: pre-wrap;
+                word-wrap: break-word;
+                font-family: monospace;
+                line-height: 1.5;
+                padding: 15px;
+                background-color: #f8f9fa;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                max-height: 500px;
+                overflow-y: auto;
+            }
 
-        .print-button {
-            flex: 1;
-        }
-    </style>
-</head>
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
 
-<body>
-    <header>
-        <button id="goBackButton" class="button go-back-button">⬅ Go Back</button>
-        <h1>Blood Report Analyzer</h1>
-        <p>Upload your blood test PDF for quick analysis</p>
-    </header>
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
 
-    <div class="container">
-        <div class="upload-section">
-            <h2>Upload Blood Test Report</h2>
-            <p>Please upload your blood test report in PDF format to get started.</p>
-            <div class="file-input-wrapper">
-                <input type="file" id="pdfFile" class="file-input" accept=".pdf">
-                <label for="pdfFile" class="file-input-label">Choose PDF File</label>
-                <div id="fileName" class="file-name">No file chosen</div>
+            /* Enhanced styling for analysis results */
+            .patient-info {
+                background-color: #e8f4f8;
+                padding: 15px;
+                border-radius: 5px;
+                margin-bottom: 20px;
+                border-left: 5px solid #3498db;
+            }
+
+            .patient-info-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 10px;
+            }
+
+            .patient-info-item {
+                margin-bottom: 5px;
+            }
+
+            .results-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+            }
+
+            .results-table th {
+                background-color: #f8f9fa;
+                padding: 10px;
+                text-align: left;
+                border-bottom: 2px solid #ddd;
+            }
+
+            .results-table td {
+                padding: 8px 10px;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .normal {
+                color: #28a745 !important;
+                /* Green color */
+            }
+
+            .high {
+                color: #dc3545 !important;
+                /* Red for high */
+                font-weight: bold !important;
+            }
+
+            .low {
+                color: #e67e22 !important;
+                /* Orange for low */
+                font-weight: bold !important;
+            }
+
+            .section-title {
+                margin-top: 25px;
+                margin-bottom: 15px;
+                color: #2c3e50;
+                border-bottom: 2px solid #eee;
+                padding-bottom: 5px;
+            }
+
+            .summary-section {
+                background-color: #f8f9fa;
+                padding: 15px;
+                border-radius: 5px;
+                margin-top: 20px;
+            }
+
+            .recommendations {
+                background-color: #e8f8f5;
+                padding: 15px;
+                border-radius: 5px;
+                margin-top: 20px;
+                border-left: 5px solid #2ecc71;
+            }
+
+            .disclaimer {
+                font-size: 12px;
+                color: #6c757d;
+                margin-top: 20px;
+                padding-top: 10px;
+                border-top: 1px solid #ddd;
+            }
+
+            .info-message {
+                text-align: center;
+                color: #6c757d;
+            }
+
+            .error-message {
+                color: #dc3545;
+                margin-top: 10px;
+                display: none;
+            }
+
+            /* Button styles for the progress button */
+            .button-container {
+                display: flex;
+                gap: 15px;
+                margin-top: 20px;
+            }
+
+            .progress-button {
+                background: linear-gradient(135deg, #2e7aad, #1f5f91);
+                flex: 1;
+            }
+
+            .progress-button:hover {
+                background: #143f6b;
+            }
+
+            .print-button {
+                flex: 1;
+            }
+        </style>
+    </head>
+
+    <body>
+        <header>
+            <button id="goBackButton" class="button go-back-button">⬅ Go Back</button>
+            <h1>Upload Your Blood Report</h1>
+            <p>Analyze your blood test PDF quickly and easily.</p>
+        </header>
+
+        <nav>
+            <a href="home.html">Home</a>
+            <a href="progress.html">Track Progress</a>
+            <a href="diet&exercise.html">Diet & Exercise</a>
+        </nav>
+
+        <div class="container">
+            <div class="upload-section">
+                <h2>Upload Blood Test Report</h2>
+                <p>Please upload your blood test report in PDF format to get started.</p>
+                <div class="file-input-wrapper">
+                    <input type="file" id="pdfFile" class="file-input" accept=".pdf">
+                    <label for="pdfFile" class="file-input-label">Choose PDF File</label>
+                    <div id="fileName" class="file-name">No file chosen</div>
+                </div>
+                <div class="help-text">Maximum file size: 10MB. For optimal results, ensure your PDF contains text data
+                    (not
+                    scanned images).</div>
+                <button id="analyzeButton" class="button" disabled>Analyze Report</button>
+                <div id="errorMessage" class="error-message"></div>
+                <div id="loader" class="loader"></div>
             </div>
-            <div class="help-text">Maximum file size: 10MB. For optimal results, ensure your PDF contains text data (not
-                scanned images).</div>
-            <button id="analyzeButton" class="button" disabled>Analyze Report</button>
-            <div id="errorMessage" class="error-message"></div>
-            <div id="loader" class="loader"></div>
-        </div>
 
-        <div id="results" class="results-section">
-            <h2>Analysis Results</h2>
-            <div class="tab-container">
-                <div class="tabs">
-                    <div class="tab active" data-tab="analysis">Analysis</div>
-                    <div class="tab" data-tab="extracted-text">Extracted Text</div>
-                </div>
-                <div id="analysis" class="tab-content active">
-                    <div id="analysisContent"></div>
-                </div>
-                <div id="extracted-text" class="tab-content">
-                    <pre id="extractedTextContent"></pre>
-                </div>
+            <div id="results" class="results-section">
+                <h2>Analysis Results</h2>
+                <div id="analysisContent"></div>
                 <div class="button-container">
                     <button id="progressButton" class="button progress-button">View Progress Charts</button>
                     <button id="printButton" class="button print-button">Print Report</button>
                 </div>
             </div>
         </div>
-    </div>
+    </body>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             let currentAnalysisData = null; // Global variable to store the current analysis
@@ -385,13 +354,10 @@
             const analyzeButton = document.getElementById('analyzeButton');
             const loader = document.getElementById('loader');
             const results = document.getElementById('results');
-            const extractedTextContent = document.getElementById('extractedTextContent');
             const analysisContent = document.getElementById('analysisContent');
             const errorMessage = document.getElementById('errorMessage');
             const printButton = document.getElementById('printButton');
             const progressButton = document.getElementById('progressButton');
-            const tabs = document.querySelectorAll('.tab');
-            const tabContents = document.querySelectorAll('.tab-content');
 
             // API key - replace with your actual key
             const API_KEY = 'AIzaSyA5Mx9lkFnqkQR1oXYvRFAZsphAtsmtmgY';
@@ -428,19 +394,6 @@
                 }
             });
 
-            // Handle tab switching
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function () {
-                    const tabId = this.getAttribute('data-tab');
-
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-
-                    this.classList.add('active');
-                    document.getElementById(tabId).classList.add('active');
-                });
-            });
-
             // Handle print button
             printButton.addEventListener('click', function () {
                 window.print();
@@ -474,37 +427,37 @@
                 return extractedValues;
             }
 
-function saveProcessedReport(rawText, analysisHTML) {
-    try {
-        // Get existing reports or initialize empty array
-        let previousReports = JSON.parse(localStorage.getItem("bloodReports")) || [];
+            function saveProcessedReport(rawText, analysisHTML) {
+                try {
+                    // Get existing reports or initialize empty array
+                    let previousReports = JSON.parse(localStorage.getItem("bloodReports")) || [];
 
-        // Extract test values from the raw text
-        let extractedValues = extractTestValues(rawText);
+                    // Extract test values from the HTML table
+                    let extractedValues = extractTestValues(rawText, analysisHTML);
 
-        // Create a consistent report structure
-        const newReport = {
-            date: new Date().toISOString(),
-            values: extractedValues,
-            analysisHTML: analysisHTML, // Store the complete HTML analysis from Gemini
-            rawText: rawText // Optionally store the raw text as well
-        };
+                    // Create a consistent report structure
+                    const newReport = {
+                        date: new Date().toISOString(),
+                        values: extractedValues,
+                        analysisHTML: analysisHTML, // Store the complete HTML analysis from Gemini
+                        rawText: rawText // Optionally store the raw text as well
+                    };
 
-        // Add the new report
-        previousReports.push(newReport);
+                    // Add the new report
+                    previousReports.push(newReport);
 
-        // Save to localStorage
-        localStorage.setItem("bloodReports", JSON.stringify(previousReports));
+                    // Save to localStorage
+                    localStorage.setItem("bloodReports", JSON.stringify(previousReports));
 
-        console.log("Processed report saved:", newReport);
-        return newReport; // Return the saved report
-    } catch (error) {
-        console.error("Error in saveProcessedReport():", error);
-        return null;
-    }
-}
-
+                    console.log("Processed report saved:", newReport);
+                    return newReport; // Return the saved report
+                } catch (error) {
+                    console.error("Error in saveProcessedReport():", error);
+                    return null;
+                }
+            }
             // Function to extract text from PDF using PDF.js
+
             async function extractTextFromPDF(file) {
                 return new Promise((resolve, reject) => {
                     const fileReader = new FileReader();
@@ -571,15 +524,8 @@ function saveProcessedReport(rawText, analysisHTML) {
                 });
             }
 
-            function displayExtractedText(text) {
-                // Get the extracted text element
-                const extractedTextContent = document.getElementById('extractedTextContent');
-
-                // Set the text with proper formatting preserved
-                extractedTextContent.textContent = text;
-            }
-
             // Helper function to convert file to base64
+
             function fileToBase64(file) {
                 return new Promise((resolve, reject) => {
                     const reader = new FileReader();
@@ -590,7 +536,7 @@ function saveProcessedReport(rawText, analysisHTML) {
             }
 
             // Function to send PDF directly to Gemini
-            // Replace the existing sendPDFToGemini function with this improved version
+
             async function sendPDFToGemini(file) {
                 try {
                     // Create a FormData object to handle the file
@@ -604,40 +550,56 @@ function saveProcessedReport(rawText, analysisHTML) {
 
                     // Construct the prompt with enhanced instructions
                     const instructions = `
-        Analyze this blood test report PDF and provide a detailed, structured analysis following these rules:
-        
-        1. Extract and present patient information first (name, age, ID, etc.)
-        2. Present test results in tables with these columns:
-           - Test Name/Parameter
-           - Result
-           - Reference Range
-           - Status (IMPORTANT: Always include this column with values: Normal, High, Low, or Borderline)
-        3. For abnormal values, mark with appropriate status (High or Low)
-        4. For each abnormal value, provide a brief interpretation (1-2 lines max)
-        5. Provide 3-4 key recommendations based on abnormal findings
-        6. Format your response as HTML - DO NOT include code block markers
-        
-        Use this structure and these HTML classes:
-        - <div class="patient-info"> for patient details
-        - <h3 class="section-title"> for section headers
-        - <table class="results-table"> for test results
-        - <div class="summary-section"> for abnormal findings summary
-        - <div class="recommendations"> for recommendations
-        - For test results, mark with class="normal", class="abnormal" or class="borderline"
-        
-        IMPORTANT: Be thorough in examining all test values. For the blood report I'm giving you, 
-        pay special attention to:
-        - Hemoglobin (HB)
-        - PCV (Hematocrit)
-        - Total Count (TC)
-        - Platelet Count (PLC)
-        - Creatinine
-        - Blood Sugar (Glucose)
-        - HbA1c
-        - Lipid Profile (Cholesterol, Triglycerides, etc.)
-        
-        ALWAYS add a Status column even if one doesn't exist in the original report.
-        `;
+Analyze this blood test report PDF and provide a detailed, structured analysis following these rules:
+
+1. Extract and present patient information first (name, age, sex, ID, etc.) in a structured format.
+2. Extract test results and present them in a table with these columns:
+   - Test Name/Parameter
+   - Result (numeric value only, after interpreting units)
+   - Unit (e.g., gm/dl, millions/cumm, x1000/cumm, etc.)
+   - Reference Range (numeric range after interpreting units)
+   - Status (must be one of: Normal, High, Low, or Borderline)
+3. For test values with "x1000/cumm" (e.g., Platelet Count (PLC), Total Leucocyte Count (TLC)):
+   - Interpret the value by multiplying by 1000 (e.g., "251 x1000/cumm" should be extracted as 251000).
+   - Interpret the reference range in the same unit (e.g., "150 - 450" for PLC means 150000 - 450000).
+   - Compare the adjusted value to the adjusted range to determine the status.
+4. For each abnormal value (High or Low), provide a brief interpretation (1-2 lines max) in a separate section.
+5. Provide 3-4 key recommendations based on abnormal findings.
+6. Format your response as HTML - DO NOT include code block markers.
+
+Use this structure and these HTML classes:
+- <div class="patient-info"> for patient details
+- <h3 class="section-title"> for section headers
+- <table class="results-table"> for test results
+- <div class="summary-section"> for abnormal findings summary
+- <div class="recommendations"> for recommendations
+- For the Status column, apply these classes to the <td> element:
+  - class="normal" for Normal
+  - class="high" for High
+  - class="low" for Low
+  - class="borderline" for Borderline
+
+Example table row for Platelet Count (PLC):
+<tr>
+  <td>PLC</td>
+  <td>251000</td>
+  <td>per microliter</td>
+  <td>150000 - 450000</td>
+  <td class="normal">Normal</td>
+</tr>
+
+IMPORTANT: Be thorough in examining all test values. Pay special attention to:
+- Hemoglobin (HB)
+- PCV (Hematocrit)
+- Total Leucocyte Count (TLC)
+- Platelet Count (PLC)
+- Creatinine
+- Blood Sugar (Glucose)
+- HbA1c
+- Lipid Profile (Cholesterol, Triglycerides, etc.)
+
+ALWAYS include a Status column and ensure the status is determined after interpreting the units correctly.
+`;
 
                     // Create request payload with both text instructions and the PDF file
                     const requestBody = {
@@ -698,39 +660,63 @@ function saveProcessedReport(rawText, analysisHTML) {
                     throw new Error('Failed to analyze with Gemini API: ' + error.message);
                 }
             }
-
             // Enhanced function to better extract test values
-            function extractTestValues(rawText) {
+
+            function extractTestValues(rawText, analysisHTML) {
                 let extractedValues = {};
 
-                // Improved regex patterns for extracting test values
-                let regexPatterns = {
-                    "Hemoglobin": /H(?:b|emoglobin)\s+(\d+\.?\d*)\s*(?:g\/dl|gm\/dl)/i,
-                    "RBC count": /RBC\s+(?:count)?\s+(\d+\.?\d*)/i,
-                    "PCV": /PCV\s+(\d+\.?\d*)\s*%/i,
-                    "WBC count": /(?:TC|WBC|White\s+Blood\s+Cells|Total\s+Count)\s+(\d+\.?\d*)/i,
-                    "Platelets": /(?:PLC|PLT|Platelets?)\s+(\d+)\s*x?1000?\/cumm/i,
-                    "Glucose": /(?:Glucose|RBS|FBS|Blood\s+sugar)\s+(\d+)\s*mg\/dl/i,
-                    "HbA1c": /HbA1c\s+(\d+\.?\d*)\s*%/i,
-                    "Creatinine": /Creatinine\s+(\d+\.?\d*)\s*mg\/dl/i,
-                    "Cholesterol": /Cholesterol\s+total\s+(\d+)\s*mg\/dl/i,
-                    "Triglycerides": /Triglycerides\s+(\d+)\s*mg\/dl/i,
-                    "HDL": /Cholesterol\s+HDL\s+(\d+)\s*mg\/dl/i,
-                    "LDL": /Cholesterol\s+LDL\s+(\d+)\s*mg\/dl/i,
-                    "VLDL": /Cholesterol\s+VLDL\s+(\d+)\s*mg\/dl/i
-                };
+                // Parse the HTML to extract values from the table
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(analysisHTML, 'text/html');
+                const tables = doc.querySelectorAll('table.results-table');
 
-                // Apply regex patterns
-                for (let test in regexPatterns) {
-                    let match = rawText.match(regexPatterns[test]);
-                    if (match) {
-                        extractedValues[test] = parseFloat(match[1]);
-                    }
+                if (tables.length === 0) {
+                    console.warn("No results table found in analysis HTML");
+                    return extractedValues;
                 }
 
-                console.log("Extracted test values:", extractedValues);
+                // Map test names to keys for extractedValues
+                const testNameMap = {
+                    "hb": "Hemoglobin",
+                    "hct": "PCV",
+                    "rbc count": "RBC count",
+                    "tlc": "WBC count",
+                    "plc": "Platelets",
+                    "glucose": "Glucose",
+                    "hba1c": "HbA1c",
+                    "creatinine": "Creatinine",
+                    "cholesterol": "Cholesterol",
+                    "triglycerides": "Triglycerides",
+                    "hdl": "HDL",
+                    "ldl": "LDL",
+                    "vldl": "VLDL"
+                };
+
+                tables.forEach(table => {
+                    const rows = Array.from(table.querySelectorAll('tr')).slice(1); // Skip header
+                    rows.forEach(row => {
+                        const cells = row.querySelectorAll('td');
+                        if (cells.length < 5) return; // Expecting 5 columns: Test Name, Result, Unit, Reference Range, Status
+
+                        const testName = cells[0].textContent.trim().toLowerCase();
+                        const resultText = cells[1].textContent.trim();
+                        const resultValue = parseFloat(resultText);
+
+                        if (isNaN(resultValue)) return;
+
+                        // Map the test name to the key used in extractedValues
+                        const mappedTestName = Object.keys(testNameMap).find(key => testName.includes(key));
+                        if (mappedTestName) {
+                            const standardTestName = testNameMap[mappedTestName];
+                            extractedValues[standardTestName] = resultValue;
+                        }
+                    });
+                });
+
+                console.log("Extracted test values from HTML table:", extractedValues);
                 return extractedValues;
             }
+
 
             function displayAnalysisResults(analysis) {
                 // Clean any remaining markdown or code block markers
@@ -739,7 +725,7 @@ function saveProcessedReport(rawText, analysisHTML) {
                 // Apply the HTML formatting from the API response
                 analysisContent.innerHTML = cleanedAnalysis;
 
-                // Process all tables in the report
+                // Process all tables in the report to apply styling based on Gemini's classes
                 const tables = analysisContent.querySelectorAll('table');
                 tables.forEach(table => {
                     // Ensure table has proper styling
@@ -754,150 +740,31 @@ function saveProcessedReport(rawText, analysisHTML) {
                     const headers = Array.from(headerRow.querySelectorAll('th')).map(th =>
                         th.textContent.trim().toLowerCase());
 
-                    // Find the column indices with more flexible matching
-                    const testNameColIndex = headers.findIndex(h =>
-                        h.includes('test') || h.includes('parameter') || h.includes('description'));
-                    const resultColIndex = headers.findIndex(h =>
-                        h.includes('result') || h.includes('value'));
-                    const rangeColIndex = headers.findIndex(h =>
-                        h.includes('reference') || h.includes('range') || h.includes('normal'));
-
-                    // Find or create status column
-                    let statusColIndex = headers.findIndex(h =>
+                    // Find the column indices
+                    const statusColIndex = headers.findIndex(h =>
                         h.includes('status') || h.includes('flag') || h.includes('class'));
 
-                    // If no status column exists, create one
-                    if (statusColIndex === -1) {
-                        // Add a status header to the header row
-                        const statusHeader = document.createElement('th');
-                        statusHeader.textContent = 'Status';
-                        headerRow.appendChild(statusHeader);
-                        statusColIndex = headers.length; // New column will be at the end
-
-                        // Add a status cell to each data row
-                        const rows = Array.from(table.querySelectorAll('tr')).slice(1);
-                        rows.forEach(row => {
-                            const statusCell = document.createElement('td');
-                            row.appendChild(statusCell);
-                        });
-                    }
-
-                    // Only process tables with result and range columns
-                    if (resultColIndex === -1 || rangeColIndex === -1) return;
+                    if (statusColIndex === -1) return;
 
                     // Process each row in the table (skip header)
                     const rows = Array.from(table.querySelectorAll('tr')).slice(1);
 
                     rows.forEach(row => {
                         const cells = row.querySelectorAll('td');
-                        if (cells.length <= Math.max(resultColIndex, rangeColIndex, statusColIndex)) return;
+                        if (cells.length <= statusColIndex) return;
 
-                        // Get test result and reference range
-                        const resultCell = cells[resultColIndex];
-                        const rangeCell = cells[rangeColIndex];
                         const statusCell = cells[statusColIndex];
+                        if (!statusCell) return;
 
-                        // Skip if cells don't exist
-                        if (!resultCell || !rangeCell || !statusCell) return;
-
-                        // Extract numeric result value, handling various formats
-                        const resultText = resultCell.textContent.trim();
-                        const resultValue = parseFloat(resultText.replace(/[^\d.-]/g, ''));
-                        const rangeText = rangeCell.textContent.trim();
-
-                        // Only process if we have a valid numeric result
-                        if (isNaN(resultValue)) return;
-
-                        // Extract range values with improved pattern matching
-                        let lowerBound, upperBound;
-                        let rangePattern;
-
-                        // Handle ranges like "10-20", "< 10", "> 5", etc.
-                        if (rangeText.includes('-')) {
-                            rangePattern = /(\d+\.?\d*)\s*-\s*(\d+\.?\d*)/;
-                            const match = rangeText.match(rangePattern);
-                            if (match && match.length >= 3) {
-                                lowerBound = parseFloat(match[1]);
-                                upperBound = parseFloat(match[2]);
-                            }
-                        } else if (rangeText.includes('<')) {
-                            rangePattern = /[<≤]\s*(\d+\.?\d*)/;
-                            const match = rangeText.match(rangePattern);
-                            if (match && match.length >= 2) {
-                                upperBound = parseFloat(match[1]);
-                            }
-                        } else if (rangeText.includes('>')) {
-                            rangePattern = /[>≥]\s*(\d+\.?\d*)/;
-                            const match = rangeText.match(rangePattern);
-                            if (match && match.length >= 2) {
-                                lowerBound = parseFloat(match[1]);
-                            }
-                        }
-
-                        // Determine status based on value comparison with range
-                        let statusClass = '';
-                        let statusText = '';
-
-                        if (!isNaN(lowerBound) && !isNaN(upperBound)) {
-                            // We have both bounds
-                            if (resultValue < lowerBound) {
-                                statusClass = 'low';
-                                statusText = 'Low';
-                            } else if (resultValue > upperBound) {
-                                statusClass = 'high';
-                                statusText = 'High';
-                            } else {
-                                statusClass = 'normal';
-                                statusText = 'Normal';
-                            }
-                        } else if (!isNaN(lowerBound)) {
-                            // Only lower bound (> value)
-                            if (resultValue < lowerBound) {
-                                statusClass = 'low';
-                                statusText = 'Low';
-                            } else {
-                                statusClass = 'normal';
-                                statusText = 'Normal';
-                            }
-                        } else if (!isNaN(upperBound)) {
-                            // Only upper bound (< value)
-                            if (resultValue > upperBound) {
-                                statusClass = 'high';
-                                statusText = 'High';
-                            } else {
-                                statusClass = 'normal';
-                                statusText = 'Normal';
-                            }
-                        } else {
-                            // Default if no range is defined
-                            statusClass = '';
-                            statusText = '-';
-                        }
-
-                        // Apply consistent styling
-                        if (statusClass) {
-                            // Remove any existing status classes
-                            resultCell.classList.remove('normal', 'high', 'low', 'abnormal', 'borderline');
-                            statusCell.classList.remove('normal', 'high', 'low', 'abnormal', 'borderline');
-
-                            // Add appropriate class
-                            resultCell.classList.add(statusClass);
-                            statusCell.classList.add(statusClass);
-
-                            // Set text content for status cell
-                            statusCell.textContent = statusText;
-
-                            // Apply appropriate color
-                            if (statusClass === 'high') {
-                                resultCell.style.color = '#dc3545'; // Red for high
-                                statusCell.style.color = '#dc3545';
-                            } else if (statusClass === 'low') {
-                                resultCell.style.color = '#e67e22'; // Orange for low
-                                statusCell.style.color = '#e67e22';
-                            } else if (statusClass === 'normal') {
-                                resultCell.style.color = '#28a745'; // Green for normal
-                                statusCell.style.color = '#28a745';
-                            }
+                        // Apply styling based on the class assigned by Gemini
+                        if (statusCell.classList.contains('high')) {
+                            statusCell.style.color = '#dc3545'; // Red for high
+                        } else if (statusCell.classList.contains('low')) {
+                            statusCell.style.color = '#e67e22'; // Orange for low
+                        } else if (statusCell.classList.contains('normal')) {
+                            statusCell.style.color = '#28a745'; // Green for normal
+                        } else if (statusCell.classList.contains('borderline')) {
+                            statusCell.style.color = '#e67e22'; // Orange for borderline
                         }
                     });
                 });
@@ -909,13 +776,13 @@ function saveProcessedReport(rawText, analysisHTML) {
                     link.setAttribute('rel', 'noopener noreferrer');
                 });
             }
-
             // Handle analyze button click
+
+
             analyzeButton.addEventListener('click', async function () {
                 if (pdfFile.files.length === 0) return;
 
                 // Reset previous results
-                extractedTextContent.textContent = '';
                 analysisContent.innerHTML = '';
 
                 // Show loader
@@ -932,23 +799,23 @@ function saveProcessedReport(rawText, analysisHTML) {
                     // Display analysis results
                     displayAnalysisResults(analysisResult);
 
-                    // Optionally also extract and display text
+                    // Extract text for saving to localStorage (but not displaying)
                     const extractedText = await extractTextFromPDF(file);
-                    displayExtractedText(extractedText);
 
                     // Save extracted text and values for progress tracking
                     const savedReport = saveProcessedReport(extractedText, analysisResult);
                     if (savedReport) {
                         // Store the current analysis data in a global variable
                         currentAnalysisData = savedReport;
-                        
+
                         // Also store in sessionStorage for access across pages in the same session
                         sessionStorage.setItem('currentBloodAnalysis', JSON.stringify(currentAnalysisData));
-                        
+
                         console.log("Analysis data saved and ready for use:", currentAnalysisData);
                     } else {
                         console.warn("Failed to save analysis data");
                     }
+
                     // Show results section
                     results.style.display = 'block';
 
@@ -961,14 +828,12 @@ function saveProcessedReport(rawText, analysisHTML) {
                     loader.style.display = 'none';
                     analyzeButton.disabled = false;
                 }
-            });
-
-            // Handle go back button
+            });            // Handle go back button
             document.getElementById('goBackButton').addEventListener('click', function () {
                 window.location.href = 'home.html'; // Change this to your actual homepage URL
             });
         });
     </script>
-</body>
+    </body>
 
-</html>
+    </html>
