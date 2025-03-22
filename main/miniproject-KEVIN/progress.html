@@ -135,7 +135,7 @@
     <nav>
         <a href="home.html">Home</a>
         <a href="upld.html">Upload Reports</a>
-        <a href="progress.html">Track Progress</a>
+        <a href="diet&exercise.html">Diet & Exercise</a>
     </nav>
 
     <div class="chart-container">
@@ -414,7 +414,8 @@
                                 pointHoverRadius: 8,
                                 pointBackgroundColor: color,
                                 pointBorderColor: '#fff',
-                                pointBorderWidth: 2
+                                pointBorderWidth: 2,
+                                spanGaps: true // Add this to connect points across null values
                             }]
                         },
                         options: {
@@ -499,6 +500,7 @@
                     }
                 });
             }
+
 
             function getRandomColor() {
                 return `hsl(${Math.random() * 360}, 70%, 50%)`;
