@@ -7,9 +7,9 @@
     <title>Health Recommendations | Blood Analysis</title>
     <style>
         :root {
-            --primary-color: #62a6b8;
+            --primary-color: #2e7aad;
             --secondary-color: #3b637d;
-            --light-bg: #f5f9fc;
+            --light-bg: #f8f9fa;
             --border-color: #e0e7ee;
             --warning-color: #e67e22;
             --danger-color: #e74c3c;
@@ -22,63 +22,87 @@
             padding: 0;
         }
 
+        html,
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            width: 100%;
+            max-width: none;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
             line-height: 1.6;
             color: #333;
             background-color: var(--light-bg);
-            padding: 20px;
         }
 
         .container {
-            max-width: 1200px;
+            width: 100%;
+            min-width: 100%;
+            max-width: 1400px;
             margin: 0 auto;
+            padding: 0;
             background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
         }
 
         header {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 1rem;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #87bdd8;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            margin: 0 1rem;
+            text-decoration: none;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+        }
+
+        .go-back-button {
+            position: fixed;
+            top: 10px;
+            left: 10px;
             background-color: var(--primary-color);
             color: white;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header-title h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-
-        .header-title p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .header-actions button {
-            background-color: white;
-            color: var(--primary-color);
             border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
-            cursor: pointer;
+            padding: 6px 12px;
+            font-size: 12px;
             font-weight: bold;
-            margin-left: 10px;
-            transition: all 0.3s ease;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: background-color 0.2s, transform 0.1s;
+            display: inline-block;
+            width: auto;
+            min-width: unset;
+            max-width: fit-content;
         }
 
-        .header-actions button:hover {
-            background-color: #f0f0f0;
-            transform: translateY(-2px);
+        .go-back-button:hover {
+            background-color: #1f5f91;
+            transform: scale(1.05);
         }
 
         .tabs {
             display: flex;
             background-color: #f0f7ff;
             border-bottom: 1px solid var(--border-color);
+            margin: 0 20px;
         }
 
         .tab {
@@ -88,6 +112,7 @@
             font-weight: 500;
             color: var(--secondary-color);
             border-bottom: 3px solid transparent;
+            font-size: 18px;
         }
 
         .tab:hover {
@@ -103,6 +128,7 @@
         .tab-content {
             display: none;
             padding: 30px;
+            margin: 0 20px 20px 20px;
         }
 
         .tab-content.active {
@@ -167,49 +193,53 @@
             border-left-color: #9b59b6;
         }
 
-        .warning-card {
-            background-color: #fff3f3;
-            border-left: 4px solid var(--danger-color);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .warning-card h3 {
-            color: var(--danger-color);
-            margin-bottom: 10px;
-        }
-
         .food-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
             margin-top: 20px;
         }
 
         .food-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
             background-color: white;
             border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            min-height: 120px;
+        }
+
+        .food-content {
+            flex: 1;
             display: flex;
-            align-items: center;
-            border-left: 3px solid var(--primary-color);
+            flex-direction: column;
+            justify-content: center;
         }
 
         .food-icon {
-            font-size: 24px;
-            margin-right: 15px;
+            font-size: 30px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f7ff;
+            border-radius: 50%;
         }
 
         .food-title {
+            margin-bottom: 8px;
             font-weight: bold;
-            margin-bottom: 5px;
+            font-size: 20px;
+            color: var(--secondary-color);
         }
 
         .food-description {
-            font-size: 13px;
-            color: #666;
+            font-size: 18px;
+            color: #1b1b1b;
         }
 
         .guidelines {
@@ -231,6 +261,7 @@
             padding: 15px;
             margin-bottom: 15px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
         }
 
         .exercise-item-icon {
@@ -253,28 +284,23 @@
         .exercise-title {
             font-weight: bold;
             margin-bottom: 5px;
+            font-size: 18px;
         }
 
         .exercise-description {
-            font-size: 14px;
+            font-size: 16px;
             margin-bottom: 5px;
         }
 
         .exercise-steps {
-            margin-top: 10px;
+            font-size: 16px;
+            margin-bottom: 5px;
             padding-left: 20px;
         }
 
-        .exercise-steps li {
-            font-size: 14px;
-            color: #555;
-            margin-bottom: 5px;
-        }
-
         .exercise-duration {
-            font-size: 12px;
+            font-size: 14px;
             color: var(--secondary-color);
-            margin-top: 5px;
         }
 
         .meal-plan-day {
@@ -283,6 +309,7 @@
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
         }
 
         .meal-plan-day h4 {
@@ -307,10 +334,11 @@
         .meal-title {
             font-weight: bold;
             margin-bottom: 5px;
+            font-size: 18px;
         }
 
         .meal-description {
-            font-size: 14px;
+            font-size: 16px;
             color: #555;
         }
 
@@ -347,17 +375,6 @@
             margin-top: 4px;
         }
 
-        .badge-ai {
-            display: inline-block;
-            background-color: #62a6b8;
-            color: white;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            margin-left: 8px;
-            vertical-align: middle;
-        }
-
         @media print {
             body {
                 background-color: white;
@@ -368,7 +385,7 @@
                 box-shadow: none;
             }
 
-            .header-actions,
+            .go-back-button,
             .tabs {
                 display: none;
             }
@@ -383,22 +400,30 @@
                 grid-template-columns: 1fr;
             }
 
-            .header-title h1 {
+            header h1 {
                 font-size: 20px;
             }
 
-            .header-actions button {
-                padding: 6px 12px;
+            header p {
                 font-size: 12px;
             }
 
             .tab {
                 padding: 10px 15px;
-                font-size: 14px;
+                font-size: 16px;
             }
 
             .tab-content {
                 padding: 15px;
+                margin: 0 10px 10px 10px;
+            }
+
+            .tabs {
+                margin: 0 10px;
+            }
+
+            .container {
+                padding: 0;
             }
         }
     </style>
@@ -407,15 +432,16 @@
 <body>
     <div class="container">
         <header>
-            <div class="header-title">
-                <h1>Health Recommendations</h1>
-                <p>Based on your blood test analysis</p>
-            </div>
-            <div class="header-actions">
-                <button id="goBackButton">Go Back</button>
-                <button id="printButton">Print Report</button>
-            </div>
+            <button id="goBackButton" class="go-back-button">⬅ Go Back</button>
+            <h1>Diet & Exercise Recommendations</h1>
+            <p>Personalized advice based on your blood test results.</p>
         </header>
+
+        <nav>
+            <a href="home.html">Home</a>
+            <a href="upld.html">Upload Reports</a>
+            <a href="progress.html">Track Progress</a>
+        </nav>
 
         <div class="tabs">
             <div class="tab active" data-tab="overview">Overview</div>
@@ -436,166 +462,101 @@
                 <p>Loading dietary recommendations... <span class="spinner"></span></p>
             </div>
             <div id="dietContent" style="display: none;">
-                <div id="dietSummary">
-                    <!-- Diet summary will be populated here -->
-                </div>
+                <div id="dietSummary"></div>
                 <h4 class="section-title">Foods to Include</h4>
-                <div id="recommendedFoods" class="food-list">
-                    <!-- Recommended foods will be populated here -->
-                </div>
+                <div id="recommendedFoods" class="food-list"></div>
                 <h4 class="section-title">Foods to Limit</h4>
-                <div id="limitFoods" class="food-list">
-                    <!-- Foods to limit will be populated here -->
-                </div>
+                <div id="limitFoods" class="food-list"></div>
                 <div class="guidelines">
                     <h4>General Nutrition Guidelines</h4>
-                    <ul id="nutritionGuidelines">
-                        <!-- Guidelines will be populated here -->
-                    </ul>
+                    <ul id="nutritionGuidelines"></ul>
                 </div>
             </div>
         </div>
 
         <div id="exercise" class="tab-content">
             <h3 class="section-title">Exercise Recommendations</h3>
-            <div id="exerciseSummary">
-                <!-- Exercise summary will be populated here -->
+            <div id="exerciseLoadingIndicator">
+                <p>Loading exercise recommendations... <span class="spinner"></span></p>
             </div>
-            <div id="exerciseRecommendations" class="exercise-recommendations">
-                <!-- Exercise items will be populated here -->
+            <div id="exerciseContent" style="display: none;">
+                <div id="exerciseSummary"></div>
+                <div id="exerciseRecommendations" class="exercise-recommendations"></div>
             </div>
         </div>
 
         <div id="mealplan" class="tab-content">
-            <h3 class="section-title">Personalized Kerala-Style Meal Plan</h3>
-            <div id="mealPlanContainer">
-                <!-- Meal plan will be populated here -->
+            <h3 class="section-title">Personalized Meal Plan</h3>
+            <div id="mealPlanLoadingIndicator">
+                <p>Loading meal plan... <span class="spinner"></span></p>
+            </div>
+            <div id="mealPlanContent" style="display: none;">
+                <div id="mealPlanContainer"></div>
             </div>
         </div>
     </div>
-
     <script>
-        // Function to get the latest blood report from local storage
         function getLatestBloodReport() {
-            const reportsString = localStorage.getItem('bloodReports');
-            console.log('Raw bloodReports from localStorage:', reportsString);
-
-            if (!reportsString) {
-                console.log('No bloodReports found in localStorage');
-                return null;
-            }
-
-            let reports;
             try {
-                reports = JSON.parse(reportsString);
-                console.log('Parsed bloodReports:', reports);
-            } catch (parseError) {
-                console.error('Failed to parse bloodReports from localStorage:', parseError);
+                const reports = JSON.parse(localStorage.getItem('bloodReports')) || [];
+                if (!Array.isArray(reports) || reports.length === 0) return null;
+
+                reports.sort((a, b) => new Date(b.date) - new Date(a.date));
+                const expectedParams = ['Hemoglobin', 'Glucose', 'CRP', 'RBC', 'Cholesterol', 'LDL', 'HDL', 'PCV'];
+                return reports.find(report =>
+                    report.date && report.values && report.analysisHTML &&
+                    expectedParams.some(param => report.values[param] != null)
+                ) || null;
+            } catch (error) {
+                console.error("Error fetching latest report from localStorage:", error);
                 return null;
             }
-
-            if (!Array.isArray(reports) || reports.length === 0) {
-                console.log('bloodReports is empty or not an array:', reports);
-                return null;
-            }
-
-            // Fixed sorting logic
-            reports.sort((a, b) => new Date(b.date) - new Date(a.date));
-            console.log('Sorted bloodReports (newest first):', reports);
-
-            const expectedParams = ['Hemoglobin', 'Glucose', 'CRP', 'RBC', 'Cholesterol', 'LDL', 'HDL', 'PCV'];
-            let latestValidReport = null;
-
-            for (const report of reports) {
-                if (!report.date || !report.values || !report.analysisHTML) {
-                    console.log('Report is invalid (missing date, values, or analysisHTML):', report);
-                    continue;
-                }
-
-                const hasExpectedParam = expectedParams.some(param => param in report.values && report.values[param] != null);
-                if (hasExpectedParam) {
-                    latestValidReport = report;
-                    break;
-                } else {
-                    console.log('Report lacks expected parameters:', report);
-                }
-            }
-
-            if (!latestValidReport) {
-                console.log('No valid report found with expected parameters');
-                return null;
-            }
-
-            console.log('Selected latest valid report:', latestValidReport);
-            return latestValidReport;
         }
 
-        // Function to parse analysis HTML
         function parseAnalysisHTML(analysisHTML) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(analysisHTML, 'text/html');
             const testResults = [];
-
-            const table = doc.querySelector('table.results-table');
-            if (!table) {
-                console.warn('No results table found in analysisHTML');
-                return { testResults, patientInfo: {} };
-            }
+            const patientInfo = {};
 
             const patientInfoDiv = doc.querySelector('div.patient-info');
-            const patientInfo = {};
             if (patientInfoDiv) {
-                const items = patientInfoDiv.querySelectorAll('.patient-info-item');
-                items.forEach(item => {
-                    const text = item.textContent.trim();
-                    const [key, value] = text.split(':').map(s => s.trim());
-                    if (key && value) {
-                        patientInfo[key.toLowerCase()] = value;
+                patientInfoDiv.querySelectorAll('.patient-info-item').forEach(item => {
+                    const [key, value] = item.textContent.trim().split(':').map(s => s.trim());
+                    if (key && value) patientInfo[key.toLowerCase()] = value;
+                });
+            }
+
+            const table = doc.querySelector('table.results-table');
+            if (table) {
+                const headers = Array.from(table.querySelectorAll('th')).map(th => th.textContent.trim().toLowerCase());
+                const rows = table.querySelectorAll('tr');
+                const testNameIndex = headers.indexOf('test name/parameter');
+                const resultIndex = headers.indexOf('result');
+                const unitIndex = headers.indexOf('unit');
+                const rangeIndex = headers.indexOf('reference range');
+                const statusIndex = headers.indexOf('status');
+
+                if (testNameIndex !== -1 && resultIndex !== -1 && statusIndex !== -1) {
+                    for (let i = 1; i < rows.length; i++) {
+                        const cells = rows[i].querySelectorAll('td');
+                        if (cells.length < headers.length) continue;
+
+                        const testName = cells[testNameIndex].textContent.trim();
+                        const result = parseFloat(cells[resultIndex].textContent.trim());
+                        const unit = unitIndex !== -1 ? cells[unitIndex].textContent.trim() : 'N/A';
+                        const range = rangeIndex !== -1 ? cells[rangeIndex].textContent.trim() : 'N/A';
+                        const status = cells[statusIndex].textContent.trim();
+
+                        if (!isNaN(result)) {
+                            testResults.push({ testName, result, unit, referenceRange: range, status });
+                        }
                     }
-                });
+                }
             }
-
-            const rows = table.querySelectorAll('tr');
-            const headers = Array.from(rows[0].querySelectorAll('th')).map(th => th.textContent.trim().toLowerCase());
-
-            const testNameIndex = headers.indexOf('test name/parameter');
-            const resultIndex = headers.indexOf('result');
-            const unitIndex = headers.indexOf('unit');
-            const rangeIndex = headers.indexOf('reference range');
-            const statusIndex = headers.indexOf('status');
-
-            if (testNameIndex === -1 || resultIndex === -1 || statusIndex === -1) {
-                console.warn('Required columns not found in results table');
-                return { testResults, patientInfo };
-            }
-
-            for (let i = 1; i < rows.length; i++) {
-                const cells = rows[i].querySelectorAll('td');
-                if (cells.length < headers.length) continue;
-
-                const testName = cells[testNameIndex].textContent.trim();
-                const result = parseFloat(cells[resultIndex].textContent.trim());
-                const unit = unitIndex !== -1 ? cells[unitIndex].textContent.trim() : 'N/A';
-                const referenceRange = rangeIndex !== -1 ? cells[rangeIndex].textContent.trim() : 'N/A';
-                const status = cells[statusIndex].textContent.trim();
-
-                if (isNaN(result)) continue;
-
-                testResults.push({
-                    testName,
-                    result,
-                    unit,
-                    referenceRange,
-                    status
-                });
-            }
-
-            console.log('Parsed test results from analysisHTML:', testResults);
-            console.log('Parsed patient info from analysisHTML:', patientInfo);
             return { testResults, patientInfo };
         }
 
-        // Function to show no data message
         function showNoDataMessage() {
             document.getElementById('patientSummary').innerHTML = `
                 <div class="parameter-card">
@@ -604,38 +565,30 @@
                     <button id="uploadButton" style="background-color: var(--primary-color); color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin-top: 15px;">Upload Blood Test</button>
                 </div>
             `;
-
-            document.getElementById('uploadButton').addEventListener('click', function () {
-                window.location.href = 'upld.html';
-            });
+            document.getElementById('uploadButton').addEventListener('click', () => window.location.href = 'upld.html');
         }
 
-        // Function to fetch recommendations from Gemini API
         async function getGeminiRecommendations(bloodData) {
-            if (!bloodData || !bloodData.analysisHTML) {
-                console.error('Invalid blood data provided to Gemini API: missing analysisHTML');
-                return null;
-            }
+            if (!bloodData || !bloodData.analysisHTML) return null;
 
             const { testResults, patientInfo } = parseAnalysisHTML(bloodData.analysisHTML);
             const testDate = new Date(bloodData.date).toLocaleDateString();
 
-            let testResultsText = testResults.map(result => {
-                return `- ${result.testName}: ${result.result} ${result.unit} (${result.status}, Reference: ${result.referenceRange})`;
-            }).join('\n');
+            const testResultsText = testResults.map(result =>
+                `- ${result.testName}: ${result.result} ${result.unit} (${result.status}, Reference: ${result.referenceRange})`
+            ).join('\n') || 'No test results available.';
+            const patientInfoText = Object.entries(patientInfo).map(([key, value]) => `${key}: ${value}`).join(', ');
 
-            if (!testResultsText) {
-                testResultsText = 'No test results available.';
-            }
+            const apiKey = 'AIzaSyCaBpjdVtlzriQUljPhAmxRem49DNBPFGU';
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-            const patientInfoText = Object.entries(patientInfo).map(([key, value]) => {
-                return `${key}: ${value}`;
-            }).join(', ');
+            const promptText = `Analyze the following blood test report and provide detailed diet, exercise, and meal plan recommendations based solely on the provided test results and patient information. Do not include generic or fallback recommendations—every suggestion must be directly tied to the analyzed data.
 
-            const apiKey = 'AIzaSyA5Mx9lkFnqkQR1oXYvRFAZsphAtsmtmgY'; // Replace with your actual Gemini API key
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
-
-            const promptText = `Analyze the following blood test report and provide detailed diet, exercise, and meal plan recommendations based on all parameters. For the exercise section, include a comprehensive set of at least 5 exercises tailored to the specific health conditions indicated by the blood test results (e.g., low hemoglobin might suggest endurance exercises, high glucose might suggest cardio, high cholesterol might suggest fat-burning exercises, etc.), with accurate, detailed step-by-step instructions for each exercise to ensure proper execution. For the meal plan, provide a 3-day Kerala-style meal plan tailored to the specific blood test results, reflecting traditional South Indian cuisine from Kerala, incorporating local ingredients like coconut, rice, fish, and spices, and addressing the health conditions identified (e.g., low hemoglobin might include iron-rich fish, high glucose might avoid high-sugar items):
+For exercise recommendations, ensure:
+- Exactly 5 unique exercises are provided, each tailored to the specific test results and patient condition.
+- Exercises are not generic (e.g., avoid "brisk walking," "swimming," "yoga," or "body strengthening" unless explicitly justified by the data with a unique variation).
+- Each exercise has a specific name (e.g., "Goblet Squat," "Plank to Shoulder Tap") and a step-by-step description.
+- Each exercise explicitly references the relevant test values and their status (e.g., "Due to low Hemoglobin of 10 g/dL...") to justify the recommendation.
 
 Patient Information:
 ${patientInfoText || 'Not provided'}
@@ -643,82 +596,84 @@ ${patientInfoText || 'Not provided'}
 Test Results (including status and reference ranges):
 ${testResultsText}
 
-Test Date: ${testDate}
+Test Date:
+${testDate}
 
 Return the response as a JSON object (and ONLY the JSON object, with no additional text, Markdown, or code block formatting) in the following format:
+
 {
     "diet": {
-        "summary": "A brief summary of dietary recommendations based on the blood test results.",
+        "summary": "A brief summary of dietary recommendations based on the test results.",
         "recommendedFoods": [
-            {"name": "Food 1", "description": "Why this is recommended based on specific parameters.", "icon": "🍎"},
-            {"name": "Food 2", "description": "Why this is recommended based on specific parameters.", "icon": "🥦"}
+            {"name": "Food 1", "description": "Why this is recommended based on specific test results.", "icon": "🍎"},
+            {"name": "Food 2", "description": "Why this is recommended based on specific test results.", "icon": "🥦"}
         ],
         "foodsToLimit": [
-            {"name": "Food 1", "description": "Why this should be limited based on specific parameters.", "icon": "🍩"},
-            {"name": "Food 2", "description": "Why this should be limited based on specific parameters.", "icon": "🍟"}
+            {"name": "Food 1", "description": "Why this should be limited based on specific test results.", "icon": "🍩"},
+            {"name": "Food 2", "description": "Why this should be limited based on specific test results.", "icon": "🍟"}
         ],
         "nutritionGuidelines": [
-            "Guideline 1 based on blood test analysis",
-            "Guideline 2 based on blood test analysis"
+            "Guideline 1 tied to test results",
+            "Guideline 2 tied to test results"
         ]
     },
     "exercise": {
-        "summary": "A brief summary of exercise recommendations tailored to the blood test results.",
+        "summary": "A brief summary of exercise recommendations tailored to the test results.",
         "exercises": [
             {
-                "name": "Exercise 1",
-                "description": "Why this is recommended based on specific parameters (e.g., improves hemoglobin).",
+                "name": "Specific Exercise Name 1",
+                "description": "Why this is recommended, explicitly referencing specific test results.",
+                "steps": [
+                    "Step 1: Description of the first step.",
+                    "Step 2: Description of the second step.",
+                    "Step 3: Continue detailing the steps."
+                ],
                 "duration": "20 mins",
-                "icon": "🏃‍♂️",
-                "steps": [
-                    "Step 1: Detailed instruction for proper execution.",
-                    "Step 2: Detailed instruction for proper execution.",
-                    "Step 3: Detailed instruction for proper execution."
-                ]
+                "icon": "🏋️"
             },
             {
-                "name": "Exercise 2",
-                "description": "Why this is recommended based on specific parameters (e.g., regulates glucose).",
-                "duration": "30 mins",
-                "icon": "🚴‍♀️",
+                "name": "Specific Exercise Name 2",
+                "description": "Why this is recommended, explicitly referencing specific test results.",
                 "steps": [
-                    "Step 1: Detailed instruction for proper execution.",
-                    "Step 2: Detailed instruction for proper execution.",
-                    "Step 3: Detailed instruction for proper execution."
-                ]
-            },
-            {
-                "name": "Exercise 3",
-                "description": "Why this is recommended based on specific parameters (e.g., reduces cholesterol).",
-                "duration": "25 mins",
-                "icon": "🏋️‍♂️",
-                "steps": [
-                    "Step 1: Detailed instruction for proper execution.",
-                    "Step 2: Detailed instruction for proper execution.",
-                    "Step 3: Detailed instruction for proper execution."
-                ]
-            },
-            {
-                "name": "Exercise 4",
-                "description": "Why this is recommended based on specific parameters (e.g., improves circulation).",
+                    "Step 1: Description of the first step.",
+                    "Step 2: Description of the second step.",
+                    "Step 3: Continue detailing the steps."
+                ],
                 "duration": "15 mins",
-                "icon": "🧘‍♀️",
-                "steps": [
-                    "Step 1: Detailed instruction for proper execution.",
-                    "Step 2: Detailed instruction for proper execution.",
-                    "Step 3: Detailed instruction for proper execution."
-                ]
+                "icon": "🤸"
             },
             {
-                "name": "Exercise 5",
-                "description": "Why this is recommended based on specific parameters (e.g., boosts stamina).",
-                "duration": "20 mins",
-                "icon": "🏊‍♂️",
+                "name": "Specific Exercise Name 3",
+                "description": "Why this is recommended, explicitly referencing specific test results.",
                 "steps": [
-                    "Step 1: Detailed instruction for proper execution.",
-                    "Step 2: Detailed instruction for proper execution.",
-                    "Step 3: Detailed instruction for proper execution."
-                ]
+                    "Step 1: Description of the first step.",
+                    "Step 2: Description of the second step.",
+                    "Step 3: Continue detailing the steps."
+                ],
+                "duration": "25 mins",
+                "icon": "🏃"
+            },
+            {
+                "name": "Specific Exercise Name 4",
+                "description": "Why this is recommended, explicitly referencing specific test results.",
+                "steps": [
+                    "Step 1: Description of the first step.",
+                    "Step 2: Description of the second step.",
+                    "Step 3: Continue detailing the steps."
+                ],
+                "duration": "30 mins",
+                "icon": "🚴"
+            },
+            {
+                "name": "Specific Exercise Name 5",
+                "description": "Why this is recommended, explicitly referencing specific test results.",
+                "steps": [
+                    "Step 1: Description of the first step.",
+                    "Step 2: Description of the second step.",
+                    "Step 3: Continue detailing the steps."
+                ],
+                "duration": "20 mins",
+                "icon": "🧘"
             }
         ]
     },
@@ -726,110 +681,54 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
         {
             "day": "Day 1",
             "meals": [
-                {"name": "Breakfast", "description": "Kerala-style meal tailored to blood test results (e.g., Appam with vegetable stew for normal glucose)", "nutrition": "Nutritional info"},
-                {"name": "Lunch", "description": "Kerala-style meal tailored to blood test results (e.g., Rice with fish curry for low hemoglobin)", "nutrition": "Nutritional info"},
-                {"name": "Dinner", "description": "Kerala-style meal tailored to blood test results (e.g., Puttu with kadala curry)", "nutrition": "Nutritional info"}
-            ]
-        },
-        {
-            "day": "Day 2",
-            "meals": [
-                {"name": "Breakfast", "description": "Kerala-style meal tailored to blood test results", "nutrition": "Nutritional info"},
-                {"name": "Lunch", "description": "Kerala-style meal tailored to blood test results", "nutrition": "Nutritional info"},
-                {"name": "Dinner", "description": "Kerala-style meal tailored to blood test results", "nutrition": "Nutritional info"}
-            ]
-        },
-        {
-            "day": "Day 3",
-            "meals": [
-                {"name": "Breakfast", "description": "Kerala-style meal tailored to blood test results", "nutrition": "Nutritional info"},
-                {"name": "Lunch", "description": "Kerala-style meal tailored to blood test results", "nutrition": "Nutritional info"},
-                {"name": "Dinner", "description": "Kerala-style meal tailored to blood test results", "nutrition": "Nutritional info"}
+                {"name": "Breakfast", "description": "Description tied to test results", "nutrition": "Nutritional info tied to test results"},
+                {"name": "Lunch", "description": "Description tied to test results", "nutrition": "Nutritional info tied to test results"},
+                {"name": "Dinner", "description": "Description tied to test results", "nutrition": "Nutritional info tied to test results"}
             ]
         }
     ]
 }`;
 
-            console.log('Gemini API prompt:', promptText);
+            console.log(promptText);
 
             try {
                 const response = await fetch(endpoint, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [
-                            {
-                                parts: [
-                                    { text: promptText }
-                                ]
-                            }
-                        ],
+                        contents: [{ parts: [{ text: promptText }] }],
                         safetySettings: [
-                            {
-                                category: 'HARM_CATEGORY_HARASSMENT',
-                                threshold: 'BLOCK_MEDIUM_AND_ABOVE'
-                            },
-                            {
-                                category: 'HARM_CATEGORY_HATE_SPEECH',
-                                threshold: 'BLOCK_MEDIUM_AND_ABOVE'
-                            },
-                            {
-                                category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-                                threshold: 'BLOCK_MEDIUM_AND_ABOVE'
-                            },
-                            {
-                                category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-                                threshold: 'BLOCK_MEDIUM_AND_ABOVE'
-                            }
+                            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+                            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+                            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+                            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' }
                         ]
                     })
                 });
 
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Gemini API request failed: ${response.status} - ${errorText}`);
-                }
+                if (!response.ok) throw new Error(`API request failed: ${response.status}`);
 
                 const data = await response.json();
-
                 if (data.candidates && data.candidates.length > 0) {
-                    let generatedText = data.candidates[0].content.parts[0].text;
-                    console.log('Raw Gemini API response:', generatedText);
-
-                    generatedText = generatedText.trim();
+                    let generatedText = data.candidates[0].content.parts[0].text.trim();
                     generatedText = generatedText.replace(/^```json\n|\n```$/g, '');
                     const jsonMatch = generatedText.match(/{[\s\S]*}/);
-                    if (jsonMatch) {
-                        generatedText = jsonMatch[0];
-                    }
+                    if (jsonMatch) generatedText = jsonMatch[0];
 
-                    console.log('Cleaned Gemini API response:', generatedText);
-
-                    try {
-                        const recommendations = JSON.parse(generatedText);
-                        console.log('Parsed Gemini API recommendations:', recommendations);
-                        return {
-                            diet: recommendations.diet || { summary: '', recommendedFoods: [], foodsToLimit: [], nutritionGuidelines: [] },
-                            exercise: recommendations.exercise || { summary: '', exercises: [] },
-                            mealPlan: recommendations.mealPlan || []
-                        };
-                    } catch (parseError) {
-                        console.error('Failed to parse Gemini API response as JSON:', parseError);
-                        return null;
-                    }
-                } else {
-                    console.error('No candidates found in Gemini API response:', data);
-                    return null;
+                    const recommendations = JSON.parse(generatedText);
+                    return {
+                        diet: recommendations.diet || { summary: '', recommendedFoods: [], foodsToLimit: [], nutritionGuidelines: [] },
+                        exercise: recommendations.exercise || { summary: '', exercises: [] },
+                        mealPlan: recommendations.mealPlan || []
+                    };
                 }
+                return null;
             } catch (error) {
-                console.error('Error getting AI recommendations from Gemini API:', error);
+                console.error('Error fetching AI recommendations:', error);
                 return null;
             }
         }
 
-        // Main function to generate recommendations
         async function generateRecommendations(bloodData) {
             if (!bloodData || !bloodData.analysisHTML) {
                 showNoDataMessage();
@@ -838,8 +737,8 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
 
             const { testResults, patientInfo } = parseAnalysisHTML(bloodData.analysisHTML);
             const date = new Date(bloodData.date).toLocaleDateString();
-
             const patientSummary = document.getElementById('patientSummary');
+
             patientSummary.innerHTML = `
                 <h3 class="section-title">Health Profile</h3>
                 <p>Recommendations based on your blood test from ${date}</p>
@@ -850,121 +749,77 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
                 <div id="loadingIndicator">
                     <p>Generating personalized AI recommendations... <span class="spinner"></span></p>
                 </div>
-                <div id="warningContainer"></div>
                 <div id="abnormalParameters"></div>
             `;
 
             const abnormalParamsContainer = document.getElementById('abnormalParameters');
-            const warningContainer = document.getElementById('warningContainer');
-
-            // Check for critical values
-            let criticalWarning = false;
-            const criticalParams = [];
-
             testResults.forEach(result => {
                 const testName = result.testName.toLowerCase();
-                const value = result.result;
                 const status = result.status.toLowerCase();
-                const referenceRange = result.referenceRange.split('-').map(Number);
-
-                // Define critical thresholds (these are illustrative; adjust based on medical standards)
-                const isCritical = (testName.includes('hemoglobin') && (value < 7 || value > 18)) ||
-                    (testName.includes('glucose') && (value < 50 || value > 200)) ||
-                    (testName.includes('crp') && value > 10) ||
-                    (testName.includes('cholesterol') && value > 240) ||
-                    (testName.includes('ldl') && value > 160) ||
-                    (testName.includes('hdl') && value < 30);
-
-                if (isCritical) {
-                    criticalWarning = true;
-                    criticalParams.push(`${result.testName} (${value} ${result.unit})`);
-                }
-
                 let elem;
-                if (testName.includes('hemoglobin') || testName.includes('hb')) {
-                    if (status !== 'normal') {
-                        elem = document.createElement('div');
-                        elem.className = `parameter-card anemia`;
-                        elem.innerHTML = `
-                            <h3>Hemoglobin <span class="parameter-status status-${status}">${status}</span></h3>
-                            <p>Your hemoglobin level of ${value} ${result.unit} is ${status} (${result.referenceRange}).</p>
-                        `;
-                        abnormalParamsContainer.appendChild(elem);
-                    }
-                } else if (testName.includes('glucose')) {
-                    if (status !== 'normal') {
-                        elem = document.createElement('div');
-                        elem.className = `parameter-card diabetes`;
-                        elem.innerHTML = `
-                            <h3>Glucose <span class="parameter-status status-${status}">${status}</span></h3>
-                            <p>Your glucose level of ${value} ${result.unit} is ${status} (${result.referenceRange}).</p>
-                        `;
-                        abnormalParamsContainer.appendChild(elem);
-                    }
-                } else if (testName.includes('crp')) {
-                    if (status !== 'normal') {
-                        elem = document.createElement('div');
-                        elem.className = `parameter-card inflammation`;
-                        elem.innerHTML = `
-                            <h3>C-Reactive Protein <span class="parameter-status status-${status}">${status}</span></h3>
-                            <p>Your CRP level of ${value} ${result.unit} is ${status} (${result.referenceRange}).</p>
-                        `;
-                        abnormalParamsContainer.appendChild(elem);
-                    }
-                } else if (testName.includes('rbc')) {
-                    if (status !== 'normal') {
-                        elem = document.createElement('div');
-                        elem.className = `parameter-card anemia`;
-                        elem.innerHTML = `
-                            <h3>Red Blood Cell Count <span class="parameter-status status-${status}">${status}</span></h3>
-                            <p>Your RBC count of ${value} ${result.unit} is ${status} (${result.referenceRange}).</p>
-                        `;
-                        abnormalParamsContainer.appendChild(elem);
-                    }
-                } else if (testName.includes('cholesterol')) {
-                    if (status !== 'normal') {
-                        elem = document.createElement('div');
-                        elem.className = `parameter-card`;
-                        elem.innerHTML = `
-                            <h3>Cholesterol <span class="parameter-status status-${status}">${status}</span></h3>
-                            <p>Your cholesterol level of ${value} ${result.unit} is ${status} (${result.referenceRange}).</p>
-                        `;
-                        abnormalParamsContainer.appendChild(elem);
-                    }
-                } else if (testName.includes('ldl')) {
-                    if (status !== 'normal') {
-                        elem = document.createElement('div');
-                        elem.className = `parameter-card`;
-                        elem.innerHTML = `
-                            <h3>LDL Cholesterol <span class="parameter-status status-${status}">${status}</span></h3>
-                            <p>Your LDL level of ${value} ${result.unit} is ${status} (${result.referenceRange}).</p>
-                        `;
-                        abnormalParamsContainer.appendChild(elem);
-                    }
-                } else if (testName.includes('hdl')) {
-                    if (status !== 'normal') {
-                        elem = document.createElement('div');
-                        elem.className = `parameter-card`;
-                        elem.innerHTML = `
-                            <h3>HDL Cholesterol <span class="parameter-status status-${status}">${status}</span></h3>
-                            <p>Your HDL level of ${value} ${result.unit} is ${status} (${result.referenceRange}).</p>
-                        `;
-                        abnormalParamsContainer.appendChild(elem);
-                    }
-                } else if (testName.includes('pcv') || testName.includes('hematocrit')) {
-                    if (status !== 'normal') {
-                        elem = document.createElement('div');
-                        elem.className = `parameter-card`;
-                        elem.innerHTML = `
-                            <h3>PCV/Hematocrit <span class="parameter-status status-${status}">${status}</span></h3>
-                            <p>Your PCV level of ${value} ${result.unit} is ${status} (${result.referenceRange}).</p>
-                        `;
-                        abnormalParamsContainer.appendChild(elem);
-                    }
+
+                if ((testName.includes('hemoglobin') || testName.includes('hb')) && status === 'low') {
+                    elem = document.createElement('div');
+                    elem.className = 'parameter-card anemia';
+                    elem.innerHTML = `
+                        <h3>Hemoglobin <span class="parameter-status status-low">${status}</span></h3>
+                        <p>Your hemoglobin level of ${result.result} ${result.unit} is below the normal range (${result.referenceRange}).</p>
+                    `;
+                } else if (testName.includes('glucose') && status === 'high') {
+                    elem = document.createElement('div');
+                    elem.className = 'parameter-card diabetes';
+                    elem.innerHTML = `
+                        <h3>Glucose <span class="parameter-status status-high">${status}</span></h3>
+                        <p>Your glucose level of ${result.result} ${result.unit} is above the normal range (${result.referenceRange}).</p>
+                    `;
+                } else if (testName.includes('crp') && status === 'high') {
+                    elem = document.createElement('div');
+                    elem.className = 'parameter-card inflammation';
+                    elem.innerHTML = `
+                        <h3>C-Reactive Protein <span class="parameter-status status-high">${status}</span></h3>
+                        <p>Your CRP level of ${result.result} ${result.unit} is elevated (${result.referenceRange}).</p>
+                    `;
+                } else if (testName.includes('rbc') && status === 'low') {
+                    elem = document.createElement('div');
+                    elem.className = 'parameter-card anemia';
+                    elem.innerHTML = `
+                        <h3>Red Blood Cell Count <span class="parameter-status status-low">${status}</span></h3>
+                        <p>Your RBC count of ${result.result} ${result.unit} is below the normal range (${result.referenceRange}).</p>
+                    `;
+                } else if (testName.includes('cholesterol') && status === 'high') {
+                    elem = document.createElement('div');
+                    elem.className = 'parameter-card';
+                    elem.innerHTML = `
+                        <h3>Cholesterol <span class="parameter-status status-high">${status}</span></h3>
+                        <p>Your cholesterol level of ${result.result} ${result.unit} is above the normal range (${result.referenceRange}).</p>
+                    `;
+                } else if (testName.includes('ldl') && status === 'high') {
+                    elem = document.createElement('div');
+                    elem.className = 'parameter-card';
+                    elem.innerHTML = `
+                        <h3>LDL Cholesterol <span class="parameter-status status-high">${status}</span></h3>
+                        <p>Your LDL level of ${result.result} ${result.unit} is above the normal range (${result.referenceRange}).</p>
+                    `;
+                } else if (testName.includes('hdl') && status === 'low') {
+                    elem = document.createElement('div');
+                    elem.className = 'parameter-card';
+                    elem.innerHTML = `
+                        <h3>HDL Cholesterol <span class="parameter-status status-low">${status}</span></h3>
+                        <p>Your HDL level of ${result.result} ${result.unit} is below the normal range (${result.referenceRange}).</p>
+                    `;
+                } else if ((testName.includes('pcv') || testName.includes('hematocrit')) && status === 'high') {
+                    elem = document.createElement('div');
+                    elem.className = 'parameter-card';
+                    elem.innerHTML = `
+                        <h3>PCV/Hematocrit <span class="parameter-status status-high">${status}</span></h3>
+                        <p>Your PCV level of ${result.result} ${result.unit} is above the normal range (${result.referenceRange}).</p>
+                    `;
                 }
+
+                if (elem) abnormalParamsContainer.appendChild(elem);
             });
 
-            if (abnormalParamsContainer.children.length === 0) {
+            if (!abnormalParamsContainer.children.length) {
                 abnormalParamsContainer.innerHTML = `
                     <div class="parameter-card">
                         <h3>Overall Health <span class="parameter-status status-normal">Normal</span></h3>
@@ -973,39 +828,24 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
                 `;
             }
 
-            if (criticalWarning) {
-                warningContainer.innerHTML = `
-                    <div class="warning-card">
-                        <h3>⚠️ Critical Health Warning</h3>
-                        <p>The following parameters are significantly outside normal ranges: ${criticalParams.join(', ')}. Please consult a doctor immediately for a professional medical evaluation, as these values may indicate a serious health condition requiring urgent attention.</p>
-                    </div>
-                `;
-            }
+            const aiRecommendations = await getGeminiRecommendations(bloodData);
+            document.getElementById('loadingIndicator').style.display = 'none';
 
-            try {
-                const aiRecommendations = await getGeminiRecommendations(bloodData);
-                document.getElementById('loadingIndicator').style.display = 'none';
-
-                if (aiRecommendations) {
-                    generateDietRecommendations(aiRecommendations);
-                    generateExerciseRecommendations(aiRecommendations);
-                    generateMealPlan(aiRecommendations);
-                } else {
-                    throw new Error('No recommendations received from API');
-                }
-            } catch (error) {
-                document.getElementById('loadingIndicator').style.display = 'none';
+            if (!aiRecommendations) {
                 patientSummary.innerHTML += `
-                    <div class="parameter-card" style="border-left-color: #e74c3c;">
+                    <div class="parameter-card">
                         <h3>Error</h3>
-                        <p>Unable to generate recommendations due to an API error. Please try again later.</p>
+                        <p>Unable to generate recommendations at this time. Please try again later.</p>
                     </div>
                 `;
-                console.error('Error with AI recommendations:', error);
+                return;
             }
+
+            generateDietRecommendations(aiRecommendations);
+            generateExerciseRecommendations(aiRecommendations);
+            generateMealPlan(aiRecommendations);
         }
 
-        // Function to generate diet recommendations from API data
         function generateDietRecommendations(aiRecommendations) {
             const dietLoadingIndicator = document.getElementById('dietLoadingIndicator');
             const dietContent = document.getElementById('dietContent');
@@ -1014,22 +854,9 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
             const limitFoods = document.getElementById('limitFoods');
             const nutritionGuidelines = document.getElementById('nutritionGuidelines');
 
-            if (!aiRecommendations || !aiRecommendations.diet) {
-                dietContent.innerHTML = `
-                    <div class="parameter-card" style="border-left-color: #e74c3c;">
-                        <h3>Error</h3>
-                        <p>Failed to load dietary recommendations from the API.</p>
-                    </div>
-                `;
-                dietLoadingIndicator.style.display = 'none';
-                dietContent.style.display = 'block';
-                return;
-            }
-
             dietSummary.innerHTML = `
                 <div class="ai-recommendation">
-                    <p>${aiRecommendations.diet.summary || 'No summary provided by AI.'}</p>
-                    <span class="badge-ai">AI-Generated</span>
+                    <p>${aiRecommendations.diet.summary}</p>
                 </div>
             `;
 
@@ -1068,25 +895,15 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
             dietContent.style.display = 'block';
         }
 
-        // Function to generate exercise recommendations from API data with steps
         function generateExerciseRecommendations(aiRecommendations) {
+            const exerciseLoadingIndicator = document.getElementById('exerciseLoadingIndicator');
+            const exerciseContent = document.getElementById('exerciseContent');
             const exerciseSummary = document.getElementById('exerciseSummary');
             const exerciseRecommendations = document.getElementById('exerciseRecommendations');
 
-            if (!aiRecommendations || !aiRecommendations.exercise) {
-                exerciseSummary.innerHTML = `
-                    <div class="parameter-card" style="border-left-color: #e74c3c;">
-                        <h3>Error</h3>
-                        <p>Failed to load exercise recommendations from the API.</p>
-                    </div>
-                `;
-                return;
-            }
-
             exerciseSummary.innerHTML = `
                 <div class="ai-recommendation">
-                    <p>${aiRecommendations.exercise.summary || 'No summary provided by AI.'}</p>
-                    <span class="badge-ai">AI-Generated</span>
+                    <p>${aiRecommendations.exercise.summary}</p>
                 </div>
             `;
 
@@ -1099,36 +916,31 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
                     <div class="exercise-item-content">
                         <div class="exercise-title">${exercise.name}</div>
                         <div class="exercise-description">${exercise.description}</div>
-                        <div class="exercise-duration">Duration: ${exercise.duration}</div>
                         <ol class="exercise-steps">
-                            ${exercise.steps ? exercise.steps.map(step => `<li>${step}</li>`).join('') : '<li>No steps provided.</li>'}
+                            ${exercise.steps.map(step => `<li>${step}</li>`).join('')}
                         </ol>
+                        <div class="exercise-duration">Duration: ${exercise.duration}</div>
                     </div>
                 `;
                 exerciseRecommendations.appendChild(exerciseItem);
             });
+
+            exerciseLoadingIndicator.style.display = 'none';
+            exerciseContent.style.display = 'block';
         }
 
-        // Function to generate Kerala-style meal plan from API data
         function generateMealPlan(aiRecommendations) {
+            const mealPlanLoadingIndicator = document.getElementById('mealPlanLoadingIndicator');
+            const mealPlanContent = document.getElementById('mealPlanContent');
             const mealPlanContainer = document.getElementById('mealPlanContainer');
 
-            if (!aiRecommendations || !aiRecommendations.mealPlan || aiRecommendations.mealPlan.length === 0) {
-                mealPlanContainer.innerHTML = `
-                    <div class="parameter-card" style="border-left-color: #e74c3c;">
-                        <h3>Error</h3>
-                        <p>Failed to load Kerala-style meal plan from the API.</p>
-                    </div>
-                `;
-                return;
-            }
-
             mealPlanContainer.innerHTML = '';
+
             aiRecommendations.mealPlan.forEach(day => {
                 const dayElement = document.createElement('div');
                 dayElement.className = 'meal-plan-day';
                 dayElement.innerHTML = `
-                    <h4>${day.day} <span class="badge-ai">AI-Generated (Kerala Style)</span></h4>
+                    <h4>${day.day}</h4>
                     ${day.meals.map(meal => `
                         <div class="meal-item">
                             <div class="meal-title">${meal.name}</div>
@@ -1139,32 +951,26 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
                 `;
                 mealPlanContainer.appendChild(dayElement);
             });
+
+            mealPlanLoadingIndicator.style.display = 'none';
+            mealPlanContent.style.display = 'block';
         }
 
-        // Initialize on document load
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', () => {
             const tabs = document.querySelectorAll('.tab');
             const tabContents = document.querySelectorAll('.tab-content');
 
             tabs.forEach(tab => {
                 tab.addEventListener('click', function () {
                     const tabId = this.getAttribute('data-tab');
-
                     tabs.forEach(t => t.classList.remove('active'));
                     tabContents.forEach(c => c.classList.remove('active'));
-
                     this.classList.add('active');
                     document.getElementById(tabId).classList.add('active');
                 });
             });
 
-            document.getElementById('goBackButton').addEventListener('click', function () {
-                window.location.href = 'upld.html';
-            });
-
-            document.getElementById('printButton').addEventListener('click', function () {
-                window.print();
-            });
+            document.getElementById('goBackButton').addEventListener('click', () => window.location.href = 'upld.html');
 
             const latestReport = getLatestBloodReport();
             if (latestReport) {

@@ -360,7 +360,7 @@
             const progressButton = document.getElementById('progressButton');
 
             // API key - replace with your actual key
-            const API_KEY = 'AIzaSyA5Mx9lkFnqkQR1oXYvRFAZsphAtsmtmgY';
+            const API_KEY = 'AIzaSyCaBpjdVtlzriQUljPhAmxRem49DNBPFGU';
 
             // Handle file selection
             pdfFile.addEventListener('change', function (e) {
@@ -546,7 +546,7 @@
                     const base64PDF = await fileToBase64(file);
 
                     // Gemini API endpoint with your API key
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
 
                     // Construct the prompt with enhanced instructions
                     const instructions = `
