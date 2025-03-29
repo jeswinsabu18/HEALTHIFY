@@ -1,6 +1,6 @@
-import { supabaseUrl, supabaseAnonKey } from './config.js';
+import { supabaseUrl, supabaseKey } from './config.js';
 
-const supabaseAuth = supabase.createClient(supabaseUrl, supabaseAnonKey);
+const supabaseAuth = supabase.createClient(supabaseUrl, supabaseKey);
 
 document.getElementById('resetPasswordForm').addEventListener('submit', async (e) => {
     e.preventDefault();

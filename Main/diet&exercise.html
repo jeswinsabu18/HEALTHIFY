@@ -486,23 +486,132 @@
 
 
     </div>
-    <script>
-        function getLatestBloodReport() {
-            try {
-                const reports = JSON.parse(localStorage.getItem('bloodReports')) || [];
-                if (!Array.isArray(reports) || reports.length === 0) return null;
+    <script type="module">
+        import { db } from "./scripts/firebase-storage-config.js";
+        import { getCurrentUserId, isAuthenticated } from "./scripts/user-data-service.js";
+        import {
+            collection,
+            query,
+            orderBy,
+            getDocs
+        } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
-                reports.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        async function initializeApp() {
+            try {
+                const isLoggedIn = await isAuthenticated();
+                if (!isLoggedIn) {
+                    // Redirect to login page if not authenticated
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                // Initialize UI components first
+                initializeUI();
+
+                // Show loading indicator
+                document.getElementById('patientSummary').innerHTML = `
+            <div class="parameter-card">
+                <h3>Loading Data</h3>
+                <p>Fetching your latest blood test data... <span class="spinner"></span></p>
+            </div>
+        `;
+
+                // Then fetch data
+                const latestReport = await getLatestBloodReport();
+                if (latestReport) {
+                    generateRecommendations(latestReport);
+                } else {
+                    showNoDataMessage();
+                }
+            } catch (error) {
+                console.error("Error initializing application:", error);
+                document.getElementById('patientSummary').innerHTML = `
+            <div class="parameter-card">
+                <h3>Error</h3>
+                <p>An error occurred while loading the application. Please try again later.</p>
+            </div>
+        `;
+            }
+        }
+
+        // Separate UI initialization into its own function
+        function initializeUI() {
+            // Set up tab functionality
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function () {
+                    const tabId = this.getAttribute('data-tab');
+
+                    // Log for debugging
+                    console.log(`Tab clicked: ${tabId}`);
+
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+
+                    // Add active class to selected tab and content
+                    this.classList.add('active');
+                    const content = document.getElementById(tabId);
+                    if (content) {
+                        content.classList.add('active');
+                    } else {
+                        console.error(`Tab content not found: ${tabId}`);
+                    }
+                });
+            });
+
+            // Set up back button
+            const backButton = document.getElementById('goBackButton');
+            if (backButton) {
+                backButton.addEventListener('click', () => window.location.href = 'upld.html');
+            }
+        }
+
+        // Make sure only one event listener is set up
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+
+        async function getLatestBloodReport() {
+            try {
+                const userId = await getCurrentUserId();
+                if (!userId) {
+                    console.error("No user logged in");
+                    return null;
+                }
+
+                const reportsRef = collection(db, "users", userId, "bloodReports");
+                const q = query(reportsRef, orderBy("date", "desc"));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    console.log("No reports found for user");
+                    return null;
+                }
+
+                const reports = [];
+                querySnapshot.forEach((doc) => {
+                    const reportData = doc.data();
+                    reports.push({
+                        id: doc.id,
+                        ...reportData,
+                        date: reportData.date?.toDate().toISOString() || new Date().toISOString()
+                    });
+                });
+
                 const expectedParams = ['Hemoglobin', 'Glucose', 'CRP', 'RBC', 'Cholesterol', 'LDL', 'HDL', 'PCV'];
                 return reports.find(report =>
                     report.date && report.values && report.analysisHTML &&
                     expectedParams.some(param => report.values[param] != null)
                 ) || null;
             } catch (error) {
-                console.error("Error fetching latest report from localStorage:", error);
+                console.error("Error fetching latest report from Firestore:", error);
                 return null;
             }
         }
+
 
         function parseAnalysisHTML(analysisHTML) {
             const parser = new DOMParser();
@@ -581,8 +690,7 @@ For exercise recommendations, ensure:
 - Each exercise has a specific name (e.g., "Goblet Squat," "Plank to Shoulder Tap") and a step-by-step description.
 - Each exercise explicitly references the relevant test values and their status (e.g., "Due to low Hemoglobin of 10 g/dL...") to justify the recommendation.
 
-Patient Information:
-${patientInfoText || 'Not provided'}
+
 
 Test Results (including status and reference ranges):
 ${testResultsText}
@@ -723,10 +831,7 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
             patientSummary.innerHTML = `
                 <h3 class="section-title">Health Profile</h3>
                 <p>Recommendations based on your blood test from ${date}</p>
-                <div class="parameter-card">
-                    <h3>Patient Information</h3>
-                    <p>${Object.entries(patientInfo).map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`).join('<br>') || 'Not provided'}</p>
-                </div>
+                
                 <div id="loadingIndicator">
                     <p>Generating personalized AI recommendations... <span class="spinner"></span></p>
                 </div>
@@ -910,30 +1015,9 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
         }
 
 
+        document.addEventListener('DOMContentLoaded', initializeApp);
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const tabs = document.querySelectorAll('.tab');
-            const tabContents = document.querySelectorAll('.tab-content');
 
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function () {
-                    const tabId = this.getAttribute('data-tab');
-                    tabs.forEach(t => t.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-                    this.classList.add('active');
-                    document.getElementById(tabId).classList.add('active');
-                });
-            });
-
-            document.getElementById('goBackButton').addEventListener('click', () => window.location.href = 'upld.html');
-
-            const latestReport = getLatestBloodReport();
-            if (latestReport) {
-                generateRecommendations(latestReport);
-            } else {
-                showNoDataMessage();
-            }
-        });
     </script>
 </body>
 

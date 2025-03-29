@@ -1,15 +1,15 @@
-import { supabaseUrl, supabaseAnonKey } from './config.js';
+import { supabaseUrl, supabaseKey } from './config.js';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // Create the Supabase client correctly
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Function to handle logout
 async function handleLogout() {
     try {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
-        
+
         // Force redirect to index.html after successful logout
         window.location.replace('index.html');
     } catch (error) {

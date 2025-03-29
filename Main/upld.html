@@ -7,6 +7,7 @@
         <title>Blood Report Analyzer</title>
         <!-- PDF.js library -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
         <style>
             body {
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -344,9 +345,23 @@
             </div>
         </div>
     </body>
-    <script>
+
+
+
+    <script type="module">
+
+        import { db } from "./scripts/firebase-storage-config.js";
+        import { getCurrentUserId } from "./scripts/user-data-service.js";
+        import {
+            collection,
+            addDoc,
+            Timestamp
+        } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+
         document.addEventListener('DOMContentLoaded', function () {
             let currentAnalysisData = null; // Global variable to store the current analysis
+
             // Set the workerSrc property to load worker from CDN
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
@@ -405,60 +420,6 @@
                 window.location.href = 'progress.html';
             });
 
-            function extractTestValues(rawText) {
-                let extractedValues = {};
-
-                // Improved regex patterns for extracting test values
-                let regexPatterns = {
-                    "Hemoglobin": /H(?:b|emoglobin)\s+(\d+\.?\d*)\s*(?:g\/dl|gm\/dl)/i,
-                    "RBC count": /RBC\s+(?:count)?\s+(\d+\.?\d*)/i,
-                    "Glucose": /(?:Glucose|FBS|Blood sugar)\s+(\d+\.?\d*)/i,
-                    "CRP": /CRP\s+(?:\(C reactive\s+protein\))?\s+(\d+\.?\d*)\s*mg\/L/i
-                };
-
-                // Apply regex patterns
-                for (let test in regexPatterns) {
-                    let match = rawText.match(regexPatterns[test]);
-                    if (match) {
-                        extractedValues[test] = parseFloat(match[1]);
-                    }
-                }
-
-                console.log("Extracted test values:", extractedValues);
-                return extractedValues;
-            }
-
-            function saveProcessedReport(rawText, analysisHTML) {
-                try {
-                    // Get existing reports or initialize empty array
-                    let previousReports = JSON.parse(localStorage.getItem("bloodReports")) || [];
-
-                    // Extract test values from the HTML table
-                    let extractedValues = extractTestValues(rawText, analysisHTML);
-
-                    // Create a consistent report structure
-                    const newReport = {
-                        date: new Date().toISOString(),
-                        values: extractedValues,
-                        analysisHTML: analysisHTML, // Store the complete HTML analysis from Gemini
-                        rawText: rawText // Optionally store the raw text as well
-                    };
-
-                    // Add the new report
-                    previousReports.push(newReport);
-
-                    // Save to localStorage
-                    localStorage.setItem("bloodReports", JSON.stringify(previousReports));
-
-                    console.log("Processed report saved:", newReport);
-                    return newReport; // Return the saved report
-                } catch (error) {
-                    console.error("Error in saveProcessedReport():", error);
-                    return null;
-                }
-            }
-            // Function to extract text from PDF using PDF.js
-
             async function extractTextFromPDF(file) {
                 return new Promise((resolve, reject) => {
                     const fileReader = new FileReader();
@@ -513,11 +474,13 @@
 
                             resolve(extractedText);
                         } catch (error) {
+                            console.error('PDF.js error:', error);
                             reject(new Error('Failed to extract text from PDF: ' + error.message));
                         }
                     };
 
-                    fileReader.onerror = function () {
+                    fileReader.onerror = function (error) {
+                        console.error('FileReader error:', error);
                         reject(new Error('Failed to read file'));
                     };
 
@@ -526,7 +489,6 @@
             }
 
             // Helper function to convert file to base64
-
             function fileToBase64(file) {
                 return new Promise((resolve, reject) => {
                     const reader = new FileReader();
@@ -537,14 +499,17 @@
             }
 
             // Function to send PDF directly to Gemini
-
             async function sendPDFToGemini(file) {
                 try {
-                    // Create a FormData object to handle the file
-                    const formData = new FormData();
-
                     // Convert file to base64
                     const base64PDF = await fileToBase64(file);
+
+                    // Extract the base64 data part (remove the prefix)
+                    const base64Data = base64PDF.split('base64,')[1];
+
+                    if (!base64Data) {
+                        throw new Error('Failed to convert PDF to base64 format');
+                    }
 
                     // Gemini API endpoint with your API key
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
@@ -602,6 +567,8 @@ IMPORTANT: Be thorough in examining all test values. Pay special attention to:
 ALWAYS include a Status column and ensure the status is determined after interpreting the units correctly.
 `;
 
+                    console.log("Sending request to Gemini API...");
+
                     // Create request payload with both text instructions and the PDF file
                     const requestBody = {
                         contents: [{
@@ -610,7 +577,7 @@ ALWAYS include a Status column and ensure the status is determined after interpr
                                 {
                                     inline_data: {
                                         mime_type: "application/pdf",
-                                        data: base64PDF.split('base64,')[1] // Remove the data:application/pdf;base64, prefix
+                                        data: base64Data
                                     }
                                 }
                             ]
@@ -623,6 +590,18 @@ ALWAYS include a Status column and ensure the status is determined after interpr
                         }
                     };
 
+                    // Log the request for debugging (without the base64 data for brevity)
+                    console.log("API URL:", apiUrl);
+                    console.log("Request config:", {
+                        ...requestBody,
+                        contents: [{
+                            parts: [
+                                { text: "instructions (omitted for brevity)" },
+                                { inline_data: { mime_type: "application/pdf", data: "base64Data (omitted for brevity)" } }
+                            ]
+                        }]
+                    });
+
                     // Send the request
                     const response = await fetch(apiUrl, {
                         method: 'POST',
@@ -632,12 +611,24 @@ ALWAYS include a Status column and ensure the status is determined after interpr
                         body: JSON.stringify(requestBody)
                     });
 
+                    // Log the response status and headers for debugging
+                    console.log("Response status:", response.status);
+                    console.log("Response headers:", Object.fromEntries([...response.headers.entries()]));
+
                     if (!response.ok) {
-                        const errorData = await response.json().catch(() => ({}));
-                        throw new Error(`API responded with status ${response.status}: ${JSON.stringify(errorData)}`);
+                        let errorMessage;
+                        try {
+                            const errorData = await response.json();
+                            errorMessage = `API responded with status ${response.status}: ${JSON.stringify(errorData)}`;
+                            console.error("API error response:", errorData);
+                        } catch (e) {
+                            errorMessage = `API responded with status ${response.status}`;
+                        }
+                        throw new Error(errorMessage);
                     }
 
                     const data = await response.json();
+                    console.log("Received response from Gemini API:", data);
 
                     if (!data.candidates || data.candidates.length === 0) {
                         throw new Error('No response generated from Gemini API');
@@ -661,7 +652,6 @@ ALWAYS include a Status column and ensure the status is determined after interpr
                     throw new Error('Failed to analyze with Gemini API: ' + error.message);
                 }
             }
-            // Enhanced function to better extract test values
 
             function extractTestValues(rawText, analysisHTML) {
                 let extractedValues = {};
@@ -673,6 +663,22 @@ ALWAYS include a Status column and ensure the status is determined after interpr
 
                 if (tables.length === 0) {
                     console.warn("No results table found in analysis HTML");
+
+                    // Fallback to regex extraction if no table found
+                    const regexPatterns = {
+                        "Hemoglobin": /H(?:b|emoglobin)\s+(\d+\.?\d*)\s*(?:g\/dl|gm\/dl)/i,
+                        "RBC count": /RBC\s+(?:count)?\s+(\d+\.?\d*)/i,
+                        "Glucose": /(?:Glucose|FBS|Blood sugar)\s+(\d+\.?\d*)/i,
+                        "CRP": /CRP\s+(?:\(C reactive\s+protein\))?\s+(\d+\.?\d*)\s*mg\/L/i
+                    };
+
+                    for (let test in regexPatterns) {
+                        let match = rawText.match(regexPatterns[test]);
+                        if (match) {
+                            extractedValues[test] = parseFloat(match[1]);
+                        }
+                    }
+
                     return extractedValues;
                 }
 
@@ -706,10 +712,12 @@ ALWAYS include a Status column and ensure the status is determined after interpr
                         if (isNaN(resultValue)) return;
 
                         // Map the test name to the key used in extractedValues
-                        const mappedTestName = Object.keys(testNameMap).find(key => testName.includes(key));
-                        if (mappedTestName) {
-                            const standardTestName = testNameMap[mappedTestName];
-                            extractedValues[standardTestName] = resultValue;
+                        for (const key in testNameMap) {
+                            if (testName.includes(key)) {
+                                const standardTestName = testNameMap[key];
+                                extractedValues[standardTestName] = resultValue;
+                                break;
+                            }
                         }
                     });
                 });
@@ -718,6 +726,42 @@ ALWAYS include a Status column and ensure the status is determined after interpr
                 return extractedValues;
             }
 
+            async function saveProcessedReport(rawText, analysisHTML) {
+                try {
+                    const userId = await getCurrentUserId();
+                    if (!userId) {
+                        console.error("User not authenticated");
+                        return null;
+                    }
+
+                    // Extract test values from the HTML table
+                    let extractedValues = extractTestValues(rawText, analysisHTML);
+
+                    // Create document data
+                    const reportData = {
+                        date: Timestamp.now(),
+                        values: extractedValues,
+                        analysisHTML: analysisHTML,
+                        rawText: rawText
+                    };
+
+                    // Save to Firestore
+                    const reportsRef = collection(db, "users", userId, "bloodReports");
+                    const docRef = await addDoc(reportsRef, reportData);
+
+                    console.log("Processed report saved with ID:", docRef.id);
+
+                    // Return the saved report with ID
+                    return {
+                        id: docRef.id,
+                        ...reportData,
+                        date: reportData.date.toDate().toISOString()
+                    };
+                } catch (error) {
+                    console.error("Error in saveProcessedReport():", error);
+                    return null;
+                }
+            }
 
             function displayAnalysisResults(analysis) {
                 // Clean any remaining markdown or code block markers
@@ -777,9 +821,8 @@ ALWAYS include a Status column and ensure the status is determined after interpr
                     link.setAttribute('rel', 'noopener noreferrer');
                 });
             }
+
             // Handle analyze button click
-
-
             analyzeButton.addEventListener('click', async function () {
                 if (pdfFile.files.length === 0) return;
 
@@ -790,38 +833,54 @@ ALWAYS include a Status column and ensure the status is determined after interpr
                 loader.style.display = 'block';
                 analyzeButton.disabled = true;
                 errorMessage.style.display = 'none';
+                results.style.display = 'none'; // Hide results section until processing completes
 
                 const file = pdfFile.files[0];
 
                 try {
-                    // Send PDF directly to Gemini API
+                    console.log("Starting analysis for file:", file.name);
+
+                    // First extract the text to ensure we can read the PDF
+                    const extractedText = await extractTextFromPDF(file);
+                    console.log("PDF text extracted successfully, length:", extractedText.length);
+
+                    if (!extractedText || extractedText.trim().length === 0) {
+                        throw new Error("Could not extract text from PDF. The file may be scanned or protected.");
+                    }
+
+                    // Send PDF to Gemini API for analysis
+                    console.log("Sending PDF to Gemini for analysis...");
                     const analysisResult = await sendPDFToGemini(file);
+                    console.log("Analysis received from Gemini, length:", analysisResult.length);
 
                     // Display analysis results
                     displayAnalysisResults(analysisResult);
-
-                    // Extract text for saving to localStorage (but not displaying)
-                    const extractedText = await extractTextFromPDF(file);
+                    console.log("Analysis results displayed successfully");
 
                     // Save extracted text and values for progress tracking
-                    const savedReport = saveProcessedReport(extractedText, analysisResult);
-                    if (savedReport) {
-                        // Store the current analysis data in a global variable
-                        currentAnalysisData = savedReport;
+                    try {
+                        console.log("Saving processed report...");
+                        const savedReport = await saveProcessedReport(extractedText, analysisResult);
+                        if (savedReport) {
+                            // Store the current analysis data in a global variable
+                            currentAnalysisData = savedReport;
 
-                        // Also store in sessionStorage for access across pages in the same session
-                        sessionStorage.setItem('currentBloodAnalysis', JSON.stringify(currentAnalysisData));
-
-                        console.log("Analysis data saved and ready for use:", currentAnalysisData);
-                    } else {
-                        console.warn("Failed to save analysis data");
+                            // Also store in sessionStorage for access across pages in the same session
+                            sessionStorage.setItem('currentBloodAnalysis', JSON.stringify(currentAnalysisData));
+                            console.log("Analysis data saved and ready for use");
+                        } else {
+                            console.warn("Failed to save analysis data");
+                        }
+                    } catch (saveError) {
+                        console.error("Error saving report:", saveError);
+                        // Continue even if saving fails
                     }
 
                     // Show results section
                     results.style.display = 'block';
 
                 } catch (error) {
-                    console.error('Error:', error);
+                    console.error('Error during analysis:', error);
                     errorMessage.textContent = 'An error occurred during processing: ' + error.message;
                     errorMessage.style.display = 'block';
                 } finally {
@@ -829,7 +888,9 @@ ALWAYS include a Status column and ensure the status is determined after interpr
                     loader.style.display = 'none';
                     analyzeButton.disabled = false;
                 }
-            });            // Handle go back button
+            });
+
+            // Handle go back button
             document.getElementById('goBackButton').addEventListener('click', function () {
                 window.location.href = 'home.html'; // Change this to your actual homepage URL
             });
