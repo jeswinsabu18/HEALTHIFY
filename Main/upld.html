@@ -43,7 +43,7 @@
             }
 
             .container {
-                max-width: 800px;
+                max-width: 900px;
                 margin: 0 auto;
                 padding: 20px;
             }
@@ -149,6 +149,7 @@
                 background-color: white;
                 border: 1px solid #ddd;
                 border-radius: 4px;
+                font-size: 18px;
             }
 
             .loader {
@@ -552,7 +553,7 @@
                     const instructions = `
 Analyze this blood test report PDF and provide a detailed, structured analysis following these rules:
 
-1. Extract and present patient information first (name, age, sex, ID, etc.) in a structured format.
+1. Extract and present patient information first (name, age, sex, ID, etc.) in a structured format. blur out major portion of patient's full name and id for privacy
 2. Extract test results and present them in a table with these columns:
    - Test Name/Parameter
    - Result (numeric value only, after interpreting units)
