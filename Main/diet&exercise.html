@@ -74,19 +74,19 @@
 
         .go-back-button {
             position: fixed;
-            top: 10px;
-            left: 10px;
+            top: 20px;
+            left: 20px;
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 6px 12px;
-            font-size: 12px;
+            padding: 12px 20px;
+            font-size: 16px;
             font-weight: bold;
             border-radius: 4px;
             cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             z-index: 1000;
-            transition: background-color 0.2s, transform 0.1s;
+            transition: background-color 0.3s, transform 0.1s;
             display: inline-block;
             width: auto;
             min-width: unset;
@@ -447,7 +447,6 @@
             <div class="tab active" data-tab="overview">Overview</div>
             <div class="tab" data-tab="diet">Diet</div>
             <div class="tab" data-tab="exercise">Exercise</div>
-            <div class="tab" data-tab="mealplan">Meal Plan</div>
         </div>
 
         <div id="overview" class="tab-content active">
@@ -485,15 +484,7 @@
             </div>
         </div>
 
-        <div id="mealplan" class="tab-content">
-            <h3 class="section-title">Personalized Meal Plan</h3>
-            <div id="mealPlanLoadingIndicator">
-                <p>Loading meal plan... <span class="spinner"></span></p>
-            </div>
-            <div id="mealPlanContent" style="display: none;">
-                <div id="mealPlanContainer"></div>
-            </div>
-        </div>
+
     </div>
     <script>
         function getLatestBloodReport() {
@@ -582,7 +573,7 @@
             const apiKey = 'AIzaSyCaBpjdVtlzriQUljPhAmxRem49DNBPFGU';
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-            const promptText = `Analyze the following blood test report and provide detailed diet, exercise, and meal plan recommendations based solely on the provided test results and patient information. Do not include generic or fallback recommendations—every suggestion must be directly tied to the analyzed data.
+            const promptText = `Analyze the following blood test report and provide detailed diet, exercise, and meal plan recommendations based solely on the provided test results and patient information.Try to add at least 4 foods to include . Do not include generic or fallback recommendations—every suggestion must be directly tied to the analyzed data.
 
 For exercise recommendations, ensure:
 - Exactly 5 unique exercises are provided, each tailored to the specific test results and patient condition.
@@ -676,17 +667,7 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
                 "icon": "🧘"
             }
         ]
-    },
-    "mealPlan": [
-        {
-            "day": "Day 1",
-            "meals": [
-                {"name": "Breakfast", "description": "Description tied to test results", "nutrition": "Nutritional info tied to test results"},
-                {"name": "Lunch", "description": "Description tied to test results", "nutrition": "Nutritional info tied to test results"},
-                {"name": "Dinner", "description": "Description tied to test results", "nutrition": "Nutritional info tied to test results"}
-            ]
-        }
-    ]
+    }
 }`;
 
             console.log(promptText);
@@ -843,7 +824,6 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
 
             generateDietRecommendations(aiRecommendations);
             generateExerciseRecommendations(aiRecommendations);
-            generateMealPlan(aiRecommendations);
         }
 
         function generateDietRecommendations(aiRecommendations) {
@@ -929,32 +909,7 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
             exerciseContent.style.display = 'block';
         }
 
-        function generateMealPlan(aiRecommendations) {
-            const mealPlanLoadingIndicator = document.getElementById('mealPlanLoadingIndicator');
-            const mealPlanContent = document.getElementById('mealPlanContent');
-            const mealPlanContainer = document.getElementById('mealPlanContainer');
 
-            mealPlanContainer.innerHTML = '';
-
-            aiRecommendations.mealPlan.forEach(day => {
-                const dayElement = document.createElement('div');
-                dayElement.className = 'meal-plan-day';
-                dayElement.innerHTML = `
-                    <h4>${day.day}</h4>
-                    ${day.meals.map(meal => `
-                        <div class="meal-item">
-                            <div class="meal-title">${meal.name}</div>
-                            <div class="meal-description">${meal.description}</div>
-                            <div class="meal-nutrition">Nutrition: ${meal.nutrition}</div>
-                        </div>
-                    `).join('')}
-                `;
-                mealPlanContainer.appendChild(dayElement);
-            });
-
-            mealPlanLoadingIndicator.style.display = 'none';
-            mealPlanContent.style.display = 'block';
-        }
 
         document.addEventListener('DOMContentLoaded', () => {
             const tabs = document.querySelectorAll('.tab');
