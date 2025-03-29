@@ -377,6 +377,7 @@
         }
 
         // Create individual charts for each test type
+        // Create individual charts for each test type
         function createIndividualCharts(reports, dates) {
             const container = document.getElementById("chartsContainer");
             const activeTests = getActiveTests();
@@ -407,6 +408,18 @@
                 let filteredDates = pairedData.map(item => item.date);
                 let filteredValues = pairedData.map(item => item.value);
 
+                // --- START: Modification for single data point ---
+                let showPoints = true; // Default: show points
+                if (filteredValues.length === 1) {
+                    // Duplicate the single point to create a line
+                    filteredDates.push(filteredDates[0]); // Add the same date label again
+                    filteredValues.push(filteredValues[0]); // Add the same value again
+                    console.log(`Duplicating single data point for ${testType} to draw a horizontal line.`);
+                    // Optionally hide points if there's only one original point
+                    // showPoints = false; // Uncomment this line if you ONLY want the line, not the point markers
+                }
+                // --- END: Modification for single data point ---
+
                 console.log(`Creating chart for ${testType}:`, filteredValues);
 
                 // Create chart container
@@ -423,38 +436,55 @@
                 const range = testRanges[testType] || {};
                 let min, max;
 
-                // Use filtered values for min/max calculation
-                if (filteredValues.length > 0) {
-                    min = Math.min(...filteredValues);
-                    max = Math.max(...filteredValues);
+                // Use filtered values (potentially duplicated) for min/max calculation
+                const originalValuesForRange = pairedData.map(item => item.value); // Use original values for range calculation before duplication
+                if (originalValuesForRange.length > 0) {
+                    min = Math.min(...originalValuesForRange);
+                    max = Math.max(...originalValuesForRange);
 
-                    if (min === max) {
-                        if (min === 0) {
-                            max = 1;
+                    if (min === max) { // This will now be true if there was originally only one point
+                        const singleValue = min;
+                        if (singleValue === 0) {
+                            min = 0;
+                            max = (range.max !== undefined) ? Math.max(1, range.max * 0.1) : 1; // Give some space above 0
                         } else {
-                            const padding = Math.abs(min) * 0.1;
-                            min = min - padding;
-                            max = max + padding;
+                            // Pad around the single value
+                            const padding = Math.abs(singleValue) * 0.2 || 1; // Adjust padding logic
+                            min = singleValue - padding;
+                            max = singleValue + padding;
                         }
                     } else {
+                        // Padding for multiple points (original logic)
                         const padding = (max - min) * 0.2;
                         min = Math.max(0, min - padding);
                         max = max + padding;
                     }
 
+                    // Ensure normal range is visible
                     if (range.min !== undefined) min = Math.min(min, range.min * 0.9);
                     if (range.max !== undefined) max = Math.max(max, range.max * 1.1);
 
+                    // Prevent min being negative unless necessary
+                    if (min < 0 && !(range.min !== undefined && range.min < 0) && !originalValuesForRange.some(v => v < 0)) {
+                        min = 0;
+                    }
+
+
                     min = Number(min.toFixed(1));
                     max = Number(max.toFixed(1));
-                } else {
+
+                    // prevent min and max being the same after padding/rounding if range exists
+                    if (min === max) {
+                        max += 0.1;
+                    }
+
+                } else { // Should not happen due to earlier check, but keep as fallback
                     min = range.min ? range.min * 0.5 : 0;
                     max = range.max ? range.max * 1.5 : 100;
                     min = Number(min.toFixed(1));
                     max = Number(max.toFixed(1));
                 }
 
-                if (min < max * 0.05) min = 0;
 
                 const color = testColors[testType] || getRandomColor();
                 const ctx = canvas.getContext('2d');
@@ -462,21 +492,20 @@
                 activeCharts[canvas.id] = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: filteredDates, // Use filtered dates
+                        labels: filteredDates, // Use potentially duplicated dates
                         datasets: [{
                             label: testType,
-                            data: filteredValues, // Use filtered values
+                            data: filteredValues, // Use potentially duplicated values
                             borderColor: color,
                             backgroundColor: 'rgba(0, 0, 0, 0.1)',
                             borderWidth: 3,
                             fill: false,
-                            tension: 0.1,
-                            pointRadius: 6,
-                            pointHoverRadius: 8,
+                            tension: 0, // Use 0 tension for a straight line between points
+                            pointRadius: showPoints ? 6 : 0, // Use the showPoints flag
+                            pointHoverRadius: showPoints ? 8 : 0, // Use the showPoints flag
                             pointBackgroundColor: color,
                             pointBorderColor: '#fff',
                             pointBorderWidth: 2
-                            // Removed spanGaps since we're filtering nulls
                         }]
                     },
                     options: {
@@ -488,8 +517,9 @@
                                 min: min,
                                 max: max,
                                 ticks: {
+                                    stepSize: (max - min) / 5 > 0 ? Number(((max - min) / 5).toPrecision(1)) : undefined, // Suggest step size
                                     callback: function (value) {
-                                        return Number(value).toFixed(1);
+                                        return Number(value.toFixed(1)); // Ensure ticks are formatted
                                     },
                                 },
                                 title: {
@@ -530,9 +560,22 @@
                                 display: false
                             },
                             tooltip: {
+                                // Optional: Customize tooltip if needed for the duplicated point case
                                 callbacks: {
+                                    title: function (tooltipItems) {
+                                        // If dates were duplicated, show only one date in title
+                                        if (tooltipItems.length > 0) {
+                                            const dates = tooltipItems.map(item => item.label);
+                                            if (dates.length > 1 && dates[0] === dates[1]) {
+                                                return dates[0];
+                                            }
+                                            // Default behavior for multiple different dates or single point
+                                            return tooltipItems[0].label;
+                                        }
+                                        return '';
+                                    },
                                     label: function (context) {
-                                        let label = testType + ': ' + context.parsed.y;
+                                        let label = testType + ': ' + context.parsed.y.toFixed(1); // Format value
                                         if (range.unit) {
                                             label += ` ${range.unit}`;
                                         }
@@ -558,6 +601,7 @@
                 }
             });
         }
+
 
         // Generate a random color for tests without predefined colors
         function getRandomColor() {
