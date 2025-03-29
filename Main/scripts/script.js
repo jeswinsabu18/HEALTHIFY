@@ -1,18 +1,18 @@
-import { supabaseUrl, supabaseAnonKey } from './config.js';
+import { supabaseUrl, supabaseKey } from './config.js';
 
 // Changed from supabaseClient to supabase
-const supabaseAuth = supabase.createClient(supabaseUrl, supabaseAnonKey);
+const supabaseAuth = supabase.createClient(supabaseUrl, supabaseKey);
 
 const form = document.getElementById('login');
 const submitBtn = document.getElementById('submitBtn');
 
-form.addEventListener('submit', async function(e) {
+form.addEventListener('submit', async function (e) {
     e.preventDefault();
-    
+
     // Show loading state
     submitBtn.classList.add('loading');
     submitBtn.disabled = true;
-    
+
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
@@ -35,13 +35,13 @@ form.addEventListener('submit', async function(e) {
             submitBtn.classList.remove('loading');
             submitBtn.classList.add('success');
             submitBtn.innerHTML = 'Login Successful! <span class="success-checkmark">✓</span>';
-            
+
             // Store the token
             localStorage.setItem('supabase.auth.token', data.session.access_token);
-            
+
             // Reset form
             form.reset();
-            
+
             // Redirect after showing success state
             setTimeout(() => {
                 window.location.href = 'home.html';
@@ -51,18 +51,18 @@ form.addEventListener('submit', async function(e) {
         // Reset button state
         submitBtn.classList.remove('loading');
         submitBtn.disabled = false;
-        
+
         // Show error with animation
         submitBtn.style.backgroundColor = '#dc3545';
         submitBtn.style.color = 'white';
         submitBtn.textContent = error.message || 'Invalid email or password';
-        
+
         setTimeout(() => {
             submitBtn.style.backgroundColor = '';
             submitBtn.style.color = '';
             submitBtn.textContent = 'Login';
         }, 3000);
-        
+
         console.error('Error:', error);
     }
 });

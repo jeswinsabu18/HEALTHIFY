@@ -126,16 +126,21 @@
         <a href="diet&exercise.html">Diet & Exercise</a>
     </nav>
 
+
     <div class="chart-container">
         <h2>Health Metrics Over Time</h2>
 
-        <div class="chart-controls">
-            <div id="testToggleContainer">
-                <!-- Test toggles will be generated here -->
-            </div>
+        <!-- Loading Indicator added here -->
+        <div id="loadingIndicator" style="padding: 20px; color: #666;">
+            <p>Loading health data...</p>
         </div>
 
-        <div id="chartsContainer">
+        <!-- Make sure these start hidden -->
+        <div class="chart-controls" id="testToggleContainer" style="display: none;">
+            <!-- Test toggles will be generated here -->
+        </div>
+
+        <div id="chartsContainer" style="display: none;">
             <!-- Individual charts will be generated here -->
         </div>
 
@@ -151,340 +156,436 @@
         <p>&copy; 2025 Healthify. All rights reserved.</p>
     </footer>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            let activeCharts = {};
-            let allTests = [];
-            let testRanges = {
-                'Hemoglobin': { min: 12, max: 18, unit: 'g/dL' },
-                'RBC count': { min: 4.5, max: 6.5, unit: 'million/µL' },
-                'Platelets': { min: 150, max: 450, unit: 'thousand/µL' },
-                'WBC count': { min: 4.5, max: 11, unit: 'thousand/µL' },
-                'Glucose': { min: 70, max: 100, unit: 'mg/dL' },
-                'Cholesterol': { min: 125, max: 200, unit: 'mg/dL' },
-                'HDL': { min: 40, max: 60, unit: 'mg/dL' },
-                'LDL': { min: 0, max: 100, unit: 'mg/dL' },
-                'Triglycerides': { min: 0, max: 150, unit: 'mg/dL' },
-                'A1C': { min: 4, max: 5.6, unit: '%' },
-                'PCV': { min: 36, max: 50, unit: '%' }
-            };
+    <script type="module">
+        // Import Firebase modules 
+        import { db } from "./scripts/firebase-storage-config.js";
+        import { getCurrentUserId, isAuthenticated } from "./scripts/user-data-service.js";
+        import {
+            collection,
+            query,
+            orderBy,
+            getDocs
+        } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
-            const testColors = {
-                'Hemoglobin': 'rgb(65, 105, 225)',
-                'RBC count': 'rgb(220, 20, 60)',
-                'Platelets': 'rgb(255, 215, 0)',
-                'WBC count': 'rgb(50, 205, 50)',
-                'Glucose': 'rgb(148, 0, 211)',
-                'Cholesterol': 'rgb(255, 99, 132)',
-                'HDL': 'rgb(75, 192, 192)',
-                'LDL': 'rgb(255, 159, 64)',
-                'Triglycerides': 'rgb(153, 102, 255)',
-                'A1C': 'rgb(201, 203, 207)',
-                'PCV': 'rgb(255, 99, 71)'
-            };
+        // Define global variables
+        let activeCharts = {};
+        let allTests = [];
+        let testRanges = {
+            'Hemoglobin': { min: 12, max: 18, unit: 'g/dL' },
+            'RBC count': { min: 4.5, max: 6.5, unit: 'million/µL' },
+            'Platelets': { min: 150, max: 450, unit: 'thousand/µL' },
+            'WBC count': { min: 4.5, max: 11, unit: 'thousand/µL' },
+            'Glucose': { min: 70, max: 100, unit: 'mg/dL' },
+            'Cholesterol': { min: 125, max: 200, unit: 'mg/dL' },
+            'HDL': { min: 40, max: 60, unit: 'mg/dL' },
+            'LDL': { min: 0, max: 100, unit: 'mg/dL' },
+            'Triglycerides': { min: 0, max: 150, unit: 'mg/dL' },
+            'A1C': { min: 4, max: 5.6, unit: '%' },
+            'PCV': { min: 36, max: 50, unit: '%' }
+        };
 
-            // Initialize
-            initializeCharts();
+        const testColors = {
+            'Hemoglobin': 'rgb(65, 105, 225)',
+            'RBC count': 'rgb(220, 20, 60)',
+            'Platelets': 'rgb(255, 215, 0)',
+            'WBC count': 'rgb(50, 205, 50)',
+            'Glucose': 'rgb(148, 0, 211)',
+            'Cholesterol': 'rgb(255, 99, 132)',
+            'HDL': 'rgb(75, 192, 192)',
+            'LDL': 'rgb(255, 159, 64)',
+            'Triglycerides': 'rgb(153, 102, 255)',
+            'A1C': 'rgb(201, 203, 207)',
+            'PCV': 'rgb(255, 99, 71)'
+        };
 
-            function initializeCharts() {
-                console.log("Initializing charts...");
-                try {
-                    let reports = getReportsFromStorage();
-                    console.log("Reports found:", reports);
+        // Initialize the application
+        async function initializeApp() {
+            // Get references to the elements we need to control visibility
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const noDataMessage = document.getElementById('noDataMessage');
+            const chartsContainer = document.getElementById('chartsContainer');
+            const testToggleContainer = document.getElementById('testToggleContainer');
 
-                    if (!Array.isArray(reports) || reports.length === 0) {
-                        document.getElementById("noDataMessage").style.display = "block";
-                        document.getElementById("chartsContainer").style.display = "none";
-                        document.getElementById("testToggleContainer").style.display = "none";
-                        return;
-                    }
+            // --- Start: Show loading, hide everything else ---
+            loadingIndicator.style.display = 'block';
+            noDataMessage.style.display = 'none';
+            chartsContainer.style.display = 'none';
+            testToggleContainer.style.display = 'none';
+            // --- End: Initial State ---
 
-                    document.getElementById("noDataMessage").style.display = "none";
-                    document.getElementById("chartsContainer").style.display = "block";
-                    document.getElementById("testToggleContainer").style.display = "block";
-
-                    allTests = extractUniqueTests(reports);
-                    console.log("All tests:", allTests);
-
-                    createTestToggles(allTests);
-                    updateCharts();
-                } catch (error) {
-                    console.error("Error initializing charts:", error);
+            try {
+                const isLoggedIn = await isAuthenticated();
+                if (!isLoggedIn) {
+                    window.location.href = 'index.html';
+                    return; // Stop execution if not logged in
                 }
-            }
 
-            function getReportsFromStorage() {
-                let reports = JSON.parse(localStorage.getItem("bloodReports")) || [];
+                console.log("Initializing charts: Fetching data...");
+                const reports = await getReportsFromStorage(); // Wait for data
+                console.log("Data fetched. Reports:", reports);
+
+                // --- Data fetch complete: Hide loading indicator ---
+                loadingIndicator.style.display = 'none';
+                // ---
+
+                // Now check if we actually got data
+                if (!Array.isArray(reports) || reports.length === 0) {
+                    console.log("No reports found. Displaying 'No Data' message.");
+                    // --- Start: Show 'No Data' message ---
+                    noDataMessage.style.display = 'block';
+                    chartsContainer.style.display = 'none'; // Ensure these remain hidden
+                    testToggleContainer.style.display = 'none';
+                    // --- End: No Data State ---
+                    return; // Stop execution, nothing more to do
+                }
+
+                // --- Data Found: Show chart/toggle containers ---
+                console.log("Reports found. Preparing charts and toggles.");
+                noDataMessage.style.display = 'none'; // Ensure 'no data' message is hidden
+                chartsContainer.style.display = 'block';
+                testToggleContainer.style.display = 'block';
+                // --- End: Data Available State ---
+
+                // Proceed with chart generation
+                allTests = extractUniqueTests(reports);
+                console.log("All unique tests identified:", allTests);
+
+                createTestToggles(allTests);
+                await updateCharts(reports); // Update/Create charts with the fetched data
+                console.log("Charts updated/created.");
+
+            } catch (error) {
+                console.error("Error during initialization or chart update:", error);
+                // --- Start: Handle Error State ---
+                loadingIndicator.style.display = 'none'; // Hide loading
+                chartsContainer.style.display = 'none'; // Hide content
+                testToggleContainer.style.display = 'none';
+
+                // Show an error message (can reuse noDataMessage or add a specific error div)
+                noDataMessage.innerHTML = `<p>Error loading health data. Please try refreshing the page.</p><p style="font-size: 0.8em; color: #dc3545;">${error.message}</p>`;
+                noDataMessage.style.borderColor = '#f5c6cb'; // Error styling
+                noDataMessage.style.backgroundColor = '#f8d7da';
+                noDataMessage.style.color = '#721c24';
+                noDataMessage.style.display = 'block';
+                // --- End: Error State ---
+            }
+        }
+        // Fetch reports from Firebase
+        async function getReportsFromStorage() {
+            try {
+                const userId = await getCurrentUserId();
+                console.log(userId);
+
+                if (!userId) {
+                    console.error("User not authenticated");
+                    return [];
+                }
+
+                const reportsRef = collection(db, "users", userId, "bloodReports");
+                const q = query(reportsRef, orderBy("date", "asc"));
+                const querySnapshot = await getDocs(q);
+
+                const reports = [];
+                querySnapshot.forEach((doc) => {
+                    const reportData = doc.data();
+                    reports.push({
+                        id: doc.id,
+                        ...reportData,
+                        date: reportData.date.toDate().toISOString()
+                    });
+                });
+
                 return reports;
+            } catch (error) {
+                console.error("Error fetching reports from Firestore:", error);
+                return [];
             }
+        }
 
-            function extractUniqueTests(reports) {
-                let tests = [];
-                reports.forEach(report => {
-                    if (report.values) {
-                        Object.keys(report.values).forEach(test => {
-                            if (!tests.includes(test)) {
-                                tests.push(test);
-                            }
-                        });
-                    }
-                });
-                return tests;
-            }
-
-            function updateCharts() {
-                try {
-                    let reports = getReportsFromStorage();
-                    reports.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-                    let dates = reports.map(report => new Date(report.date).toLocaleDateString());
-                    clearCharts();
-                    createIndividualCharts(reports, dates);
-                } catch (error) {
-                    console.error("Error updating charts:", error);
+        // Extract unique test types from reports
+        function extractUniqueTests(reports) {
+            let tests = [];
+            reports.forEach(report => {
+                if (report.values) {
+                    Object.keys(report.values).forEach(test => {
+                        if (!tests.includes(test)) {
+                            tests.push(test);
+                        }
+                    });
                 }
-            }
+            });
+            return tests;
+        }
 
-            function clearCharts() {
-                Object.keys(activeCharts).forEach(id => {
-                    if (activeCharts[id]) {
-                        activeCharts[id].destroy();
-                        delete activeCharts[id];
-                    }
+        // Update charts based on the available data
+        async function updateCharts(reportsData = null) {
+            try {
+                const reports = reportsData || await getReportsFromStorage();
+
+                // Sort reports by date
+                reports.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                // Extract dates for x-axis
+                let dates = reports.map(report => new Date(report.date).toLocaleDateString());
+
+                // Clear existing charts
+                clearCharts();
+
+                // Create new charts
+                createIndividualCharts(reports, dates);
+            } catch (error) {
+                console.error("Error updating charts:", error);
+            }
+        }
+
+        // Clear all existing charts
+        function clearCharts() {
+            Object.keys(activeCharts).forEach(id => {
+                if (activeCharts[id]) {
+                    activeCharts[id].destroy();
+                    delete activeCharts[id];
+                }
+            });
+            document.getElementById("chartsContainer").innerHTML = '';
+        }
+
+        // Create toggle buttons for each test type
+        function createTestToggles(tests) {
+            const container = document.getElementById("testToggleContainer");
+            container.innerHTML = '';
+
+            tests.forEach(test => {
+                const button = document.createElement('button');
+                button.textContent = test;
+                button.className = 'test-toggle active';
+                button.dataset.test = test;
+                button.style.backgroundColor = testColors[test] || getRandomColor();
+                button.style.color = getContrastColor(button.style.backgroundColor);
+
+                button.addEventListener('click', function () {
+                    this.classList.toggle('active');
+                    updateCharts();
                 });
-                document.getElementById("chartsContainer").innerHTML = '';
-            }
 
-            function createTestToggles(tests) {
-                const container = document.getElementById("testToggleContainer");
-                container.innerHTML = '';
+                container.appendChild(button);
+            });
+        }
 
-                tests.forEach(test => {
-                    const button = document.createElement('button');
-                    button.textContent = test;
-                    button.className = 'test-toggle active';
-                    button.dataset.test = test;
-                    button.style.backgroundColor = testColors[test] || getRandomColor();
-                    button.style.color = getContrastColor(button.style.backgroundColor);
+        // Get the list of currently active tests
+        function getActiveTests() {
+            return Array.from(document.querySelectorAll('.test-toggle.active')).map(btn => btn.dataset.test);
+        }
 
-                    button.addEventListener('click', function () {
-                        this.classList.toggle('active');
-                        updateCharts();
-                    });
+        // Create individual charts for each test type
+        function createIndividualCharts(reports, dates) {
+            const container = document.getElementById("chartsContainer");
+            const activeTests = getActiveTests();
 
-                    container.appendChild(button);
+            activeTests.forEach((testType) => {
+                // Extract data for this test and filter out null values
+                let values = reports.map(report => {
+                    return report.values && report.values[testType] !== undefined ?
+                        parseFloat(report.values[testType]) : null;
                 });
-            }
 
-            function getActiveTests() {
-                return Array.from(document.querySelectorAll('.test-toggle.active')).map(btn => btn.dataset.test);
-            }
+                // Create a paired array of dates and values, then filter out null values
+                let pairedData = dates.map((date, index) => ({
+                    date: date,
+                    value: values[index]
+                }));
 
-            function createIndividualCharts(reports, dates) {
-                const container = document.getElementById("chartsContainer");
-                const activeTests = getActiveTests();
+                // Filter out entries where value is null or NaN
+                pairedData = pairedData.filter(item => item.value !== null && !isNaN(item.value));
 
-                activeTests.forEach((testType) => {
-                    // Extract data for this test and filter out null values
-                    let values = reports.map(report => {
-                        return report.values && report.values[testType] !== undefined ?
-                            parseFloat(report.values[testType]) : null;
-                    });
+                // If no valid data after filtering, skip this test
+                if (pairedData.length === 0) {
+                    console.log(`No valid data for ${testType}, skipping`);
+                    return;
+                }
 
-                    // Create a paired array of dates and values, then filter out null values
-                    let pairedData = dates.map((date, index) => ({
-                        date: date,
-                        value: values[index]
-                    }));
+                // Extract filtered dates and values
+                let filteredDates = pairedData.map(item => item.date);
+                let filteredValues = pairedData.map(item => item.value);
 
-                    // Filter out entries where value is null or NaN
-                    pairedData = pairedData.filter(item => item.value !== null && !isNaN(item.value));
+                console.log(`Creating chart for ${testType}:`, filteredValues);
 
-                    // If no valid data after filtering, skip this test
-                    if (pairedData.length === 0) {
-                        console.log(`No valid data for ${testType}, skipping`);
-                        return;
-                    }
+                // Create chart container
+                const canvasWrapper = document.createElement('div');
+                canvasWrapper.className = 'individual-chart';
 
-                    // Extract filtered dates and values
-                    let filteredDates = pairedData.map(item => item.date);
-                    let filteredValues = pairedData.map(item => item.value);
+                const canvas = document.createElement('canvas');
+                canvas.id = `chart-${testType.replace(/\s+/g, '-')}`;
+                canvasWrapper.appendChild(canvas);
 
-                    console.log(`Creating chart for ${testType}:`, filteredValues);
+                container.appendChild(canvasWrapper);
 
-                    // Create chart container
-                    const canvasWrapper = document.createElement('div');
-                    canvasWrapper.className = 'individual-chart';
+                // Calculate appropriate min/max for y-axis
+                const range = testRanges[testType] || {};
+                let min, max;
 
-                    const canvas = document.createElement('canvas');
-                    canvas.id = `chart-${testType.replace(/\s+/g, '-')}`;
-                    canvasWrapper.appendChild(canvas);
+                // Use filtered values for min/max calculation
+                if (filteredValues.length > 0) {
+                    min = Math.min(...filteredValues);
+                    max = Math.max(...filteredValues);
 
-                    container.appendChild(canvasWrapper);
-
-                    // Calculate appropriate min/max for y-axis
-                    const range = testRanges[testType] || {};
-                    let min, max;
-
-                    // Use filtered values for min/max calculation
-                    if (filteredValues.length > 0) {
-                        min = Math.min(...filteredValues);
-                        max = Math.max(...filteredValues);
-
-                        if (min === max) {
-                            if (min === 0) {
-                                max = 1;
-                            } else {
-                                const padding = Math.abs(min) * 0.1;
-                                min = min - padding;
-                                max = max + padding;
-                            }
+                    if (min === max) {
+                        if (min === 0) {
+                            max = 1;
                         } else {
-                            const padding = (max - min) * 0.2;
-                            min = Math.max(0, min - padding);
+                            const padding = Math.abs(min) * 0.1;
+                            min = min - padding;
                             max = max + padding;
                         }
-
-                        if (range.min !== undefined) min = Math.min(min, range.min * 0.9);
-                        if (range.max !== undefined) max = Math.max(max, range.max * 1.1);
-
-                        min = Number(min.toFixed(1));
-                        max = Number(max.toFixed(1));
                     } else {
-                        min = range.min ? range.min * 0.5 : 0;
-                        max = range.max ? range.max * 1.5 : 100;
-                        min = Number(min.toFixed(1));
-                        max = Number(max.toFixed(1));
+                        const padding = (max - min) * 0.2;
+                        min = Math.max(0, min - padding);
+                        max = max + padding;
                     }
 
-                    if (min < max * 0.05) min = 0;
+                    if (range.min !== undefined) min = Math.min(min, range.min * 0.9);
+                    if (range.max !== undefined) max = Math.max(max, range.max * 1.1);
 
-                    const color = testColors[testType] || getRandomColor();
-                    const ctx = canvas.getContext('2d');
+                    min = Number(min.toFixed(1));
+                    max = Number(max.toFixed(1));
+                } else {
+                    min = range.min ? range.min * 0.5 : 0;
+                    max = range.max ? range.max * 1.5 : 100;
+                    min = Number(min.toFixed(1));
+                    max = Number(max.toFixed(1));
+                }
 
-                    activeCharts[canvas.id] = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: filteredDates, // Use filtered dates
-                            datasets: [{
-                                label: testType,
-                                data: filteredValues, // Use filtered values
-                                borderColor: color,
-                                backgroundColor: 'rgba(0, 0, 0, 0.1)',
-                                borderWidth: 3,
-                                fill: false,
-                                tension: 0.1,
-                                pointRadius: 6,
-                                pointHoverRadius: 8,
-                                pointBackgroundColor: color,
-                                pointBorderColor: '#fff',
-                                pointBorderWidth: 2
-                                // Removed spanGaps since we're filtering nulls
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            scales: {
-                                y: {
-                                    beginAtZero: min === 0,
-                                    min: min,
-                                    max: max,
-                                    ticks: {
-                                        callback: function (value) {
-                                            return Number(value).toFixed(1);
-                                        },
+                if (min < max * 0.05) min = 0;
+
+                const color = testColors[testType] || getRandomColor();
+                const ctx = canvas.getContext('2d');
+
+                activeCharts[canvas.id] = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: filteredDates, // Use filtered dates
+                        datasets: [{
+                            label: testType,
+                            data: filteredValues, // Use filtered values
+                            borderColor: color,
+                            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.1,
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            pointBackgroundColor: color,
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2
+                            // Removed spanGaps since we're filtering nulls
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: min === 0,
+                                min: min,
+                                max: max,
+                                ticks: {
+                                    callback: function (value) {
+                                        return Number(value).toFixed(1);
                                     },
-                                    title: {
-                                        display: true,
-                                        text: testType + (range.unit ? ` (${range.unit})` : ''),
-                                        color: color,
-                                        font: {
-                                            size: 14,
-                                            weight: 'bold'
-                                        }
-                                    }
                                 },
-                                x: {
-                                    title: {
-                                        display: true,
-                                        text: 'Date',
-                                        font: {
-                                            size: 14,
-                                            weight: 'bold'
-                                        }
+                                title: {
+                                    display: true,
+                                    text: testType + (range.unit ? ` (${range.unit})` : ''),
+                                    color: color,
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
                                     }
                                 }
                             },
-                            plugins: {
+                            x: {
                                 title: {
                                     display: true,
-                                    text: testType + ' Over Time',
+                                    text: 'Date',
                                     font: {
-                                        size: 18,
+                                        size: 14,
                                         weight: 'bold'
-                                    },
-                                    padding: {
-                                        top: 10,
-                                        bottom: 20
                                     }
+                                }
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: testType + ' Over Time',
+                                font: {
+                                    size: 18,
+                                    weight: 'bold'
                                 },
-                                legend: {
-                                    display: false
-                                },
-                                tooltip: {
-                                    callbacks: {
-                                        label: function (context) {
-                                            let label = testType + ': ' + context.parsed.y;
-                                            if (range.unit) {
-                                                label += ` ${range.unit}`;
-                                            }
-                                            if (range.min !== undefined && range.max !== undefined) {
-                                                label += ` (Normal: ${range.min}-${range.max})`;
-                                            }
-                                            return label;
+                                padding: {
+                                    top: 10,
+                                    bottom: 20
+                                }
+                            },
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        let label = testType + ': ' + context.parsed.y;
+                                        if (range.unit) {
+                                            label += ` ${range.unit}`;
                                         }
+                                        if (range.min !== undefined && range.max !== undefined) {
+                                            label += ` (Normal: ${range.min}-${range.max})`;
+                                        }
+                                        return label;
                                     }
                                 }
                             }
                         }
-                    });
-
-                    if (range.min !== undefined && range.max !== undefined) {
-                        const normalRangeLabel = document.createElement('div');
-                        normalRangeLabel.style.textAlign = 'center';
-                        normalRangeLabel.style.marginTop = '5px';
-                        normalRangeLabel.style.color = '#666';
-                        normalRangeLabel.style.fontWeight = 'bold';
-                        normalRangeLabel.textContent = `Normal Range: ${range.min}-${range.max} ${range.unit || ''}`;
-                        canvasWrapper.appendChild(normalRangeLabel);
                     }
                 });
-            }
 
-            function getRandomColor() {
-                return `hsl(${Math.random() * 360}, 70%, 50%)`;
-            }
+                if (range.min !== undefined && range.max !== undefined) {
+                    const normalRangeLabel = document.createElement('div');
+                    normalRangeLabel.style.textAlign = 'center';
+                    normalRangeLabel.style.marginTop = '5px';
+                    normalRangeLabel.style.color = '#666';
+                    normalRangeLabel.style.fontWeight = 'bold';
+                    normalRangeLabel.textContent = `Normal Range: ${range.min}-${range.max} ${range.unit || ''}`;
+                    canvasWrapper.appendChild(normalRangeLabel);
+                }
+            });
+        }
 
-            function getContrastColor(hexOrRgb) {
-                let r, g, b;
-                if (hexOrRgb.startsWith('rgb')) {
-                    const matches = hexOrRgb.match(/(\d+),\s*(\d+),\s*(\d+)/);
-                    if (matches) {
-                        r = parseInt(matches[1]);
-                        g = parseInt(matches[2]);
-                        b = parseInt(matches[3]);
-                    } else {
-                        return '#000000';
-                    }
+        // Generate a random color for tests without predefined colors
+        function getRandomColor() {
+            return `hsl(${Math.random() * 360}, 70%, 50%)`;
+        }
+
+        // Get contrasting text color based on background
+        function getContrastColor(hexOrRgb) {
+            let r, g, b;
+            if (hexOrRgb.startsWith('rgb')) {
+                const matches = hexOrRgb.match(/(\d+),\s*(\d+),\s*(\d+)/);
+                if (matches) {
+                    r = parseInt(matches[1]);
+                    g = parseInt(matches[2]);
+                    b = parseInt(matches[3]);
                 } else {
                     return '#000000';
                 }
-
-                const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-                return luminance > 0.5 ? '#000000' : '#ffffff';
+            } else {
+                return '#000000';
             }
-        });
+
+            const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+            return luminance > 0.5 ? '#000000' : '#ffffff';
+        }
+
+        // Initialize app when document is loaded
+        document.addEventListener("DOMContentLoaded", initializeApp);
     </script>
 </body>
 
