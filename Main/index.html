@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,34 +23,38 @@
             align-items: center;
             min-height: 100vh;
         }
-        .logo-container {
-    text-align: center;
-    margin-bottom: 1.5rem;
-    animation: fade-in 1s ease-in-out;
-}
 
-/* Logo styling with highlight and shadow */
-.logo {
-    width: 120px; /* Increase logo size */
-    height: auto;
-    border-radius: 50%;
-    padding: 8px;
-    background: linear-gradient(135deg, #5fb5ff, #79beff);
-    box-shadow: 0 8px 20px rgba(0, 123, 255, 0.2);
-    border: 2px solid #a3d6f74b;
-    animation: glow 1.5s infinite alternate;
-}
-/* Optional: Fade-in animation */
-@keyframes fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
+        .logo-container {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            animation: fade-in 1s ease-in-out;
+        }
+
+        /* Logo styling with highlight and shadow */
+        .logo {
+            width: 120px;
+            /* Increase logo size */
+            height: auto;
+            border-radius: 50%;
+            padding: 8px;
+            background: linear-gradient(135deg, #5fb5ff, #79beff);
+            box-shadow: 0 8px 20px rgba(0, 123, 255, 0.2);
+            border: 2px solid #a3d6f74b;
+            animation: glow 1.5s infinite alternate;
+        }
+
+        /* Optional: Fade-in animation */
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
 
         .appointment-form {
@@ -197,6 +202,7 @@
                 transform: scale(0);
                 opacity: 0;
             }
+
             to {
                 transform: scale(1);
                 opacity: 1;
@@ -230,11 +236,12 @@
         }
     </style>
 </head>
+
 <body>
     <form class="appointment-form" id="login">
         <img src="./assets/Logo.webp.png" alt="Healthfy Logo" class="logo">
-        <h2>Healthfy</h2>
-        
+        <h2>Healthify</h2>
+
         <div class="form-group">
             <label for="email">Email</label>
             <input type="email" id="email" placeholder="Enter your email address" required>
@@ -247,10 +254,12 @@
 
         <button type="submit" id="submitBtn">Login</button>
         <a href="reset-password.html" class="forgot-password">Forgot Password?</a>
-        <button type="button" class="signup-button" onclick="window.location.href='signup.html'">Create New Account</button>
+        <button type="button" class="signup-button" onclick="window.location.href='signup.html'">Create New
+            Account</button>
     </form>
 
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script type="module" src="scripts/script.js"></script>
 </body>
+
 </html>

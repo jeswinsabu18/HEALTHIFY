@@ -135,6 +135,14 @@
             display: block;
         }
 
+        .food-item:hover {
+            background-color: #f0f7ff;
+            /* Light blue hover effect */
+            transform: scale(1.02);
+            /* Slight scale-up */
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
         .section-title {
             color: var(--secondary-color);
             margin-bottom: 20px;
@@ -228,6 +236,14 @@
             justify-content: center;
             background-color: #f0f7ff;
             border-radius: 50%;
+        }
+
+        .exercise-item:hover {
+            background-color: #f0f7ff;
+            /* Light blue hover effect */
+            transform: scale(1.02);
+            /* Slight scale-up */
+            transition: background-color 0.3s, transform 0.2s;
         }
 
         .food-title {
@@ -499,6 +515,29 @@
             getDocs
         } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
+        const foodIconMap = {
+            "spinach": "🥬",
+            "salmon": "🐟",
+            "quinoa": "🌾",
+            "almonds": "🥜",
+            "chicken": "🍗",
+            "broccoli": "🥦",
+            "sweet potato": "🍠",
+            "avocado": "🥑",
+            "berries": "🍓",
+            "oats": "🥣",
+            "processed meats": "🥓",
+            "sugary drinks": "🥤",
+            "fried foods": "🍟",
+            "white bread": "🍞",
+            "cake": "🍰",
+            "cheese": "🧀",
+            "red meat": "🥩",
+            "butter": "🧈",
+            // Add more mappings as needed
+            "default": "🥗" // Fallback icon
+        };
+
         async function initializeApp() {
             try {
                 const isLoggedIn = await isAuthenticated();
@@ -507,7 +546,6 @@
                     return;
                 }
 
-                // Fetch user profile data
                 const userProfile = await fetchUserProfile();
                 if (!userProfile) {
                     console.warn("User profile not loaded; proceeding with default recommendations.");
@@ -526,7 +564,7 @@
 
                 const latestReport = await getLatestBloodReport();
                 if (latestReport) {
-                    generateRecommendations(latestReport, userProfile); // Pass userProfile to generateRecommendations
+                    generateRecommendations(latestReport, userProfile);
                 } else {
                     showNoDataMessage();
                 }
@@ -540,6 +578,7 @@
         `;
             }
         }
+
 
         // Function to fetch user profile from Supabase
         async function fetchUserProfile() {
@@ -979,32 +1018,50 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
             const nutritionGuidelines = document.getElementById('nutritionGuidelines');
 
             dietSummary.innerHTML = `
-                <div class="ai-recommendation">
-                    <p>${aiRecommendations.diet.summary}</p>
-                </div>
-            `;
+        <div class="ai-recommendation">
+            <p>${aiRecommendations.diet.summary}</p>
+        </div>
+    `;
 
             recommendedFoods.innerHTML = '';
             aiRecommendations.diet.recommendedFoods.forEach(food => {
-                const foodItem = document.createElement('div');
+                const foodNameLower = food.name.toLowerCase();
+                const icon = foodIconMap[foodNameLower] || food.icon || foodIconMap["default"];
+                const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(food.name)}`;
+
+                const foodItem = document.createElement('a');
                 foodItem.className = 'food-item';
+                foodItem.href = googleSearchUrl;
+                foodItem.target = '_blank'; // Open in new tab
+                foodItem.style.cursor = 'pointer'; // Indicate clickability
+                foodItem.style.textDecoration = 'none'; // Remove underline from link
+                foodItem.style.color = 'inherit'; // Inherit text color
                 foodItem.innerHTML = `
-                    <div class="food-icon">${food.icon || '🥗'}</div>
-                    <div class="food-title">${food.name}</div>
-                    <div class="food-description">${food.description}</div>
-                `;
+            <div class="food-icon">${icon}</div>
+            <div class="food-title">${food.name}</div>
+            <div class="food-description">${food.description}</div>
+        `;
                 recommendedFoods.appendChild(foodItem);
             });
 
             limitFoods.innerHTML = '';
             aiRecommendations.diet.foodsToLimit.forEach(food => {
-                const foodItem = document.createElement('div');
+                const foodNameLower = food.name.toLowerCase();
+                const icon = foodIconMap[foodNameLower] || food.icon || foodIconMap["default"];
+                const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(food.name)}`;
+
+                const foodItem = document.createElement('a');
                 foodItem.className = 'food-item';
+                foodItem.href = googleSearchUrl;
+                foodItem.target = '_blank'; // Open in new tab
+                foodItem.style.cursor = 'pointer'; // Indicate clickability
+                foodItem.style.textDecoration = 'none'; // Remove underline from link
+                foodItem.style.color = 'inherit'; // Inherit text color
                 foodItem.innerHTML = `
-                    <div class="food-icon">${food.icon || '⚠️'}</div>
-                    <div class="food-title">${food.name}</div>
-                    <div class="food-description">${food.description}</div>
-                `;
+            <div class="food-icon">${icon}</div>
+            <div class="food-title">${food.name}</div>
+            <div class="food-description">${food.description}</div>
+        `;
                 limitFoods.appendChild(foodItem);
             });
 
@@ -1019,6 +1076,7 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
             dietContent.style.display = 'block';
         }
 
+
         function generateExerciseRecommendations(aiRecommendations) {
             const exerciseLoadingIndicator = document.getElementById('exerciseLoadingIndicator');
             const exerciseContent = document.getElementById('exerciseContent');
@@ -1026,34 +1084,39 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
             const exerciseRecommendations = document.getElementById('exerciseRecommendations');
 
             exerciseSummary.innerHTML = `
-                <div class="ai-recommendation">
-                    <p>${aiRecommendations.exercise.summary}</p>
-                </div>
-            `;
+        <div class="ai-recommendation">
+            <p>${aiRecommendations.exercise.summary}</p>
+        </div>
+    `;
 
             exerciseRecommendations.innerHTML = '';
             aiRecommendations.exercise.exercises.forEach(exercise => {
-                const exerciseItem = document.createElement('div');
+                const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(exercise.name)}`;
+
+                const exerciseItem = document.createElement('a');
                 exerciseItem.className = 'exercise-item';
+                exerciseItem.href = googleSearchUrl;
+                exerciseItem.target = '_blank'; // Open in new tab
+                exerciseItem.style.cursor = 'pointer'; // Indicate clickability
+                exerciseItem.style.textDecoration = 'none'; // Remove underline from link
+                exerciseItem.style.color = 'inherit'; // Inherit text color
                 exerciseItem.innerHTML = `
-                    <div class="exercise-item-icon">${exercise.icon || '🏃‍♂️'}</div>
-                    <div class="exercise-item-content">
-                        <div class="exercise-title">${exercise.name}</div>
-                        <div class="exercise-description">${exercise.description}</div>
-                        <ol class="exercise-steps">
-                            ${exercise.steps.map(step => `<li>${step}</li>`).join('')}
-                        </ol>
-                        <div class="exercise-duration">Duration: ${exercise.duration}</div>
-                    </div>
-                `;
+            <div class="exercise-item-icon">${exercise.icon || '🏃‍♂️'}</div>
+            <div class="exercise-item-content">
+                <div class="exercise-title">${exercise.name}</div>
+                <div class="exercise-description">${exercise.description}</div>
+                <ol class="exercise-steps">
+                    ${exercise.steps.map(step => `<li>${step}</li>`).join('')}
+                </ol>
+                <div class="exercise-duration">Duration: ${exercise.duration}</div>
+            </div>
+        `;
                 exerciseRecommendations.appendChild(exerciseItem);
             });
 
             exerciseLoadingIndicator.style.display = 'none';
             exerciseContent.style.display = 'block';
         }
-
-
         document.addEventListener('DOMContentLoaded', initializeApp);
 
 

@@ -110,6 +110,42 @@
             border: 1px solid #f5c6cb;
             border-radius: 4px;
         }
+
+        /* Loading animation styles */
+        #loadingIndicator {
+            padding: 30px;
+            color: #3b637d;
+            /* Darker color for better visibility */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            /* Space between text and spinner */
+        }
+
+        #loadingIndicator p {
+            font-size: 1.5rem;
+            /* Larger text */
+            font-weight: bold;
+        }
+
+        #loadingIndicator.loading::after {
+            content: "";
+            width: 40px;
+            /* Larger spinner */
+            height: 40px;
+            border: 5px solid #87bdd8;
+            /* Thicker border */
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 
@@ -125,16 +161,15 @@
         <a href="upld.html">Upload Reports</a>
         <a href="diet&exercise.html">Diet & Exercise</a>
         <a href="storage.html" aria-label="Storage">Storage</a>
-
     </nav>
-
 
     <div class="chart-container">
         <h2>Health Metrics Over Time</h2>
 
-        <!-- Loading Indicator added here -->
-        <div id="loadingIndicator" style="padding: 20px; color: #666;">
-            <p>Loading health data...</p>
+        <!-- Enhanced Loading Indicator with animation -->
+        <div id="loadingIndicator" class="loading">
+            <p>Loading Health Data...</p>
+            <!-- Spinner will appear here via ::after -->
         </div>
 
         <!-- Make sure these start hidden -->
@@ -155,7 +190,7 @@
     </div>
 
     <footer>
-        <p>&copy; 2025 Healthify. All rights reserved.</p>
+        <p>© 2025 Healthify. All rights reserved.</p>
     </footer>
 
     <script type="module">
@@ -210,6 +245,7 @@
 
             // --- Start: Show loading, hide everything else ---
             loadingIndicator.style.display = 'block';
+            loadingIndicator.classList.add('loading');
             noDataMessage.style.display = 'none';
             chartsContainer.style.display = 'none';
             testToggleContainer.style.display = 'none';
@@ -228,7 +264,8 @@
 
                 // --- Data fetch complete: Hide loading indicator ---
                 loadingIndicator.style.display = 'none';
-                // ---
+                loadingIndicator.classList.remove('loading');
+                // --- End: Loading Complete ---
 
                 // Now check if we actually got data
                 if (!Array.isArray(reports) || reports.length === 0) {
@@ -260,6 +297,7 @@
                 console.error("Error during initialization or chart update:", error);
                 // --- Start: Handle Error State ---
                 loadingIndicator.style.display = 'none'; // Hide loading
+                loadingIndicator.classList.remove('loading');
                 chartsContainer.style.display = 'none'; // Hide content
                 testToggleContainer.style.display = 'none';
 
@@ -272,6 +310,7 @@
                 // --- End: Error State ---
             }
         }
+
         // Fetch reports from Firebase
         async function getReportsFromStorage() {
             try {
@@ -379,7 +418,6 @@
         }
 
         // Create individual charts for each test type
-        // Create individual charts for each test type
         function createIndividualCharts(reports, dates) {
             const container = document.getElementById("chartsContainer");
             const activeTests = getActiveTests();
@@ -417,8 +455,6 @@
                     filteredDates.push(filteredDates[0]); // Add the same date label again
                     filteredValues.push(filteredValues[0]); // Add the same value again
                     console.log(`Duplicating single data point for ${testType} to draw a horizontal line.`);
-                    // Optionally hide points if there's only one original point
-                    // showPoints = false; // Uncomment this line if you ONLY want the line, not the point markers
                 }
                 // --- END: Modification for single data point ---
 
@@ -439,54 +475,46 @@
                 let min, max;
 
                 // Use filtered values (potentially duplicated) for min/max calculation
-                const originalValuesForRange = pairedData.map(item => item.value); // Use original values for range calculation before duplication
+                const originalValuesForRange = pairedData.map(item => item.value);
                 if (originalValuesForRange.length > 0) {
                     min = Math.min(...originalValuesForRange);
                     max = Math.max(...originalValuesForRange);
 
-                    if (min === max) { // This will now be true if there was originally only one point
+                    if (min === max) {
                         const singleValue = min;
                         if (singleValue === 0) {
                             min = 0;
-                            max = (range.max !== undefined) ? Math.max(1, range.max * 0.1) : 1; // Give some space above 0
+                            max = (range.max !== undefined) ? Math.max(1, range.max * 0.1) : 1;
                         } else {
-                            // Pad around the single value
-                            const padding = Math.abs(singleValue) * 0.2 || 1; // Adjust padding logic
+                            const padding = Math.abs(singleValue) * 0.2 || 1;
                             min = singleValue - padding;
                             max = singleValue + padding;
                         }
                     } else {
-                        // Padding for multiple points (original logic)
                         const padding = (max - min) * 0.2;
                         min = Math.max(0, min - padding);
                         max = max + padding;
                     }
 
-                    // Ensure normal range is visible
                     if (range.min !== undefined) min = Math.min(min, range.min * 0.9);
                     if (range.max !== undefined) max = Math.max(max, range.max * 1.1);
 
-                    // Prevent min being negative unless necessary
                     if (min < 0 && !(range.min !== undefined && range.min < 0) && !originalValuesForRange.some(v => v < 0)) {
                         min = 0;
                     }
 
-
                     min = Number(min.toFixed(1));
                     max = Number(max.toFixed(1));
 
-                    // prevent min and max being the same after padding/rounding if range exists
                     if (min === max) {
                         max += 0.1;
                     }
-
-                } else { // Should not happen due to earlier check, but keep as fallback
+                } else {
                     min = range.min ? range.min * 0.5 : 0;
                     max = range.max ? range.max * 1.5 : 100;
                     min = Number(min.toFixed(1));
                     max = Number(max.toFixed(1));
                 }
-
 
                 const color = testColors[testType] || getRandomColor();
                 const ctx = canvas.getContext('2d');
@@ -494,17 +522,17 @@
                 activeCharts[canvas.id] = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: filteredDates, // Use potentially duplicated dates
+                        labels: filteredDates,
                         datasets: [{
                             label: testType,
-                            data: filteredValues, // Use potentially duplicated values
+                            data: filteredValues,
                             borderColor: color,
                             backgroundColor: 'rgba(0, 0, 0, 0.1)',
                             borderWidth: 3,
                             fill: false,
-                            tension: 0, // Use 0 tension for a straight line between points
-                            pointRadius: showPoints ? 6 : 0, // Use the showPoints flag
-                            pointHoverRadius: showPoints ? 8 : 0, // Use the showPoints flag
+                            tension: 0,
+                            pointRadius: showPoints ? 6 : 0,
+                            pointHoverRadius: showPoints ? 8 : 0,
                             pointBackgroundColor: color,
                             pointBorderColor: '#fff',
                             pointBorderWidth: 2
@@ -519,9 +547,9 @@
                                 min: min,
                                 max: max,
                                 ticks: {
-                                    stepSize: (max - min) / 5 > 0 ? Number(((max - min) / 5).toPrecision(1)) : undefined, // Suggest step size
+                                    stepSize: (max - min) / 5 > 0 ? Number(((max - min) / 5).toPrecision(1)) : undefined,
                                     callback: function (value) {
-                                        return Number(value.toFixed(1)); // Ensure ticks are formatted
+                                        return Number(value.toFixed(1));
                                     },
                                 },
                                 title: {
@@ -562,22 +590,19 @@
                                 display: false
                             },
                             tooltip: {
-                                // Optional: Customize tooltip if needed for the duplicated point case
                                 callbacks: {
                                     title: function (tooltipItems) {
-                                        // If dates were duplicated, show only one date in title
                                         if (tooltipItems.length > 0) {
                                             const dates = tooltipItems.map(item => item.label);
                                             if (dates.length > 1 && dates[0] === dates[1]) {
                                                 return dates[0];
                                             }
-                                            // Default behavior for multiple different dates or single point
                                             return tooltipItems[0].label;
                                         }
                                         return '';
                                     },
                                     label: function (context) {
-                                        let label = testType + ': ' + context.parsed.y.toFixed(1); // Format value
+                                        let label = testType + ': ' + context.parsed.y.toFixed(1);
                                         if (range.unit) {
                                             label += ` ${range.unit}`;
                                         }
@@ -603,7 +628,6 @@
                 }
             });
         }
-
 
         // Generate a random color for tests without predefined colors
         function getRandomColor() {
@@ -633,6 +657,7 @@
         // Initialize app when document is loaded
         document.addEventListener("DOMContentLoaded", initializeApp);
     </script>
+    <script>(function () { function c() { var b = a.contentDocument || a.contentWindow.document; if (b) { var d = b.createElement('script'); d.innerHTML = "window.__CF$cv$params={r:'9286e476ae43adc9',t:'MTc0MzMzMDIxNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d) } } if (document.body) { var a = document.createElement('iframe'); a.height = 1; a.width = 1; a.style.position = 'absolute'; a.style.top = 0; a.style.left = 0; a.style.border = 'none'; a.style.visibility = 'hidden'; document.body.appendChild(a); if ('loading' !== document.readyState) c(); else if (window.addEventListener) document.addEventListener('DOMContentLoaded', c); else { var e = document.onreadystatechange || function () { }; document.onreadystatechange = function (b) { e(b); 'loading' !== document.readyState && (document.onreadystatechange = e, c()) } } } })();</script>
 </body>
 
 </html>
