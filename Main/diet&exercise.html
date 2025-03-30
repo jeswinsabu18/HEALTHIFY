@@ -491,6 +491,7 @@
     <script type="module">
         import { db } from "./scripts/firebase-storage-config.js";
         import { getCurrentUserId, isAuthenticated } from "./scripts/user-data-service.js";
+        import { supabase } from "./scripts/config.js"; // Add this import
         import {
             collection,
             query,
@@ -498,20 +499,24 @@
             getDocs
         } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
-
         async function initializeApp() {
             try {
                 const isLoggedIn = await isAuthenticated();
                 if (!isLoggedIn) {
-                    // Redirect to login page if not authenticated
                     window.location.href = 'index.html';
                     return;
                 }
 
-                // Initialize UI components first
+                // Fetch user profile data
+                const userProfile = await fetchUserProfile();
+                if (!userProfile) {
+                    console.warn("User profile not loaded; proceeding with default recommendations.");
+                } else {
+                    console.log("User profile loaded:", userProfile);
+                }
+
                 initializeUI();
 
-                // Show loading indicator
                 document.getElementById('patientSummary').innerHTML = `
             <div class="parameter-card">
                 <h3>Loading Data</h3>
@@ -519,10 +524,9 @@
             </div>
         `;
 
-                // Then fetch data
                 const latestReport = await getLatestBloodReport();
                 if (latestReport) {
-                    generateRecommendations(latestReport);
+                    generateRecommendations(latestReport, userProfile); // Pass userProfile to generateRecommendations
                 } else {
                     showNoDataMessage();
                 }
@@ -537,6 +541,22 @@
             }
         }
 
+        // Function to fetch user profile from Supabase
+        async function fetchUserProfile() {
+            try {
+                const { data: { user }, error } = await supabase.auth.getUser();
+                if (error) throw error;
+                if (!user) {
+                    console.error("No authenticated user found");
+                    window.location.href = 'index.html';
+                    return null;
+                }
+                return user.user_metadata || {};
+            } catch (error) {
+                console.error('Error fetching user profile:', error);
+                return null;
+            }
+        }
         // Separate UI initialization into its own function
         function initializeUI() {
             // Set up tab functionality
@@ -670,7 +690,7 @@
             document.getElementById('uploadButton').addEventListener('click', () => window.location.href = 'upld.html');
         }
 
-        async function getGeminiRecommendations(bloodData) {
+        async function getGeminiRecommendations(bloodData, userProfile) {
             if (!bloodData || !bloodData.analysisHTML) return null;
 
             const { testResults, patientInfo } = parseAnalysisHTML(bloodData.analysisHTML);
@@ -681,18 +701,35 @@
             ).join('\n') || 'No test results available.';
             const patientInfoText = Object.entries(patientInfo).map(([key, value]) => `${key}: ${value}`).join(', ');
 
+            // Calculate age from birthdate if available
+            let age = null;
+            if (userProfile?.birthdate) {
+                const birthDate = new Date(userProfile.birthdate);
+                age = new Date().getFullYear() - birthDate.getFullYear();
+            }
+
             const apiKey = 'AIzaSyCaBpjdVtlzriQUljPhAmxRem49DNBPFGU';
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-            const promptText = `Analyze the following blood test report and provide detailed diet, exercise, and meal plan recommendations based solely on the provided test results and patient information.Try to add at least 4 foods to include . Do not include generic or fallback recommendations—every suggestion must be directly tied to the analyzed data.
+            const promptText = `Analyze the following blood test report and provide detailed diet and exercise recommendations based on the test results, patient information, and the following user profile:
+- Age: ${age || 'Not provided'}
+- Gender: ${userProfile?.gender || 'Not provided'}
+- Weight: ${userProfile?.weight ? `${userProfile.weight} kg` : 'Not provided'}
+- Height: ${userProfile?.height ? `${userProfile.height} cm` : 'Not provided'}
+- Medical History: ${userProfile?.medicalInfo || 'Not provided'}
+
+Make recommendations highly personalized to the user profile and test results. Do not include generic or fallback recommendations—every suggestion must be directly tied to the analyzed data.
+
+For diet recommendations:
+- Provide at least 4 foods to include, each with a specific reason tied to the test results and user profile.
+- Provide foods to limit, each with a specific reason tied to the test results and user profile.
+- Include nutrition guidelines tailored to the user's age, gender, weight, height, and medical history.
 
 For exercise recommendations, ensure:
-- Exactly 5 unique exercises are provided, each tailored to the specific test results and patient condition.
-- Exercises are not generic (e.g., avoid "brisk walking," "swimming," "yoga," or "body strengthening" unless explicitly justified by the data with a unique variation).
+- Exactly 5 unique exercises are provided, each tailored to the specific test results, patient condition, and user profile (e.g., adjust intensity based on age/weight).
+- Exercises are not generic (e.g., avoid "brisk walking," "swimming," "yoga," or "body strengthening" unless explicitly justified with a unique variation).
 - Each exercise has a specific name (e.g., "Goblet Squat," "Plank to Shoulder Tap") and a step-by-step description.
-- Each exercise explicitly references the relevant test values and their status (e.g., "Due to low Hemoglobin of 10 g/dL...") to justify the recommendation.
-
-
+- Each exercise explicitly references the relevant test values and their status (e.g., "Due to low Hemoglobin of 10 g/dL...") and user profile (e.g., "Given your weight of 70 kg...") to justify the recommendation.
 
 Test Results (including status and reference ranges):
 ${testResultsText}
@@ -700,30 +737,33 @@ ${testResultsText}
 Test Date:
 ${testDate}
 
+Patient Information:
+${patientInfoText}
+
 Return the response as a JSON object (and ONLY the JSON object, with no additional text, Markdown, or code block formatting) in the following format:
 
 {
     "diet": {
-        "summary": "A brief summary of dietary recommendations based on the test results.",
+        "summary": "A brief summary of dietary recommendations based on the test results and user profile.",
         "recommendedFoods": [
-            {"name": "Food 1", "description": "Why this is recommended based on specific test results.", "icon": "🍎"},
-            {"name": "Food 2", "description": "Why this is recommended based on specific test results.", "icon": "🥦"}
+            {"name": "Food 1", "description": "Why this is recommended based on specific test results and user profile.", "icon": "🍎"},
+            {"name": "Food 2", "description": "Why this is recommended based on specific test results and user profile.", "icon": "🥦"}
         ],
         "foodsToLimit": [
-            {"name": "Food 1", "description": "Why this should be limited based on specific test results.", "icon": "🍩"},
-            {"name": "Food 2", "description": "Why this should be limited based on specific test results.", "icon": "🍟"}
+            {"name": "Food 1", "description": "Why this should be limited based on specific test results and user profile.", "icon": "🍩"},
+            {"name": "Food 2", "description": "Why this should be limited based on specific test results and user profile.", "icon": "🍟"}
         ],
         "nutritionGuidelines": [
-            "Guideline 1 tied to test results",
-            "Guideline 2 tied to test results"
+            "Guideline 1 tied to test results and user profile",
+            "Guideline 2 tied to test results and user profile"
         ]
     },
     "exercise": {
-        "summary": "A brief summary of exercise recommendations tailored to the test results.",
+        "summary": "A brief summary of exercise recommendations tailored to the test results and user profile.",
         "exercises": [
             {
                 "name": "Specific Exercise Name 1",
-                "description": "Why this is recommended, explicitly referencing specific test results.",
+                "description": "Why this is recommended, explicitly referencing specific test results and user profile.",
                 "steps": [
                     "Step 1: Description of the first step.",
                     "Step 2: Description of the second step.",
@@ -734,7 +774,7 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
             },
             {
                 "name": "Specific Exercise Name 2",
-                "description": "Why this is recommended, explicitly referencing specific test results.",
+                "description": "Why this is recommended, explicitly referencing specific test results and user profile.",
                 "steps": [
                     "Step 1: Description of the first step.",
                     "Step 2: Description of the second step.",
@@ -745,7 +785,7 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
             },
             {
                 "name": "Specific Exercise Name 3",
-                "description": "Why this is recommended, explicitly referencing specific test results.",
+                "description": "Why this is recommended, explicitly referencing specific test results and user profile.",
                 "steps": [
                     "Step 1: Description of the first step.",
                     "Step 2: Description of the second step.",
@@ -756,7 +796,7 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
             },
             {
                 "name": "Specific Exercise Name 4",
-                "description": "Why this is recommended, explicitly referencing specific test results.",
+                "description": "Why this is recommended, explicitly referencing specific test results and user profile.",
                 "steps": [
                     "Step 1: Description of the first step.",
                     "Step 2: Description of the second step.",
@@ -767,7 +807,7 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
             },
             {
                 "name": "Specific Exercise Name 5",
-                "description": "Why this is recommended, explicitly referencing specific test results.",
+                "description": "Why this is recommended, explicitly referencing specific test results and user profile.",
                 "steps": [
                     "Step 1: Description of the first step.",
                     "Step 2: Description of the second step.",
@@ -809,8 +849,7 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
                     const recommendations = JSON.parse(generatedText);
                     return {
                         diet: recommendations.diet || { summary: '', recommendedFoods: [], foodsToLimit: [], nutritionGuidelines: [] },
-                        exercise: recommendations.exercise || { summary: '', exercises: [] },
-                        mealPlan: recommendations.mealPlan || []
+                        exercise: recommendations.exercise || { summary: '', exercises: [] }
                     };
                 }
                 return null;
@@ -819,8 +858,7 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
                 return null;
             }
         }
-
-        async function generateRecommendations(bloodData) {
+        async function generateRecommendations(bloodData, userProfile) {
             if (!bloodData || !bloodData.analysisHTML) {
                 showNoDataMessage();
                 return;
@@ -831,14 +869,13 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
             const patientSummary = document.getElementById('patientSummary');
 
             patientSummary.innerHTML = `
-                <h3 class="section-title">Health Profile</h3>
-                <p>Recommendations based on your blood test from ${date}</p>
-                
-                <div id="loadingIndicator">
-                    <p>Generating personalized AI recommendations... <span class="spinner"></span></p>
-                </div>
-                <div id="abnormalParameters"></div>
-            `;
+        <h3 class="section-title">Health Profile</h3>
+        <p>Recommendations based on your blood test from ${date}</p>
+        <div id="loadingIndicator">
+            <p>Generating personalized AI recommendations... <span class="spinner"></span></p>
+        </div>
+        <div id="abnormalParameters"></div>
+    `;
 
             const abnormalParamsContainer = document.getElementById('abnormalParameters');
             testResults.forEach(result => {
@@ -916,16 +953,16 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
                 `;
             }
 
-            const aiRecommendations = await getGeminiRecommendations(bloodData);
+            const aiRecommendations = await getGeminiRecommendations(bloodData, userProfile); // Pass userProfile
             document.getElementById('loadingIndicator').style.display = 'none';
 
             if (!aiRecommendations) {
                 patientSummary.innerHTML += `
-                    <div class="parameter-card">
-                        <h3>Error</h3>
-                        <p>Unable to generate recommendations at this time. Please try again later.</p>
-                    </div>
-                `;
+            <div class="parameter-card">
+                <h3>Error</h3>
+                <p>Unable to generate recommendations at this time. Please try again later.</p>
+            </div>
+        `;
                 return;
             }
 

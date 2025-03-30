@@ -21,11 +21,14 @@ async function displayUserInfo() {
         if (error) throw error;
 
         if (user) {
-            // Display username (email or full name if available)
+            // Extract full name from raw_user_meta_data (key: fullName)
+            const fullName = user?.user_metadata?.fullName ||
+                user?.raw_user_meta_data?.fullName ||
+                user.email;
+
             const usernameElement = document.getElementById('username');
             if (usernameElement) {
-                const displayName = user.user_metadata.full_name || user.email;
-                usernameElement.textContent = displayName;
+                usernameElement.textContent = fullName;
             }
 
             // Add logout functionality
