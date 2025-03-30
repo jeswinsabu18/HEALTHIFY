@@ -1,7 +1,6 @@
-import { supabaseUrl, supabaseKey } from './config.js';
+import { supabase } from './config.js';
 
-// Changed from supabaseClient to supabase
-const supabaseAuth = supabase.createClient(supabaseUrl, supabaseKey);
+
 
 const form = document.getElementById('login');
 const submitBtn = document.getElementById('submitBtn');
@@ -17,7 +16,7 @@ form.addEventListener('submit', async function (e) {
     const password = document.getElementById('password').value;
 
     try {
-        const { data, error } = await supabaseAuth.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
             email: email,
             password: password
         });
@@ -69,7 +68,7 @@ form.addEventListener('submit', async function (e) {
 
 // Check if user is already logged in
 async function checkAuthState() {
-    const { data: { user } } = await supabaseAuth.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
     if (user) {
         window.location.href = 'home.html';
     }
@@ -77,7 +76,7 @@ async function checkAuthState() {
 
 checkAuthState();
 
-supabaseAuth.auth.onAuthStateChange((event, session) => {
+supabase.auth.onAuthStateChange((event, session) => {
     if (event === 'SIGNED_IN') {
         console.log('User signed in:', session.user);
     } else if (event === 'SIGNED_OUT') {

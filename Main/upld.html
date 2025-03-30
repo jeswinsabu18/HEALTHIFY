@@ -316,6 +316,8 @@
             <a href="home.html">Home</a>
             <a href="progress.html">Track Progress</a>
             <a href="diet&exercise.html">Diet & Exercise</a>
+            <a href="storage.html" aria-label="Storage">Storage</a>
+
         </nav>
 
         <div class="container">
@@ -350,6 +352,7 @@
 
     <script type="module">
 
+        import { supabase } from "./scripts/config.js";
         import { db } from "./scripts/firebase-storage-config.js";
         import { getCurrentUserId } from "./scripts/user-data-service.js";
         import {
@@ -745,7 +748,98 @@ ALWAYS include a Status column and ensure the status is determined after interpr
                         rawText: rawText
                     };
 
-                    // Save to Firestore
+                    // 1. Upload PDF to Supabase storage
+                    let supabaseFileUrl = null;
+                    if (pdfFile.files.length > 0) {
+                        try {
+                            const file = pdfFile.files[0];
+                            const fileExt = file.name.split('.').pop();
+                            const userId = await getCurrentUserId();
+                            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                            const filePath = `${userId}/${timestamp}_${file.name}`;
+
+                            console.log("Uploading file to Supabase storage:", filePath);
+
+                            // Get the current authenticated user
+                            const { data: { user } } = await supabase.auth.getUser();
+
+                            if (!user) {
+                                console.error("No authenticated user found");
+                                throw new Error("Authentication required for file upload");
+                            }
+
+                            // Upload to Supabase Storage 
+                            const { data: uploadData, error: uploadError } = await supabase.storage
+                                .from('blood-reports')
+                                .upload(`public/${filePath}`, file, {
+                                    cacheControl: '3600',
+                                    upsert: true,
+                                    contentType: file.type
+                                });
+
+                            if (uploadError) {
+                                console.error("Supabase storage upload error:", uploadError);
+
+                                // If bucket requires authenticated access for public folder
+                                if (uploadError.statusCode === 400 || uploadError.statusCode === 403) {
+                                    console.log("Attempting upload to authenticated folder...");
+
+                                    // Create folder with user ID if it doesn't exist
+                                    const userFolder = `${user.id}`;
+
+                                    const { data: userUploadData, error: userUploadError } = await supabase.storage
+                                        .from('blood-reports')
+                                        .upload(`${userFolder}/${filePath}`, file, {
+                                            upsert: true,
+                                            contentType: file.type
+                                        });
+
+                                    if (userUploadError) {
+                                        console.error("User folder upload also failed:", userUploadError);
+                                        throw userUploadError;
+                                    } else {
+                                        console.log("File uploaded to user folder successfully:", userUploadData);
+
+                                        // Get the URL - use createSignedUrl for private buckets
+                                        const { data: urlData, error: urlError } = await supabase.storage
+                                            .from('blood-reports')
+                                            .createSignedUrl(`${userFolder}/${filePath}`, 60 * 60 * 24 * 365); // 1 year expiry
+
+                                        if (urlError) {
+                                            console.error("Error creating signed URL:", urlError);
+                                        } else if (urlData) {
+                                            supabaseFileUrl = urlData.signedUrl;
+                                            console.log("Supabase signed file URL:", supabaseFileUrl);
+                                        }
+                                    }
+                                } else {
+                                    throw uploadError;
+                                }
+                            } else {
+                                console.log("File uploaded to public folder successfully:", uploadData);
+
+                                // Get the public URL of the uploaded file
+                                const { data: urlData } = supabase.storage
+                                    .from('blood-reports')
+                                    .getPublicUrl(`public/${filePath}`);
+
+                                if (urlData) {
+                                    supabaseFileUrl = urlData.publicUrl;
+                                    console.log("Supabase public file URL:", supabaseFileUrl);
+                                }
+                            }
+                        } catch (storageError) {
+                            console.error("Error uploading to Supabase storage:", storageError);
+                            // Continue execution even if Supabase upload fails
+                        }
+                    }
+
+                    // Add the Supabase file URL to the report data
+                    if (supabaseFileUrl) {
+                        reportData.pdfUrl = supabaseFileUrl;
+                    }
+
+                    // 2. Save to Firestore (as before)
                     const reportsRef = collection(db, "users", userId, "bloodReports");
                     const docRef = await addDoc(reportsRef, reportData);
 
