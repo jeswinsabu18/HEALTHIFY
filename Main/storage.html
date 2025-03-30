@@ -331,7 +331,6 @@
             const pdfList = document.getElementById('pdfList');
             const goBackButton = document.getElementById('goBackButton');
 
-            // Handle go back button
             goBackButton.addEventListener('click', function () {
                 window.location.href = 'home.html';
             });
@@ -348,60 +347,39 @@
                         return;
                     }
 
-                    // Extract correct file path
-                    let filePath = '';
-                    if (pdfUrl.includes('/storage/v1/object/public/')) {
-                        // Remove the 'public/' prefix from path
-                        filePath = pdfUrl.split('/storage/v1/object/public/')[1].split('?')[0];
-                        filePath = filePath.replace('public/', ''); // Remove duplicate public prefix
-                    } else {
-                        // Fallback for other URL formats
-                        const fileName = pdfUrl.split('/').pop().split('?')[0];
-                        filePath = `${userId}/${fileName}`;
-                    }
+                    let filePath = extractFilePathFromUrl(pdfUrl, userId);
 
-                    console.log("Final deletion path:", filePath);
-
-                    // 1. Delete from Supabase Storage
                     const { error: storageError } = await supabase.storage
                         .from('blood-reports')
                         .remove([filePath]);
 
                     if (storageError) throw storageError;
 
-                    // 2. Delete from Firestore
                     const reportRef = doc(db, "users", userId, "bloodReports", reportId);
                     await deleteDoc(reportRef);
 
-                    // 3. Force refresh the dashboard (workaround for cache)
                     await supabase.storage
                         .from('blood-reports')
                         .list('public', { limit: 1, offset: 0 });
 
-                    // 4. Refresh UI
                     await fetchUserPDFs();
-
                     alert("Report deleted successfully!");
                 } catch (error) {
                     console.error("Deletion failed:", error);
                     alert(`Deletion failed: ${error.message}`);
                 }
             }
-            // Helper function to extract file path from URL
+
             function extractFilePathFromUrl(pdfUrl, userId) {
-                // Case 1: Full public URL
                 if (pdfUrl.includes('/storage/v1/object/public/')) {
                     return pdfUrl.split('/storage/v1/object/public/')[1].split('?')[0];
                 }
-                // Case 2: Signed URL
                 else if (pdfUrl.includes('/storage/v1/object/')) {
                     return pdfUrl.split('/storage/v1/object/')[1].split('?')[0];
                 }
-                // Case 3: Already a path format
                 else if (pdfUrl.includes(`${userId}/`)) {
                     return pdfUrl;
                 }
-                // Case 4: Fallback - construct path from user ID and filename
                 else {
                     const fileName = pdfUrl.split('/').pop().split('?')[0];
                     return `${userId}/${fileName}`;
@@ -411,11 +389,11 @@
             async function fetchUserPDFs() {
                 try {
                     pdfList.innerHTML = `
-                    <div class="loading-container" id="loadingContainer">
-                        <div class="loader"></div>
-                        <p class="loading-text">Loading your reports...</p>
-                    </div>
-                `;
+                        <div class="loading-container" id="loadingContainer">
+                            <div class="loader"></div>
+                            <p class="loading-text">Loading your reports...</p>
+                        </div>
+                    `;
 
                     const startTime = Date.now();
                     const userId = await getCurrentUserId();
@@ -456,27 +434,26 @@
                         const pdfContainer = document.createElement('div');
                         pdfContainer.classList.add('pdf-container');
                         pdfContainer.innerHTML = `
-                        <h3 class="pdf-title">${fileName}</h3>
-                        <p class="pdf-date">Uploaded: ${reportDate}</p>
-                        <div class="pdf-actions">
-                            <button class="pdf-view-button" data-pdf-url="${pdfUrl}" data-report-id="${reportId}">View Report</button>
-                            <button class="pdf-delete-button" data-report-id="${reportId}" data-pdf-url="${pdfUrl}">
-                                <span class="delete-icon">🗑️</span> Delete
-                            </button>
-                        </div>
-                        <button class="toggle-details">
-                            <span class="toggle-icon">▼</span> Show Analysis
-                        </button>
-                        <div class="pdf-details">
-                            <div class="pdf-details-content analysis-content">
-                                ${analysisHTML}
+                            <h3 class="pdf-title">${fileName}</h3>
+                            <p class="pdf-date">Uploaded: ${reportDate}</p>
+                            <div class="pdf-actions">
+                                <button class="pdf-view-button" data-pdf-url="${pdfUrl}" data-report-id="${reportId}">View Report</button>
+                                <button class="pdf-delete-button" data-report-id="${reportId}" data-pdf-url="${pdfUrl}">
+                                    <span class="delete-icon">🗑️</span> Delete
+                                </button>
                             </div>
-                        </div>
-                    `;
+                            <button class="toggle-details">
+                                <span class="toggle-icon">▼</span> Show Analysis
+                            </button>
+                            <div class="pdf-details">
+                                <div class="pdf-details-content analysis-content">
+                                    ${analysisHTML}
+                                </div>
+                            </div>
+                        `;
 
                         pdfList.appendChild(pdfContainer);
 
-                        // Add toggle functionality
                         const toggleBtn = pdfContainer.querySelector('.toggle-details');
                         toggleBtn.addEventListener('click', () => {
                             pdfContainer.classList.toggle('expanded');
@@ -484,14 +461,31 @@
                                 '<span class="toggle-icon">▲</span> Hide Analysis' :
                                 '<span class="toggle-icon">▼</span> Show Analysis';
                         });
+
+                        const viewButton = pdfContainer.querySelector('.pdf-view-button');
+                        viewButton.addEventListener('click', () => {
+                            const pdfUrl = viewButton.getAttribute('data-pdf-url');
+                            if (pdfUrl) {
+                                window.open(pdfUrl, '_blank');
+                            } else {
+                                alert('PDF URL not available');
+                            }
+                        });
+
+                        const deleteButton = pdfContainer.querySelector('.pdf-delete-button');
+                        deleteButton.addEventListener('click', async () => {
+                            const reportId = deleteButton.getAttribute('data-report-id');
+                            const pdfUrl = deleteButton.getAttribute('data-pdf-url');
+                            await deleteReport(reportId, pdfUrl);
+                        });
                     });
 
-                    // [Rest of your existing event listeners remain the same]
                 } catch (error) {
                     console.error('Error fetching PDFs:', error);
                     showNoReportsMessage("Error Loading Reports", "We encountered a problem loading your reports. Please try again later.");
                 }
             }
+
             function showNoReportsMessage(title, message) {
                 pdfList.innerHTML = `
                     <div class="no-reports-container">
