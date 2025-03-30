@@ -1,8 +1,4 @@
-import { supabaseUrl, supabaseKey } from './config.js';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-
-// Create the Supabase client correctly
-const supabase = createClient(supabaseUrl, supabaseKey);
+import { supabase } from './config.js';
 
 // Function to handle logout
 async function handleLogout() {

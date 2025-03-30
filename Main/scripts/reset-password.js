@@ -1,6 +1,5 @@
-import { supabaseUrl, supabaseKey } from './config.js';
+import { supabase } from './config.js';
 
-const supabaseAuth = supabase.createClient(supabaseUrl, supabaseKey);
 
 document.getElementById('resetPasswordForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -12,7 +11,7 @@ document.getElementById('resetPasswordForm').addEventListener('submit', async (e
         submitBtn.disabled = true;
         submitBtn.textContent = 'Sending...';
 
-        const { error } = await supabaseAuth.auth.resetPasswordForEmail(email, {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
             redirectTo: `${window.location.origin}/update-password.html`,
         });
 

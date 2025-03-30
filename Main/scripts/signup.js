@@ -1,6 +1,6 @@
-import { supabaseUrl, supabaseKey } from './config.js';
+import { supabase } from './config.js';
 
-const supabaseAuth = supabase.createClient(supabaseUrl, supabaseKey);
+
 
 const form = document.getElementById('signup');
 
@@ -52,7 +52,7 @@ async function signUpWithSupabase(email, password, fullName, birthdate, gender, 
     const delay = 7000; // 7 seconds
 
     while (attempts < maxAttempts) {
-        const { user, error } = await supabaseAuth.auth.signUp({
+        const { user, error } = await supabase.auth.signUp({
             email,
             password,
             options: {
