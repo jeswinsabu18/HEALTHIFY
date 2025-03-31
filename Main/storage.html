@@ -295,12 +295,51 @@
         .analysis-content th {
             background-color: #f2f2f2;
         }
+
+        .Login {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        .user-info-link {
+            text-decoration: none;
+            color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .username {
+            font-size: 16px;
+            font-weight: bold;
+        }
     </style>
 </head>
 
 <body>
     <header>
         <button id="goBackButton" class="go-back-button">⬅ Go Back</button>
+
+        <div class="Login">
+            <a href="profile.html" class="user-info-link">
+                <div class="user-info">
+                    <img src="" alt="Profile Picture" class="profile-pic" id="profilePic">
+                    <span class="username" id="username"></span>
+                </div>
+            </a>
+        </div>
+
         <h1>Your Blood Report History</h1>
         <p>View or delete your previously uploaded blood test reports.</p>
     </header>
@@ -310,6 +349,7 @@
         <a href="upld.html">Upload Reports</a>
         <a href="progress.html">Track Progress</a>
         <a href="diet&exercise.html">Diet & Exercise</a>
+        <a href="#" id="logoutBtn" aria-label="Logout">Logout</a>
     </nav>
 
     <div class="container">
@@ -326,8 +366,13 @@
         import { db } from "./scripts/firebase-storage-config.js";
         import { getCurrentUserId } from "./scripts/user-data-service.js";
         import { collection, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+        import { checkAuthAndRedirect, displayUserInfo, handleLogout } from './scripts/auth.js';
 
         document.addEventListener('DOMContentLoaded', async function () {
+
+            const isLoggedIn = await checkAuthAndRedirect();
+            if (!isLoggedIn) return;
+
             const pdfList = document.getElementById('pdfList');
             const goBackButton = document.getElementById('goBackButton');
 

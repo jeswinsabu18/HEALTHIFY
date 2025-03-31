@@ -13,7 +13,6 @@ async function handleLogout() {
         alert('Error logging out. Please try again.');
     }
 }
-
 // Function to get and display user info
 async function displayUserInfo() {
     try {
@@ -29,6 +28,21 @@ async function displayUserInfo() {
             const usernameElement = document.getElementById('username');
             if (usernameElement) {
                 usernameElement.textContent = fullName;
+            }
+
+            // Add profile picture - use avatar URL directly from user metadata
+            const profilePic = document.getElementById('profilePic');
+            if (profilePic) {
+                // Get avatarUrl from metadata (matching how it's stored in profile.js)
+                const avatarUrl = user?.user_metadata?.avatarUrl ||
+                    user?.raw_user_meta_data?.avatarUrl;
+
+                if (avatarUrl) {
+                    profilePic.src = avatarUrl;
+                } else {
+                    // Set a default avatar if none exists
+                    profilePic.src = "./assets/default-avatar.png";
+                }
             }
 
             // Add logout functionality
