@@ -188,6 +188,15 @@
             text-align: center;
         }
 
+        #logoutBtn {
+            cursor: pointer;
+        }
+
+        #logoutBtn:hover {
+            background-color: #dc3545;
+        }
+
+
         .loader {
             border: 5px solid #f3f3f3;
             border-radius: 50%;
@@ -306,6 +315,118 @@
         .username {
             font-size: 16px;
             font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+
+            /* Container */
+            .container {
+                padding: 10px;
+            }
+
+            /* Header */
+            header {
+                padding: 0.5rem;
+            }
+
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            header p {
+                font-size: 0.9rem;
+            }
+
+            /* Navbar */
+            nav {
+                padding: 0.5rem;
+            }
+
+            nav a {
+                display: block;
+                margin: 0.5rem 0;
+                font-size: 1rem;
+                padding: 6px 10px;
+            }
+
+            /* PDF list */
+            .pdf-list {
+                gap: 15px;
+                margin-top: 20px;
+            }
+
+            .pdf-container {
+                padding: 15px;
+            }
+
+            .pdf-title {
+                font-size: 16px;
+            }
+
+            .pdf-date {
+                font-size: 12px;
+            }
+
+            .pdf-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .pdf-view-button,
+            .pdf-delete-button {
+                padding: 10px;
+                font-size: 12px;
+            }
+
+            .toggle-details {
+                font-size: 12px;
+            }
+
+            /* No reports container */
+            .no-reports-container {
+                padding: 20px;
+            }
+
+            .no-reports-icon {
+                font-size: 36px;
+            }
+
+            .no-reports-title {
+                font-size: 20px;
+            }
+
+            .no-reports-message {
+                font-size: 14px;
+            }
+
+            /* Loading container */
+            .loading-container {
+                padding: 20px;
+            }
+
+            .loader {
+                width: 40px;
+                height: 40px;
+            }
+
+            .loading-text {
+                font-size: 16px;
+            }
+
+            /* Login section */
+            .Login {
+                top: 0.5rem;
+                right: 0.5rem;
+            }
+
+            .profile-pic {
+                width: 30px;
+                height: 30px;
+            }
+
+            .username {
+                font-size: 14px;
+            }
         }
     </style>
 </head>

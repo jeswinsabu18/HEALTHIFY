@@ -135,6 +135,15 @@
                 background-color: #1f5f91;
             }
 
+            #logoutBtn {
+                cursor: pointer;
+            }
+
+            #logoutBtn:hover {
+                background-color: #dc3545;
+            }
+
+
             #analysisContent {
                 padding: 20px;
                 background-color: white;
@@ -320,6 +329,115 @@
             .username {
                 font-size: 16px;
                 font-weight: bold;
+            }
+
+            /* Add this at the end of the existing <style> section */
+            @media (max-width: 768px) {
+                .container {
+                    padding: 10px;
+                    /* Reduce padding for smaller screens */
+                }
+
+                header {
+                    padding: 0.5rem;
+                    /* Reduce header padding */
+                }
+
+                header h1 {
+                    font-size: 20px;
+                    /* Smaller header text */
+                }
+
+                header p {
+                    font-size: 14px;
+                    /* Smaller subtext */
+                }
+
+                nav {
+                    padding: 0.5rem;
+                    /* Reduce nav padding */
+                    display: flex;
+                    /* Ensure horizontal scrolling or stacking */
+                    flex-wrap: wrap;
+                    /* Allow wrapping if needed */
+                    justify-content: center;
+                }
+
+                nav a {
+                    margin: 0.5rem;
+                    /* Reduce margin between nav items */
+                    padding: 6px 10px;
+                    /* Smaller padding for nav links */
+                    font-size: 0.9rem;
+                    /* Smaller font size */
+                }
+
+                .upload-section,
+                .results-section {
+                    padding: 15px;
+                    /* Reduce padding */
+                }
+
+                .file-input-label,
+                .button {
+                    padding: 10px 15px;
+                    /* Smaller buttons */
+                    font-size: 14px;
+                    /* Smaller button text */
+                }
+
+                .button-container {
+                    flex-direction: column;
+                    /* Stack buttons vertically */
+                    gap: 10px;
+                    /* Reduce gap */
+                }
+
+                .Login {
+                    top: 0.5rem;
+                    /* Adjust login position */
+                    right: 0.5rem;
+                }
+
+                .profile-pic {
+                    width: 30px;
+                    /* Smaller profile picture */
+                    height: 30px;
+                }
+
+                .username {
+                    font-size: 12px;
+                    /* Smaller username text */
+                }
+
+                /* Ensure table is scrollable on small screens */
+                .results-table {
+                    display: block;
+                    overflow-x: auto;
+                    white-space: nowrap;
+                }
+            }
+
+            @media (max-width: 480px) {
+                header h1 {
+                    font-size: 18px;
+                }
+
+                nav a {
+                    font-size: 0.8rem;
+                    padding: 5px 8px;
+                }
+
+                .file-input-label,
+                .button {
+                    padding: 8px 12px;
+                    font-size: 12px;
+                }
+
+                .patient-info-grid {
+                    grid-template-columns: 1fr;
+                    /* Single column on very small screens */
+                }
             }
         </style>
     </head>

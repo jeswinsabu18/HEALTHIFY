@@ -402,8 +402,180 @@
       transition: background 0.3s, transform 0.2s;
     }
 
+
     #logoutBtn {
       cursor: pointer;
+    }
+
+    #logoutBtn:hover {
+      background-color: #dc3545;
+    }
+
+    /* Replace or add to existing media queries at the end of the <style> section */
+    @media (max-width: 768px) {
+      header {
+        padding: 1rem;
+        /* Reduce padding */
+      }
+
+      header h1 {
+        font-size: 1.8rem;
+        /* Smaller header */
+      }
+
+      header p {
+        font-size: 0.9rem;
+        /* Smaller subtext */
+      }
+
+      .logo {
+        width: 100px;
+        /* Smaller logo */
+      }
+
+      nav {
+        padding: 0.5rem;
+        overflow-x: auto;
+        /* Allow horizontal scrolling */
+        white-space: nowrap;
+      }
+
+      nav a {
+        margin: 0 0.5rem;
+        padding: 6px 10px;
+        font-size: 0.9rem;
+      }
+
+      .side-panel {
+        width: 200px;
+        /* Slightly narrower sidebar */
+        left: -200px;
+        /* Adjust for new width */
+      }
+
+      .side-panel a {
+        font-size: 16px;
+        /* Smaller sidebar links */
+        padding: 8px 12px;
+        width: 120px;
+        /* Narrower buttons */
+      }
+
+      .hero {
+        padding: 3rem 1rem;
+        /* Reduce padding */
+      }
+
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .hero p {
+        font-size: 1rem;
+      }
+
+      .features {
+        padding: 2rem 1rem;
+        gap: 1rem;
+      }
+
+      .feature-card {
+        width: 100%;
+        /* Full width on mobile */
+        max-width: 300px;
+      }
+
+      .card-image {
+        height: 150px;
+        /* Smaller image height */
+      }
+
+      .card-content {
+        padding: 1rem;
+      }
+
+      .card-content h2 {
+        font-size: 1.2rem;
+      }
+
+      .card-content p {
+        font-size: 0.9rem;
+      }
+
+      .card-button {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .Login {
+        top: 5px;
+        right: 10px;
+      }
+
+      .profile-pic {
+        width: 35px;
+        height: 35px;
+      }
+
+      .username {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+      }
+
+      .services-section {
+        padding: 3rem 1rem;
+      }
+
+      .section-header h2 {
+        font-size: 1.8rem;
+      }
+
+      .section-header p {
+        font-size: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header h1 {
+        font-size: 1.5rem;
+      }
+
+      nav a {
+        font-size: 0.8rem;
+        padding: 5px 8px;
+      }
+
+      .side-panel a {
+        font-size: 14px;
+        padding: 6px 10px;
+      }
+
+      .hero h1 {
+        font-size: 1.5rem;
+      }
+
+      .hero p {
+        font-size: 0.85rem;
+      }
+
+      .card-content h2 {
+        font-size: 1rem;
+      }
+
+      .card-button {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
+      }
+
+      .profile-pic {
+        width: 30px;
+        height: 30px;
+      }
+
+      .username {
+        font-size: 0.8rem;
+        padding: 5px 10px;
+      }
     }
 
 
