@@ -85,30 +85,6 @@
             display: none;
         }
 
-        /* Updated Go Back Button Styles */
-        .go-back-btn {
-            position: absolute;
-            top: 10px;
-            left: 20px;
-            background: #1f5f91;
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 5px;
-            font-size: 18px;
-            cursor: pointer;
-            z-index: 30;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.3s;
-        }
-
-        .go-back-btn:hover {
-            background: #143f6b;
-        }
 
         body::before {
             position: absolute;
@@ -177,14 +153,17 @@
             margin: 0 1rem;
             text-decoration: none;
             font-weight: bold;
+            font-size: 1.1rem;
             padding: 8px 12px;
             border-radius: 5px;
             transition: background 0.3s;
+            font-family: Arial, sans-serif;
         }
 
         nav a:hover {
             background-color: #1f5f91;
         }
+
 
         .username {
             color: white;
@@ -778,12 +757,13 @@
     </header>
 
     <nav>
-        <a href="#" id="logoutBtn" aria-label="Logout" onclick="event.preventDefault();">Logout</a>
+
         <a href="home.html" aria-label="Home" class="active">Home</a>
         <a href="upld.html" aria-label="Upload Reports">Upload Reports</a>
         <a href="progress.html" aria-label="Progress Tracking">Progress Tracking</a>
         <a href="diet&exercise.html" aria-label="Diet & Exercise">Diet & Exercise</a>
         <a href="storage.html" aria-label="Storage">Storage</a>
+        <a href="#" id="logoutBtn" aria-label="Logout" onclick="event.preventDefault();">Logout</a>
 
     </nav>
 
@@ -862,43 +842,6 @@
         <p>© 2025 Healthify Group of Management. All rights reserved.</p>
     </footer>
 
-    <!-- Hamburger Menu Button -->
-    <button class="menu-btn" id="menuBtn" onclick="toggleMenu()">
-        <div></div>
-        <div></div>
-        <div></div>
-    </button>
-
-    <!-- Side Panel with Go Back Arrow -->
-    <div class="side-panel" id="sidePanel" style="z-index: 1000;">
-        <button class="go-back-btn" id="goBackBtn" onclick="toggleMenu()">←</button>
-        <a href="details.html">Details</a>
-        <a href="profile.html">Profile</a>
-        <a href="#" id="logoutBtn">Logout</a>
-    </div>
-
-    <script>
-        function toggleMenu() {
-            const panel = document.getElementById('sidePanel');
-            const menuBtn = document.getElementById('menuBtn');
-            panel.classList.toggle('active');
-            menuBtn.style.display = panel.classList.contains('active') ? 'none' : 'block';
-        }
-
-        // Close sidebar when clicking outside
-        document.addEventListener('click', function (event) {
-            const panel = document.getElementById('sidePanel');
-            const menuBtn = document.getElementById('menuBtn');
-            const goBackBtn = document.getElementById('goBackBtn');
-            const isClickInsidePanel = panel.contains(event.target);
-            const isClickOnMenuBtn = menuBtn.contains(event.target);
-
-            if (panel.classList.contains('active') && !isClickInsidePanel && !isClickOnMenuBtn) {
-                panel.classList.remove('active');
-                menuBtn.style.display = 'block';
-            }
-        });
-    </script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script type="module" src="scripts/profile.js"></script>
 </body>

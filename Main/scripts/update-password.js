@@ -1,6 +1,5 @@
-import { supabaseUrl, supabaseAnonKey } from './config.js';
+import { supabase } from './config.js';
 
-const supabaseAuth = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
 document.getElementById('updatePasswordForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -25,7 +24,7 @@ document.getElementById('updatePasswordForm').addEventListener('submit', async (
         submitBtn.disabled = true;
         submitBtn.textContent = 'Updating...';
 
-        const { error } = await supabaseAuth.auth.updateUser({
+        const { error } = await supabase.auth.updateUser({
             password: password
         });
 

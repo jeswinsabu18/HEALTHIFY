@@ -69,34 +69,17 @@
             margin: 0 1rem;
             text-decoration: none;
             font-weight: bold;
+            font-size: 1.1rem;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: background 0.3s;
             font-family: Arial, sans-serif;
         }
 
-        .go-back-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 4px;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            transition: background-color 0.3s, transform 0.1s;
-            display: inline-block;
-            width: auto;
-            min-width: unset;
-            max-width: fit-content;
+        nav a:hover {
+            background-color: #1f5f91;
         }
 
-        .go-back-button:hover {
-            background-color: #1f5f91;
-            transform: scale(1.05);
-        }
 
         .tabs {
             display: flex;
@@ -430,10 +413,7 @@
                 box-shadow: none;
             }
 
-            .go-back-button,
-            .tabs {
-                display: none;
-            }
+
 
             .tab-content {
                 display: block !important;
@@ -479,9 +459,9 @@
 </head>
 
 <body>
+
     <div class="container">
         <header>
-            <button id="goBackButton" class="go-back-button">⬅ Go Back</button>
 
             <div class="Login">
                 <a href="profile.html" class="user-info-link">
@@ -653,12 +633,6 @@
                     }
                 });
             });
-
-            // Set up back button
-            const backButton = document.getElementById('goBackButton');
-            if (backButton) {
-                backButton.addEventListener('click', () => window.location.href = 'upld.html');
-            }
         }
 
         // Make sure only one event listener is set up

@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             return user;
         } catch (error) {
             console.error('Error checking auth status:', error);
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
             return null;
         }
     };
@@ -314,7 +314,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const handleLogout = async () => {
         try {
             await supabase.auth.signOut();
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         } catch (error) {
             console.error('Error signing out:', error);
             displayError('Failed to sign out. Please try again.');

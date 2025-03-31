@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthify - Verify Your Account</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.28.5/dist/umd/supabase.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #cce1ff 0%, #73b0ffce 100%);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: #dff6ffe4;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(232, 240, 242, 0.884);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(220, 236, 246, 0.647);
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(52, 152, 219, 0.2);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            animation: fade-in 1s ease-in-out;
+        }
+
+        .logo {
+            width: 120px;
+            height: auto;
+            border-radius: 50%;
+            padding: 8px;
+            background: linear-gradient(135deg, #5fb5ff, #79beff);
+            box-shadow: 0 8px 20px rgba(0, 123, 255, 0.2);
+            border: 2px solid #a3d6f74b;
+            animation: glow 1.5s infinite alternate;
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 8px 20px rgba(0, 123, 255, 0.2);
+            }
+
+            to {
+                box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+            }
+        }
+
+        @keyframes check-animation {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        h1 {
+            color: #3498db;
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            text-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        p {
+            font-size: 1rem;
+            color: #4d4d4d;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .verification-icon {
+            font-size: 5rem;
+            color: #2ecc71;
+            margin-bottom: 1rem;
+            animation: check-animation 0.8s ease-out;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 1rem;
+            width: 100%;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin: 0.5rem 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.856);
+            border: 1px solid rgba(255, 255, 255, 0.459);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(187, 228, 255, 0.825);
+            background: linear-gradient(135deg, #2980b9, #3498db);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(244, 248, 251, 0.932);
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+
+        .login-btn:hover {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        .otp-container {
+            display: flex;
+            justify-content: center;
+            margin: 1.5rem 0;
+            gap: 10px;
+        }
+
+        .otp-input {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 1.5rem;
+            border: 2px solid rgba(195, 218, 253, 0.705);
+            border-radius: 12px;
+            background-color: #ececec;
+            transition: all 0.3s ease;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: #3498db;
+            background-color: #f5f5f5;
+            box-shadow: 0 0 0 4px rgb(68, 165, 255, 0.3);
+        }
+
+        #error-message {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        #success-message {
+            color: #2ecc71;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .verification-section,
+        .success-section {
+            transition: all 0.5s ease;
+        }
+
+        .success-section {
+            display: none;
+        }
+
+        .loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .loading::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem;
+                margin: 1rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .otp-input {
+                width: 40px;
+                height: 50px;
+                font-size: a1.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <img src="./assets/Logo.webp.png" alt="Healthify Logo" class="logo">
+        </div>
+
+        <div class="verification-section">
+            <div class="icon">🔐</div>
+            <h1>Verify Your Account</h1>
+            <p>Enter the 6-digit verification code sent to your email address.</p>
+
+            <div id="error-message"></div>
+            <div id="success-message"></div>
+
+            <div class="otp-container">
+                <input type="text" class="otp-input" maxlength="1" id="otp-1" autofocus>
+                <input type="text" class="otp-input" maxlength="1" id="otp-2">
+                <input type="text" class="otp-input" maxlength="1" id="otp-3">
+                <input type="text" class="otp-input" maxlength="1" id="otp-4">
+                <input type="text" class="otp-input" maxlength="1" id="otp-5">
+                <input type="text" class="otp-input" maxlength="1" id="otp-6">
+            </div>
+
+            <button id="verify-btn" class="btn">Verify</button>
+            <button id="resend-btn" class="btn">Resend Code</button>
+        </div>
+
+        <div class="success-section">
+            <div class="verification-icon">✅</div>
+            <h1>Verification Successful!</h1>
+            <p>Thank you for verifying your account. Your account is now active.</p>
+            <p>You can now log in to your <strong>Healthify</strong> account and start your health journey.</p>
+
+            <a href="index.html" class="btn login-btn">Log In Now</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from "./scripts/config.js";
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Check if this page was loaded as a result of email verification
+            const hash = window.location.hash.substring(1);
+            const params = new URLSearchParams(hash);
+            const queryParams = new URLSearchParams(window.location.search);
+
+            // Get parameters from URL hash or query
+            const email = params.get('email') || queryParams.get('email') || localStorage.getItem('userEmail');
+            const token = params.get('token') || queryParams.get('token');
+            const type = params.get('type') || queryParams.get('type');
+
+            // Set up OTP input field behavior
+            setupOtpInputs();
+
+            // Verify button click handler
+            document.getElementById('verify-btn').addEventListener('click', function () {
+                verifyOTP();
+            });
+
+            // Resend button click handler
+            document.getElementById('resend-btn').addEventListener('click', async function () {
+                if (!email) {
+                    showError('No email found. Please try the verification link from your email again.');
+                    return;
+                }
+
+                const button = this;
+                button.disabled = true;
+                button.classList.add('loading');
+                button.textContent = '';
+
+                try {
+                    // Resend verification email/OTP using Supabase
+                    const { error } = await supabase.auth.resend({
+                        type: 'signup',
+                        email: email
+                    });
+
+                    if (error) {
+                        throw new Error(error.message);
+                    }
+
+                    showSuccess('Verification code resent! Please check your email.');
+                } catch (error) {
+                    showError('Error: ' + error.message);
+                } finally {
+                    button.disabled = false;
+                    button.classList.remove('loading');
+                    button.textContent = 'Resend Code';
+                }
+            });
+
+            // If email was provided and token matches expected pattern, handle it
+            if (email && token) {
+                // Pre-fill OTP if provided in the URL
+                if (token.length === 6 && /^\d+$/.test(token)) {
+                    prefillOTP(token);
+                }
+            }
+        });
+
+        // Set up OTP input fields for easy entry
+        function setupOtpInputs() {
+            const inputs = document.querySelectorAll('.otp-input');
+
+            inputs.forEach((input, index) => {
+                // Move to next input after entry
+                input.addEventListener('input', function () {
+                    if (this.value.length === 1) {
+                        if (index < inputs.length - 1) {
+                            inputs[index + 1].focus();
+                        }
+                    }
+                });
+
+                // Handle backspace
+                input.addEventListener('keydown', function (e) {
+                    if (e.key === 'Backspace' && !this.value && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                });
+
+                // Allow only numbers
+                input.addEventListener('input', function () {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                });
+            });
+        }
+
+        // Pre-fill OTP fields if token is provided
+        function prefillOTP(token) {
+            const digits = token.split('');
+            const inputs = document.querySelectorAll('.otp-input');
+
+            digits.forEach((digit, index) => {
+                if (index < inputs.length) {
+                    inputs[index].value = digit;
+                }
+            });
+        }
+
+        // Collect OTP from input fields
+        function getOTP() {
+            let otp = '';
+            const inputs = document.querySelectorAll('.otp-input');
+
+            inputs.forEach(input => {
+                otp += input.value;
+            });
+
+            return otp;
+        }
+
+        // Verify OTP with Supabase
+        async function verifyOTP() {
+            const otp = getOTP();
+
+            if (otp.length !== 6) {
+                showError('Please enter the complete 6-digit code');
+                return;
+            }
+
+            const button = document.getElementById('verify-btn');
+            button.disabled = true;
+            button.classList.add('loading');
+            button.textContent = '';
+
+            try {
+                // Get email from localStorage or URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const email = urlParams.get('email') || localStorage.getItem('userEmail');
+
+                if (!email) {
+                    throw new Error('No email found. Please try the verification link from your email again.');
+                }
+
+                // Verify the OTP with Supabase
+                const { data, error } = await supabase.auth.verifyOtp({
+                    email: email,
+                    token: otp,
+                    type: 'signup'
+                });
+
+                if (error) {
+                    throw new Error(error.message);
+                }
+
+                // Show success section
+                document.querySelector('.verification-section').style.display = 'none';
+                document.querySelector('.success-section').style.display = 'block';
+
+            } catch (error) {
+                showError('Verification failed: ' + error.message);
+                button.disabled = false;
+                button.classList.remove('loading');
+                button.textContent = 'Verify';
+            }
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorElement = document.getElementById('error-message');
+            const successElement = document.getElementById('success-message');
+
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            successElement.style.display = 'none';
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            const errorElement = document.getElementById('error-message');
+            const successElement = document.getElementById('success-message');
+
+            successElement.textContent = message;
+            successElement.style.display = 'block';
+            errorElement.style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>
