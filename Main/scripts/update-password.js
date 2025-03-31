@@ -53,6 +53,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // Show success message and redirect
                 successMessage.style.display = 'block';
+                // After successful password update
+                console.log('Password update successful!');
+                // You can also log the user in immediately to verify
+                const { error: signInError } = await supabase.auth.signInWithPassword({
+                    email: 'user@example.com', // Use the actual user email
+                    password: password
+                });
+                if (!signInError) {
+                    console.log('Login with new password successful!');
+                }
+
                 setTimeout(() => {
                     window.location.href = 'index.html';
                 }, 3000);
