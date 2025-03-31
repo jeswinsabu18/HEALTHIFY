@@ -146,12 +146,53 @@
                 transform: rotate(360deg);
             }
         }
+
+
+        .Login {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        .user-info-link {
+            text-decoration: none;
+            color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .username {
+            font-size: 16px;
+            font-weight: bold;
+        }
     </style>
 </head>
 
 <body>
 
+
     <header>
+
+        <div class="Login">
+            <a href="profile.html" class="user-info-link">
+                <div class="user-info">
+                    <img src="" alt="Profile Picture" class="profile-pic" id="profilePic">
+                    <span class="username" id="username"></span>
+                </div>
+            </a>
+        </div>
+
         <h1>Track Your Health Progress</h1>
         <p>Visualize your health trends over time with interactive charts.</p>
     </header>
@@ -161,6 +202,7 @@
         <a href="upld.html">Upload Reports</a>
         <a href="diet&exercise.html">Diet & Exercise</a>
         <a href="storage.html" aria-label="Storage">Storage</a>
+        <a href="#" id="logoutBtn" aria-label="Logout">Logout</a>
     </nav>
 
     <div class="chart-container">
@@ -203,6 +245,7 @@
             orderBy,
             getDocs
         } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+        import { checkAuthAndRedirect, displayUserInfo, handleLogout } from './scripts/auth.js';
 
         // Define global variables
         let activeCharts = {};
@@ -237,6 +280,10 @@
 
         // Initialize the application
         async function initializeApp() {
+
+            const isLoggedIn = await checkAuthAndRedirect();
+            if (!isLoggedIn) return;
+
             // Get references to the elements we need to control visibility
             const loadingIndicator = document.getElementById('loadingIndicator');
             const noDataMessage = document.getElementById('noDataMessage');

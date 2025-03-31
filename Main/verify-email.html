@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Verifying your email...</h2>
+        <div class="spinner" id="spinner"></div>
+        <p id="message"></p>
+    </div>
+
+    <script type="module">
+        // Import the Supabase client
+        import { createClient } from "https://esm.sh/@supabase/supabase-js";
+
+        // Supabase configuration
+        const supabaseUrl = 'https://prkeusllhjfxxbovdqjk.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBya2V1c2xsaGpmeHhib3ZkcWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE1MjcyMTgsImV4cCI6MjA1NzEwMzIxOH0.IsHvMd3pslFAucd7aw0y7sMtfflI-hP_oYtfn_-f4nY';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        // Get the token from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        console.log('Token:', token); // Debug: Log the token to ensure it's being extracted
+
+        // Elements for displaying messages
+        const messageElement = document.getElementById('message');
+        const spinnerElement = document.getElementById('spinner');
+
+        // Check if token exists
+        if (!token) {
+            spinnerElement.style.display = 'none';
+            messageElement.textContent = 'Error: No token provided in the URL.';
+            return; // This return is correctly placed inside the if block
+        }
+
+        // Verify the user with the token
+        async function verifyUser() {
+            try {
+                const { data, error } = await supabase.auth.verifyOtp({
+                    token_hash: token, // Use token_hash as required by Supabase
+                    type: 'signup' // This is for email confirmation after signup
+                });
+
+                if (error) {
+                    throw error;
+                }
+
+                // Successfully verified
+                spinnerElement.style.display = 'none';
+                messageElement.textContent = 'Email verified successfully! Redirecting...';
+
+                // Redirect to your app's homepage
+                setTimeout(() => {
+                    window.location.href = 'http://127.0.0.1:5500/HEALTHIFY/main/index.html'; // Replace with your app's homepage
+                }, 2000);
+
+            } catch (error) {
+                spinnerElement.style.display = 'none';
+                messageElement.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        // Run the verification
+        verifyUser();
+    </script>
+</body>
+
+</html>

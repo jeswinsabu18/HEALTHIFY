@@ -238,6 +238,35 @@
             border-radius: 50%;
         }
 
+        .Login {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        .user-info-link {
+            text-decoration: none;
+            color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .username {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
         .exercise-item:hover {
             background-color: #f0f7ff;
             /* Light blue hover effect */
@@ -442,6 +471,10 @@
                 padding: 0;
             }
         }
+
+        #logoutBtn:hover {
+            background-color: #dc3545;
+        }
     </style>
 </head>
 
@@ -449,6 +482,16 @@
     <div class="container">
         <header>
             <button id="goBackButton" class="go-back-button">⬅ Go Back</button>
+
+            <div class="Login">
+                <a href="profile.html" class="user-info-link">
+                    <div class="user-info">
+                        <img src="" alt="Profile Picture" class="profile-pic" id="profilePic">
+                        <span class="username" id="username"></span>
+                    </div>
+                </a>
+            </div>
+
             <h1>Diet & Exercise Recommendations</h1>
             <p>Personalized advice based on your blood test results.</p>
         </header>
@@ -458,6 +501,7 @@
             <a href="upld.html">Upload Reports</a>
             <a href="progress.html">Track Progress</a>
             <a href="storage.html" aria-label="Storage">Storage</a>
+            <a href="#" id="logoutBtn" aria-label="Logout">Logout</a>
 
         </nav>
 
@@ -505,6 +549,7 @@
 
     </div>
     <script type="module">
+        import { checkAuthAndRedirect, displayUserInfo, handleLogout } from './scripts/auth.js';
         import { db } from "./scripts/firebase-storage-config.js";
         import { getCurrentUserId, isAuthenticated } from "./scripts/user-data-service.js";
         import { supabase } from "./scripts/config.js"; // Add this import
@@ -539,47 +584,32 @@
         };
 
         async function initializeApp() {
-            try {
-                const isLoggedIn = await isAuthenticated();
-                if (!isLoggedIn) {
-                    window.location.href = 'index.html';
-                    return;
-                }
+            const isLoggedIn = await checkAuthAndRedirect();
+            if (!isLoggedIn) return;
 
-                const userProfile = await fetchUserProfile();
-                if (!userProfile) {
-                    console.warn("User profile not loaded; proceeding with default recommendations.");
-                } else {
-                    console.log("User profile loaded:", userProfile);
-                }
+            const userProfile = await fetchUserProfile();
+            if (!userProfile) {
+                console.warn("User profile not loaded; proceeding with default recommendations.");
+            } else {
+                console.log("User profile loaded:", userProfile);
+            }
 
-                initializeUI();
+            initializeUI();
 
-                document.getElementById('patientSummary').innerHTML = `
-            <div class="parameter-card">
-                <h3>Loading Data</h3>
-                <p>Fetching your latest blood test data... <span class="spinner"></span></p>
-            </div>
-        `;
+            document.getElementById('patientSummary').innerHTML = `
+        <div class="parameter-card">
+            <h3>Loading Data</h3>
+            <p>Fetching your latest blood test data... <span class="spinner"></span></p>
+        </div>
+    `;
 
-                const latestReport = await getLatestBloodReport();
-                if (latestReport) {
-                    generateRecommendations(latestReport, userProfile);
-                } else {
-                    showNoDataMessage();
-                }
-            } catch (error) {
-                console.error("Error initializing application:", error);
-                document.getElementById('patientSummary').innerHTML = `
-            <div class="parameter-card">
-                <h3>Error</h3>
-                <p>An error occurred while loading the application. Please try again later.</p>
-            </div>
-        `;
+            const latestReport = await getLatestBloodReport();
+            if (latestReport) {
+                generateRecommendations(latestReport, userProfile);
+            } else {
+                showNoDataMessage();
             }
         }
-
-
         // Function to fetch user profile from Supabase
         async function fetchUserProfile() {
             try {

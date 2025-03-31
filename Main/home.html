@@ -347,6 +347,50 @@
       margin-top: 2rem;
     }
 
+    .user-info-link {
+      text-decoration: none;
+      display: block;
+      transition: transform 0.2s;
+    }
+
+    .user-info-link:hover {
+      transform: scale(1.05);
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .profile-pic {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid white;
+    }
+
+    .username {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: white;
+      text-align: center;
+    }
+
+    /* Adjust for mobile */
+    @media (max-width: 768px) {
+      .profile-pic {
+        width: 40px;
+        height: 40px;
+      }
+
+      .username {
+        font-size: 0.85rem;
+      }
+    }
+
     .username {
       color: white;
       padding: 8px 20px;
@@ -362,9 +406,8 @@
       cursor: pointer;
     }
 
-    #logoutBtn:hover {
-      background-color: #dc3545;
-    }
+
+
 
     .services-section {
       background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
@@ -664,21 +707,27 @@
 <body>
   <header>
     <div class="Login">
-      <a href="profile.html" class="username" id="username"></a>
+      <a href="profile.html" class="user-info-link">
+        <div class="user-info">
+          <img src="" alt="Profile Picture" class="profile-pic" id="profilePic">
+          <span class="username" id="username"></span>
+        </div>
+      </a>
     </div>
+
     <img src="./assets/Logo.webp.png" alt="Website Logo" class="logo" onclick="location.href='details.html';">
     <h1>Health Management Platform</h1>
     <p>Analyze your health reports and get personalized recommendations</p>
   </header>
 
   <nav>
-    <a href="#" id="logoutBtn" aria-label="Logout" onclick="event.preventDefault();">Logout</a>
+
     <a href="upld.html" aria-label="Upload Reports">Upload Reports</a>
     <a href="progress.html" aria-label="Progress Tracking">Progress Tracking</a>
     <a href="diet&exercise.html" aria-label="Diet & Exercise">Diet & Exercise</a>
     <a href="storage.html" aria-label="Storage">Storage</a>
     <a href="profile.html" aria-label="Profile">Profile</a>
-
+    <a href="#" id="logoutBtn" aria-label="Logout" onclick="event.preventDefault();">Logout</a>
   </nav>
 
   <div class="hero">
@@ -741,27 +790,10 @@
     <p>© 2025 Healthify Group of Management. All rights reserved.</p>
   </footer>
 
-  <!-- Hamburger Menu Button -->
-  <button class="menu-btn" id="menuBtn" onclick="toggleMenu()">
-    <div></div>
-    <div></div>
-    <div></div>
-  </button>
 
-  <!-- Side Panel with Go Back Arrow -->
-  <div class="side-panel" id="sidePanel" style="z-index: 1000;">
-    <button class="go-back-btn" id="goBackBtn" onclick="toggleMenu()">←</button>
-    <a href="details.html">Details</a>
-    <a href="#" id="logoutBtn">Logout</a>
-  </div>
 
   <script>
-    function toggleMenu() {
-      const panel = document.getElementById('sidePanel');
-      const menuBtn = document.getElementById('menuBtn');
-      panel.classList.toggle('active');
-      menuBtn.style.display = panel.classList.contains('active') ? 'none' : 'block';
-    }
+
 
     // Close sidebar when clicking outside
     document.addEventListener('click', function (event) {

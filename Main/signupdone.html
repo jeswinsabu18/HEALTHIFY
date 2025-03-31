@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthify - Verify Your Email</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.28.5/dist/umd/supabase.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #cce1ff 0%, #73b0ffce 100%);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: #dff6ffe4;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(232, 240, 242, 0.884);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(220, 236, 246, 0.647);
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(52, 152, 219, 0.2);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            animation: fade-in 1s ease-in-out;
+        }
+
+        .logo {
+            width: 120px;
+            height: auto;
+            border-radius: 50%;
+            padding: 8px;
+            background: linear-gradient(135deg, #5fb5ff, #79beff);
+            box-shadow: 0 8px 20px rgba(0, 123, 255, 0.2);
+            border: 2px solid #a3d6f74b;
+            animation: glow 1.5s infinite alternate;
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 8px 20px rgba(0, 123, 255, 0.2);
+            }
+
+            to {
+                box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+            }
+        }
+
+        h1 {
+            color: #3498db;
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            text-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        p {
+            font-size: 1rem;
+            color: #4d4d4d;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .icon {
+            font-size: 3rem;
+            color: #ffa500;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 1rem;
+            width: 48%;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.856);
+            border: 1px solid rgba(255, 255, 255, 0.459);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(187, 228, 255, 0.825);
+            background: linear-gradient(135deg, #2980b9, #3498db);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(244, 248, 251, 0.932);
+        }
+
+        .home-btn {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+
+        .home-btn:hover {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        .resend-btn {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            width: 100%;
+        }
+
+        .resend-btn:hover {
+            background: linear-gradient(135deg, #d35400, #e67e22);
+        }
+
+        .note {
+            font-size: 0.9rem;
+            color: #7a7a7a;
+            margin-top: 1.5rem;
+        }
+
+        .loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .loading::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem;
+                margin: 1rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <img src="./assets/Logo.webp.png" alt="Healthify Logo" class="logo">
+        </div>
+
+        <div class="icon">📧</div>
+        <h1>Verify Your Email</h1>
+        <p>Thank you for signing up with <strong>Healthify</strong>!</p>
+        <p>We’ve sent a confirmation email to your registered email address.</p>
+        <p>Please check your inbox (and spam/junk folder) and click on the verification link to complete your signup.
+        </p>
+
+        <a href="https://mail.google.com/" target="_blank" class="btn">Go to Gmail</a>
+        <a href="index.html" class="btn home-btn">Go Back to Login</a>
+        <button id="resendVerification" class="btn resend-btn">Resend Verification Email</button>
+
+        <p class="note">If you didn’t receive the email, click the button above to resend the verification link.</p>
+    </div>
+
+    <script type="module">
+        import { supabase } from "./scripts/config.js";
+
+        document.getElementById('resendVerification').addEventListener('click', async function () {
+            const button = this;
+            button.disabled = true;
+            button.classList.add('loading');
+            button.textContent = 'Sending...';
+
+            try {
+                // Retrieve email from local storage
+                const email = localStorage.getItem('userEmail');
+                if (!email) {
+                    throw new Error('No email found. Please sign up again.');
+                }
+
+                // Resend verification email using Supabase
+                const { error } = await supabase.auth.resend({
+                    type: 'signup',
+                    email: email
+                });
+
+                if (error) {
+                    throw new Error(error.message);
+                }
+
+                alert('Verification email resent successfully! Please check your inbox.');
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                button.disabled = false;
+                button.classList.remove('loading');
+                button.textContent = 'Resend Verification Email';
+            }
+        });
+    </script>
+</body>
+
+</html>
