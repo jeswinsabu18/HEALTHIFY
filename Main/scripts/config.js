@@ -6,4 +6,4 @@ const supabaseUrl = 'https://prkeusllhjfxxbovdqjk.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBya2V1c2xsaGpmeHhib3ZkcWprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE1MjcyMTgsImV4cCI6MjA1NzEwMzIxOH0.IsHvMd3pslFAucd7aw0y7sMtfflI-hP_oYtfn_-f4nY';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-export { supabase };
+export { supabase, supabaseKey, supabaseUrl };

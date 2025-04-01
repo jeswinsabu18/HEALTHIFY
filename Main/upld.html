@@ -135,6 +135,15 @@
                 background-color: #1f5f91;
             }
 
+            #logoutBtn {
+                cursor: pointer;
+            }
+
+            #logoutBtn:hover {
+                background-color: #dc3545;
+            }
+
+
             #analysisContent {
                 padding: 20px;
                 background-color: white;
@@ -320,6 +329,115 @@
             .username {
                 font-size: 16px;
                 font-weight: bold;
+            }
+
+            /* Add this at the end of the existing <style> section */
+            @media (max-width: 768px) {
+                .container {
+                    padding: 10px;
+                    /* Reduce padding for smaller screens */
+                }
+
+                header {
+                    padding: 0.5rem;
+                    /* Reduce header padding */
+                }
+
+                header h1 {
+                    font-size: 20px;
+                    /* Smaller header text */
+                }
+
+                header p {
+                    font-size: 14px;
+                    /* Smaller subtext */
+                }
+
+                nav {
+                    padding: 0.5rem;
+                    /* Reduce nav padding */
+                    display: flex;
+                    /* Ensure horizontal scrolling or stacking */
+                    flex-wrap: wrap;
+                    /* Allow wrapping if needed */
+                    justify-content: center;
+                }
+
+                nav a {
+                    margin: 0.5rem;
+                    /* Reduce margin between nav items */
+                    padding: 6px 10px;
+                    /* Smaller padding for nav links */
+                    font-size: 0.9rem;
+                    /* Smaller font size */
+                }
+
+                .upload-section,
+                .results-section {
+                    padding: 15px;
+                    /* Reduce padding */
+                }
+
+                .file-input-label,
+                .button {
+                    padding: 10px 15px;
+                    /* Smaller buttons */
+                    font-size: 14px;
+                    /* Smaller button text */
+                }
+
+                .button-container {
+                    flex-direction: column;
+                    /* Stack buttons vertically */
+                    gap: 10px;
+                    /* Reduce gap */
+                }
+
+                .Login {
+                    top: 0.5rem;
+                    /* Adjust login position */
+                    right: 0.5rem;
+                }
+
+                .profile-pic {
+                    width: 30px;
+                    /* Smaller profile picture */
+                    height: 30px;
+                }
+
+                .username {
+                    font-size: 12px;
+                    /* Smaller username text */
+                }
+
+                /* Ensure table is scrollable on small screens */
+                .results-table {
+                    display: block;
+                    overflow-x: auto;
+                    white-space: nowrap;
+                }
+            }
+
+            @media (max-width: 480px) {
+                header h1 {
+                    font-size: 18px;
+                }
+
+                nav a {
+                    font-size: 0.8rem;
+                    padding: 5px 8px;
+                }
+
+                .file-input-label,
+                .button {
+                    padding: 8px 12px;
+                    font-size: 12px;
+                }
+
+                .patient-info-grid {
+                    grid-template-columns: 1fr;
+                    /* Single column on very small screens */
+                }
             }
         </style>
     </head>
@@ -573,37 +691,37 @@
 
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
 
-                    // Calculate age from birthdate if available
                     let age = null;
                     if (userProfile?.birthdate) {
                         const birthDate = new Date(userProfile.birthdate);
                         age = new Date().getFullYear() - birthDate.getFullYear();
                     }
 
-                    // Construct personalized prompt
                     const instructions = `
-Analyze this blood test report PDF and provide a detailed, structured analysis with personalized insights based on the following user profile:
-- Age: ${age || 'Not provided'}
-- Gender: ${userProfile?.gender || 'Not provided'}
-- Weight: ${userProfile?.weight ? `${userProfile.weight} kg` : 'Not provided'}
-- Height: ${userProfile?.height ? `${userProfile.height} cm` : 'Not provided'}
-- Medical History: ${userProfile?.medicalInfo || 'Not provided'}
+Analyze this PDF and first determine if it is a blood test report. If it is not a blood test report, return this exact message as the first line followed by an additional line:
+<div class="error-message">This document does not appear to be a blood test report.</div>
+<div>Please upload a valid blood test report PDF for analysis.</div>
 
-Follow these rules:
-1. Extract and present patient information first (name, age, sex, ID, etc.) in a structured format. Blur out major portions of the patient's full name and ID for privacy.
-2. Extract test results and present them in a table with these columns:
-   - Test Name/Parameter
-   - Result (numeric value only, after interpreting units)
-   - Unit (e.g., gm/dl, millions/cumm, x1000/cumm, etc.)
-   - Reference Range (numeric range after interpreting units)
-   - Status (must be one of: Normal, High, Low, or Borderline)
-3. For test values with "x1000/cumm" (e.g., Platelet Count (PLC), Total Leucocyte Count (TLC)):
-   - Interpret the value by multiplying by 1000 (e.g., "251 x1000/cumm" should be extracted as 251000).
-   - Interpret the reference range in the same unit (e.g., "150 - 450" for PLC means 150000 - 450000).
-   - Compare the adjusted value to the adjusted range to determine the status.
-4. For each abnormal value (High or Low), provide a brief interpretation (1-2 lines max) in a separate section, considering the user's age, gender, weight, height, and medical history.
-5. Provide 3-4 personalized recommendations based on abnormal findings and the user profile.
-6. Format your response as HTML - DO NOT include code block markers.
+If it is a blood test report, proceed with the following analysis:
+- Extract and present patient information first (name, age, sex, ID, etc.) in a structured format. Blur out major portions of the patient's full name and ID for privacy.
+- Extract test results and present them in a table with these columns:
+  - Test Name/Parameter
+  - Result (numeric value only, after interpreting units)
+  - Unit (e.g., gm/dl, millions/cumm, x1000/cumm, etc.)
+  - Reference Range (numeric range after interpreting units)
+  - Status (must be one of: Normal, High, Low, or Borderline)
+- For test values with "x1000/cumm" (e.g., Platelet Count (PLC), Total Leucocyte Count (TLC)):
+  - Interpret the value by multiplying by 1000 (e.g., "251 x1000/cumm" should be extracted as 251000).
+  - Interpret the reference range in the same unit (e.g., "150 - 450" for PLC means 150000 - 450000).
+  - Compare the adjusted value to the adjusted range to determine the status.
+- For each abnormal value (High or Low), provide a brief interpretation (1-2 lines max) in a separate section, considering the user's age, gender, weight, height, and medical history:
+  - Age: ${age || 'Not provided'}
+  - Gender: ${userProfile?.gender || 'Not provided'}
+  - Weight: ${userProfile?.weight ? `${userProfile.weight} kg` : 'Not provided'}
+  - Height: ${userProfile?.height ? `${userProfile.height} cm` : 'Not provided'}
+  - Medical History: ${userProfile?.medicalInfo || 'Not provided'}
+- Provide 3-4 personalized recommendations based on abnormal findings and the user profile.
+- Format your response as HTML - DO NOT include code block markers.
 
 Use this structure and these HTML classes:
 - <div class="patient-info"> for patient details
@@ -616,27 +734,6 @@ Use this structure and these HTML classes:
   - class="high" for High
   - class="low" for Low
   - class="borderline" for Borderline
-
-Example table row for Platelet Count (PLC):
-<tr>
-  <td>PLC</td>
-  <td>251000</td>
-  <td>per microliter</td>
-  <td>150000 - 450000</td>
-  <td class="normal">Normal</td>
-</tr>
-
-IMPORTANT: Adjust reference ranges and interpretations based on the user's age and gender where applicable (e.g., hemoglobin ranges differ for men and women). Be thorough in examining all test values, paying special attention to:
-- Hemoglobin (HB)
-- PCV (Hematocrit)
-- Total Leucocyte Count (TLC)
-- Platelet Count (PLC)
-- Creatinine
-- Blood Sugar (Glucose)
-- HbA1c
-- Lipid Profile (Cholesterol, Triglycerides, etc.)
-
-ALWAYS include a Status column and ensure the status is determined after interpreting the units correctly.
 `;
 
                     const requestBody = {
@@ -688,6 +785,7 @@ ALWAYS include a Status column and ensure the status is determined after interpr
                     throw new Error('Failed to analyze with Gemini API: ' + error.message);
                 }
             }
+
             function extractTestValues(rawText, analysisHTML) {
                 let extractedValues = {};
 

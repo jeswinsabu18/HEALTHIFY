@@ -51,6 +51,15 @@
             background-color: #1f5f91;
         }
 
+        #logoutBtn {
+            cursor: pointer;
+        }
+
+        #logoutBtn:hover {
+            background-color: #dc3545;
+        }
+
+
 
         .chart-container {
             width: 90%;
@@ -185,6 +194,132 @@
         .username {
             font-size: 16px;
             font-weight: bold;
+        }
+
+        /* Add this at the end of the existing <style> section */
+        @media (max-width: 768px) {
+            header {
+                padding: 0.5rem;
+                /* Reduce padding */
+            }
+
+            header h1 {
+                font-size: 1.5rem;
+                /* Smaller header */
+            }
+
+            header p {
+                font-size: 0.9rem;
+                /* Smaller subtext */
+            }
+
+            nav {
+                padding: 0.5rem;
+                display: flex;
+                flex-wrap: wrap;
+                /* Allow wrapping */
+                justify-content: center;
+            }
+
+            nav Withdrawal {
+                margin: 0.5rem;
+                padding: 6px 10px;
+                font-size: 0.9rem;
+            }
+
+            .chart-container {
+                width: 95%;
+                /* Slightly wider on mobile */
+                padding: 0.5rem;
+            }
+
+            .individual-chart {
+                height: 250px;
+                /* Reduce chart height */
+            }
+
+            .chart-controls {
+                padding: 0.3rem;
+                display: flex;
+                flex-wrap: wrap;
+                /* Allow toggle buttons to wrap */
+                justify-content: center;
+            }
+
+            .test-toggle {
+                margin: 0.3rem;
+                padding: 0.4rem 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            #loadingIndicator p {
+                font-size: 1.2rem;
+                /* Smaller loading text */
+            }
+
+            #loadingIndicator.loading::after {
+                width: 30px;
+                /* Smaller spinner */
+                height: 30px;
+                border-width: 4px;
+            }
+
+            .Login {
+                top: 0.5rem;
+                right: 0.5rem;
+            }
+
+            .profile-pic {
+                width: 30px;
+                height: 30px;
+            }
+
+            .username {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.2rem;
+            }
+
+            nav a {
+                font-size: 0.8rem;
+                padding: 5px 8px;
+            }
+
+            .chart-container h2 {
+                font-size: 1.2rem;
+            }
+
+            .individual-chart {
+                height: 200px;
+                /* Further reduce chart height */
+            }
+
+            .test-toggle {
+                font-size: 0.8rem;
+                padding: 0.3rem 0.6rem;
+            }
+
+            #noDataMessage p {
+                font-size: 0.9rem;
+            }
+
+            #noDataMessage .button {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            .profile-pic {
+                width: 25px;
+                height: 25px;
+            }
+
+            .username {
+                font-size: 10px;
+            }
         }
     </style>
 </head>

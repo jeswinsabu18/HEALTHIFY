@@ -723,24 +723,144 @@
             }
         }
 
-        /* Responsive styles */
+
+
         @media (max-width: 768px) {
+
+            /* Body and container */
             .profile-container {
-                margin: 2rem 1rem;
+                margin: 1rem;
                 padding: 1.5rem;
+                border-radius: 10px;
             }
 
+            /* Header */
+            header {
+                padding: 1rem;
+            }
+
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            header p {
+                font-size: 0.9rem;
+            }
+
+            .logo {
+                width: 120px;
+            }
+
+            /* Navbar */
+            nav {
+                padding: 0.5rem;
+            }
+
+            nav a {
+                display: block;
+                margin: 0.5rem 0;
+                font-size: 1rem;
+                padding: 6px 10px;
+            }
+
+            /* Sidebar */
+            .side-panel {
+                width: 200px;
+                left: -200px;
+            }
+
+            .side-panel a {
+                font-size: 16px;
+                padding: 8px 12px;
+                width: 100%;
+            }
+
+            .menu-btn {
+                left: 10px;
+                top: 5px;
+            }
+
+            .menu-btn div {
+                width: 25px;
+                margin: 5px 0;
+            }
+
+            /* Profile title */
+            .profile-title {
+                font-size: 1.8rem;
+            }
+
+            .profile-title::after {
+                width: 40px;
+            }
+
+            /* Form adjustments */
             .form-row {
                 flex-direction: column;
                 gap: 0;
             }
 
+            .form-group,
+            .form-col {
+                margin-bottom: 1rem;
+            }
+
+            .form-control {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            .form-group label,
+            .form-col label {
+                font-size: 0.9rem;
+            }
+
+            /* Avatar */
+            .avatar-wrapper {
+                width: 120px;
+                height: 120px;
+            }
+
+            .avatar-preview {
+                border-width: 2px;
+            }
+
+            .upload-label span {
+                font-size: 0.9rem;
+            }
+
+            .file-size-info {
+                font-size: 0.7rem;
+            }
+
+            /* Buttons */
             .btn-update {
+                padding: 10px 20px;
+                font-size: 0.9rem;
                 width: 100%;
             }
 
-            .profile-title {
-                font-size: 1.5rem;
+            /* Messages and spinner */
+            .success-message,
+            .error-message {
+                font-size: 0.8rem;
+                padding: 8px 12px;
+            }
+
+            .spinner {
+                width: 30px;
+                height: 30px;
+            }
+
+            /* Login */
+            .Login {
+                top: 5px;
+                right: 10px;
+            }
+
+            .username {
+                font-size: 14px;
+                padding: 6px 15px;
             }
         }
     </style>
