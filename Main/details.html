@@ -1,112 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About Us - Health Management Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
     }
+
     body {
-      font-family: Arial, sans-serif;
-      background-color: #121212;
-      color: white;
-      text-align: center;
-      padding: 2rem;
-    }
-    .container {
-      max-width: 800px;
-      margin: auto;
-      background: #1e1e1e;
+      background: linear-gradient(135deg, #cce1ff 0%, #73b0ffce 100%);
+      margin: 0;
       padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
-    h1, h2 {
-      color: #4CAF50;
+
+    .container {
+      background: #dff6ffe4;
+      padding: 2.5rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(232, 240, 242, 0.884);
+      max-width: 800px;
+      width: 100%;
+      text-align: center;
+      border: 1px solid rgba(220, 236, 246, 0.647);
+      transform: translateY(0);
+      transition: all 0.3s ease;
     }
+
+    .container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(52, 152, 219, 0.2);
+    }
+
+    h1,
+    h2 {
+      color: #3498db;
+      font-weight: 600;
+      text-shadow: 0 2px 10px rgba(52, 152, 219, 0.3);
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h2 {
+      font-size: 1.6rem;
+      margin: 1.5rem 0 1rem;
+    }
+
+    p {
+      color: #4d4d4d;
+      font-size: 1rem;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+
     .founders {
       display: flex;
       justify-content: space-around;
       flex-wrap: wrap;
       margin-top: 20px;
     }
+
     .founder {
       max-width: 250px;
       margin: 10px;
-      padding: 10px;
-      background: #333;
-      border-radius: 8px;
+      padding: 1rem;
+      background: #ececec;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+      transition: all 0.3s ease;
     }
+
+    .founder:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(187, 228, 255, 0.825);
+    }
+
     .founder img {
       width: 100px;
       height: 100px;
       border-radius: 50%;
+      background: linear-gradient(135deg, #5fb5ff, #79beff);
+      padding: 8px;
+      box-shadow: 0 8px 20px rgba(0, 123, 255, 0.2);
+      border: 2px solid #a3d6f74b;
     }
+
     .home-btn {
       display: inline-block;
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: #4CAF50;
+      margin-top: 1.5rem;
+      padding: 1rem 2rem;
+      background: linear-gradient(135deg, #2ecc71, #27ae60);
       color: white;
       text-decoration: none;
-      border-radius: 5px;
-      box-shadow: 0 0 5px white;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.856);
+      border: 1px solid rgba(255, 255, 255, 0.459);
     }
+
     .home-btn:hover {
-      background: #45a049;
+      background: linear-gradient(135deg, #27ae60, #2ecc71);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(187, 228, 255, 0.825);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 2rem;
+        margin: 1rem;
+      }
+
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      h2 {
+        font-size: 1.4rem;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <h1>About Our Health Management Platform</h1>
-    
+
     <h2>Purpose</h2>
-    <p>Healthify is a web-based platform designed to help users manage their health by securely storing and analyzing full-body health reports. The system provides AI-powered personalized diet and exercise recommendations while tracking users' progress through data visualization tools. The goal is to empower users to take proactive control of their well-being.</p>
-    
+    <p>Healthify is a web-based platform designed to help users manage their health by securely storing and analyzing
+      full-body health reports. The system provides AI-powered personalized diet and exercise recommendations while
+      tracking users' progress through data visualization tools. The goal is to empower users to take proactive control
+      of their well-being.</p>
+
     <h2>Product Perspective</h2>
-    <p>Healthify is a self-contained, cloud-based health management platform to enhance health tracking and provide deeper insights. It does not rely on any wearable devices but instead utilizes uploaded health reports for AI-driven analysis. The platform operates independently and is designed for seamless user interaction through a web-based interface.</p>
-    
+    <p>Healthify is a self-contained, cloud-based health management platform to enhance health tracking and provide
+      deeper insights. It does not rely on any wearable devices but instead utilizes uploaded health reports for
+      AI-driven analysis. The platform operates independently and is designed for seamless user interaction through a
+      web-based interface.</p>
+
     <h2>Product Functions</h2>
     <p>• Secure Upload & Storage: Users can upload full-body health reports for analysis.</p>
     <p>• AI-Driven Analysis: AI algorithms generate personalized health insights.</p>
     <p>• Visualization Tools: Charts and graphs help users track progress.</p>
     <p>• Recommendation Engine: Personalized diet and exercise plans are created based on health metrics.</p>
     <p>• User Authentication: Secure login and data access control.</p>
-    
-    <h2>Our Founders</h2>
-    <div class="founders">
-      <div class="founder">
-        <img src="founder1.jpg" alt="Stephin Mathew">
-        <h3>Stephin Mathew</h3>
-        <p>SJC22CS120</p>
-      </div>
-      <div class="founder">
-        <img src="founder2.jpg" alt="Prapanch J">
-        <h3>Prapanch J</h3>
-        <p>SJC22CS100</p>
-      </div>
-      <div class="founder">
-        <img src="founder3.jpg" alt="Kevin Biju">
-        <h3>Kevin Biju</h3>
-        <p>SJC22CS076</p>
-      </div>
-      <div class="founder">
-        <img src="founder4.jpg" alt="Jeswin Sabu">
-        <h3>Jeswin Sabu</h3>
-        <p>SJC22CS067</p>
-      </div>
-    </div>
-    
+
     <p>Prepared by:</p>
     <p>Stephin Mathew (SJC22CS120), Prapanch J (SJC22CS100), Kevin Biju (SJC22CS076), Jeswin Sabu (SJC22CS067)</p>
     <p>Students of St Joseph College Of Engineering And Technology, Palai</p>
-    
+
     <a href="home.html" class="home-btn">Home</a>
   </div>
 </body>
+
 </html>
