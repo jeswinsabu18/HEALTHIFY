@@ -1,9 +1,7 @@
 // Import from CDN properly
-import { createClient } from 'https://unpkg.com/@supabase/supabase-js@2';
-import { supabaseUrl, supabaseKey } from './config.js';
+//import { createClient } from 'https://unpkg.com/@supabase/supabase-js@2';
+import { supabase } from './config.js';
 
-// Initialize Supabase client
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Get parameters from URL
 const urlParams = new URLSearchParams(window.location.search);
