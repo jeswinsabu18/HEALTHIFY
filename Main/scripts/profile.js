@@ -299,6 +299,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 throw new Error(error.message);
             }
 
+            usernameDisplay.textContent = fullName;
             displaySuccess('Profile updated successfully!');
 
             // Refresh user data in local storage
