@@ -468,7 +468,7 @@
         import { supabase } from "./scripts/config.js";
         import { db } from "./scripts/firebase-storage-config.js";
         import { getCurrentUserId } from "./scripts/user-data-service.js";
-        import { collection, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+        import { collection, getDocs, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
         import { checkAuthAndRedirect, displayUserInfo, handleLogout } from './scripts/auth.js';
 
         document.addEventListener('DOMContentLoaded', async function () {
@@ -582,8 +582,9 @@
                             <p class="pdf-date">Uploaded: ${reportDate}</p>
                             <div class="pdf-actions">
                                 <button class="pdf-view-button" data-pdf-url="${pdfUrl}" data-report-id="${reportId}">View Report</button>
+                                <button class="pdf-view-button" data-report-id="${reportId}" style="background: linear-gradient(135deg, #28a745, #218838);">Show Recommendations</button>
                                 <button class="pdf-delete-button" data-report-id="${reportId}" data-pdf-url="${pdfUrl}">
-                                    <span class="delete-icon">🗑️</span> Delete
+                                <span class="delete-icon">🗑️</span> Delete
                                 </button>
                             </div>
                             <button class="toggle-details">
@@ -622,22 +623,142 @@
                             const pdfUrl = deleteButton.getAttribute('data-pdf-url');
                             await deleteReport(reportId, pdfUrl);
                         });
+
+                        const recommendationsButton = pdfContainer.querySelector('.pdf-view-button[style]');
+                        recommendationsButton.addEventListener('click', async () => {
+                            const reportId = recommendationsButton.getAttribute('data-report-id');
+
+                            // Check if recommendations section already exists
+                            let recommendationsSection = pdfContainer.querySelector('.recommendations-section');
+
+                            if (recommendationsSection && recommendationsSection.style.display !== 'none') {
+                                // Hide recommendations and change button text
+                                recommendationsSection.style.display = 'none';
+                                recommendationsButton.textContent = 'Show Recommendations';
+                            } else {
+                                // Either show existing or fetch new recommendations
+                                if (recommendationsSection) {
+                                    recommendationsSection.style.display = 'block';
+                                } else {
+                                    await showRecommendations(reportId, pdfContainer);
+                                }
+                                recommendationsButton.textContent = 'Hide Recommendations';
+                            }
+                        });
                     });
 
                 } catch (error) {
                     console.error('Error fetching PDFs:', error);
                     showNoReportsMessage("Error Loading Reports", "We encountered a problem loading your reports. Please try again later.");
                 }
-            }
 
-            function showNoReportsMessage(title, message) {
-                pdfList.innerHTML = `
-                    <div class="no-reports-container">
-                        <div class="no-reports-icon">📄</div>
-                        <h2 class="no-reports-title">${title}</h2>
-                        <p class="no-reports-message">${message}</p>
-                    </div>
-                `;
+
+                async function showRecommendations(reportId, pdfContainer) {
+                    try {
+                        const userId = await getCurrentUserId();
+                        if (!userId) {
+                            alert("You must be logged in to view recommendations.");
+                            return;
+                        }
+
+                        // Check if recommendations section already exists
+                        let recommendationsSection = pdfContainer.querySelector('.recommendations-section');
+                        if (recommendationsSection) {
+                            // Toggle visibility if it exists
+                            recommendationsSection.style.display =
+                                recommendationsSection.style.display === 'none' ? 'block' : 'none';
+                            return;
+                        }
+
+                        // Create new section for recommendations
+                        recommendationsSection = document.createElement('div');
+                        recommendationsSection.className = 'recommendations-section';
+                        recommendationsSection.style.marginTop = '15px';
+                        recommendationsSection.style.padding = '15px';
+                        recommendationsSection.style.backgroundColor = '#f8f9fa';
+                        recommendationsSection.style.borderRadius = '4px';
+                        recommendationsSection.innerHTML = '<div class="loader"></div><p>Loading recommendations...</p>';
+
+                        // Add the section to the container
+                        pdfContainer.appendChild(recommendationsSection);
+
+                        // Fetch recommendations from Firebase
+                        const recommendationRef = doc(db, "users", userId, "recommendations", reportId);
+                        const recommendationDoc = await getDoc(recommendationRef);
+
+                        if (recommendationDoc.exists()) {
+                            const data = recommendationDoc.data();
+
+                            let recommendationsHTML = '<h3>Diet Recommendations</h3>';
+
+                            // Diet section
+                            if (data.diet) {
+                                // Foods to limit
+                                if (data.diet.foodsToLimit && data.diet.foodsToLimit.length > 0) {
+                                    recommendationsHTML += '<h4>Foods to Limit</h4><ul>';
+                                    data.diet.foodsToLimit.forEach(food => {
+                                        recommendationsHTML += `<li>${food.name}: ${food.description || ''}</li>`;
+                                    });
+                                    recommendationsHTML += '</ul>';
+                                }
+
+                                // Nutrition guidelines
+                                if (data.diet.nutritionGuidelines) {
+                                    recommendationsHTML += '<h4>Nutrition Guidelines</h4>';
+                                    recommendationsHTML += `<p>${data.diet.nutritionGuidelines}</p>`;
+                                }
+
+                                // Recommended foods
+                                if (data.diet.recommendedFoods && data.diet.recommendedFoods.length > 0) {
+                                    recommendationsHTML += '<h4>Recommended Foods</h4><ul>';
+                                    data.diet.recommendedFoods.forEach(food => {
+                                        recommendationsHTML += `<li>${food.name}: ${food.description || ''}</li>`;
+                                    });
+                                    recommendationsHTML += '</ul>';
+                                }
+
+                                // Summary
+                                if (data.diet.summary) {
+                                    recommendationsHTML += '<h4>Summary</h4>';
+                                    recommendationsHTML += `<p>${data.diet.summary}</p>`;
+                                }
+                            }
+
+                            // Exercise section
+                            recommendationsHTML += '<h3>Exercise Recommendations</h3>';
+                            if (data.exercise && data.exercise.exercises) {
+                                recommendationsHTML += '<ul>';
+                                data.exercise.exercises.forEach(exercise => {
+                                    recommendationsHTML += `<li>${exercise.description || ''}</li>`;
+                                });
+                                recommendationsHTML += '</ul>';
+                            } else {
+                                recommendationsHTML += '<p>No exercise recommendations available</p>';
+                            }
+
+                            recommendationsSection.innerHTML = recommendationsHTML;
+                        } else {
+                            recommendationsSection.innerHTML = '<p>No recommendations found for this report.</p>';
+                        }
+                    } catch (error) {
+                        console.error('Error fetching recommendations:', error);
+                        if (pdfContainer.querySelector('.recommendations-section')) {
+                            pdfContainer.querySelector('.recommendations-section').innerHTML =
+                                '<p>Error loading recommendations. Please try again.</p>';
+                        }
+                    }
+                }
+
+
+                function showNoReportsMessage(title, message) {
+                    pdfList.innerHTML = `
+                        <div class="no-reports-container">
+                            <div class="no-reports-icon">📄</div>
+                            <h2 class="no-reports-title">${title}</h2>
+                            <p class="no-reports-message">${message}</p>
+                        </div>
+                    `;
+                }
             }
 
             await fetchUserPDFs();

@@ -528,7 +528,10 @@
 
 
     </div>
+
     <script type="module">
+
+        import { getDoc, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
         import { checkAuthAndRedirect, displayUserInfo, handleLogout } from './scripts/auth.js';
         import { db } from "./scripts/firebase-storage-config.js";
         import { getCurrentUserId, isAuthenticated } from "./scripts/user-data-service.js";
@@ -768,6 +771,7 @@ For diet recommendations:
 - Provide foods to limit, each with a specific reason tied to the test results and user profile.
 - Include nutrition guidelines tailored to the user's age, gender, weight, height, and medical history.
 
+
 For exercise recommendations, ensure:
 - Exactly 5 unique exercises are provided, each tailored to the specific test results, patient condition, and user profile (e.g., adjust intensity based on age/weight).
 - Exercises are not generic (e.g., avoid "brisk walking," "swimming," "yoga," or "body strengthening" unless explicitly justified with a unique variation).
@@ -901,6 +905,48 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
                 return null;
             }
         }
+
+        async function getOrGenerateRecommendations(bloodData, userProfile) {
+            try {
+                const userId = await getCurrentUserId();
+                if (!userId) {
+                    console.error("No user ID available");
+                    return null;
+                }
+
+                // Check if recommendations already exist for this blood report
+                const recommendationsRef = doc(db, "users", userId, "recommendations", bloodData.id);
+                const recommendationsDoc = await getDoc(recommendationsRef);
+
+                if (recommendationsDoc.exists()) {
+                    // Use existing recommendations
+                    console.log("Using existing recommendations from Firebase");
+                    return recommendationsDoc.data();
+                } else {
+                    // Generate new recommendations
+                    console.log("Generating new recommendations with Gemini");
+                    const aiRecommendations = await getGeminiRecommendations(bloodData, userProfile);
+
+                    // Store the new recommendations
+                    if (aiRecommendations) {
+                        await setDoc(recommendationsRef, {
+                            bloodReportId: bloodData.id,
+                            timestamp: new Date(),
+                            diet: aiRecommendations.diet,
+                            exercise: aiRecommendations.exercise
+                        });
+                        console.log("New recommendations saved to Firebase");
+                        return aiRecommendations;
+                    }
+                    return null;
+                }
+            } catch (error) {
+                console.error("Error with recommendations:", error);
+                // Fallback to generating recommendations without storing
+                return await getGeminiRecommendations(bloodData, userProfile);
+            }
+        }
+
         async function generateRecommendations(bloodData, userProfile) {
             if (!bloodData || !bloodData.analysisHTML) {
                 showNoDataMessage();
@@ -995,8 +1041,7 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
                     </div>
                 `;
             }
-
-            const aiRecommendations = await getGeminiRecommendations(bloodData, userProfile); // Pass userProfile
+            const aiRecommendations = await getOrGenerateRecommendations(bloodData, userProfile);
             document.getElementById('loadingIndicator').style.display = 'none';
 
             if (!aiRecommendations) {
@@ -1009,9 +1054,28 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
                 return;
             }
 
+            // Store the recommendations in Firebase
+            try {
+                const userId = await getCurrentUserId();
+                if (userId) {
+                    // Create a document with the blood report ID to link recommendations to the report
+                    const recommendationsRef = doc(db, "users", userId, "recommendations", bloodData.id);
+                    await setDoc(recommendationsRef, {
+                        bloodReportId: bloodData.id,
+                        timestamp: new Date(),
+                        diet: aiRecommendations.diet,
+                        exercise: aiRecommendations.exercise
+                    });
+                    console.log("Recommendations saved to Firebase");
+                }
+            } catch (error) {
+                console.error("Error saving recommendations to Firebase:", error);
+            }
+
             generateDietRecommendations(aiRecommendations);
             generateExerciseRecommendations(aiRecommendations);
         }
+
 
         function generateDietRecommendations(aiRecommendations) {
             const dietLoadingIndicator = document.getElementById('dietLoadingIndicator');
@@ -1095,7 +1159,7 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
 
             exerciseRecommendations.innerHTML = '';
             aiRecommendations.exercise.exercises.forEach(exercise => {
-                const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(exercise.name)}`;
+                const googleSearchUrl = `https://www.youtube.com/search?q=${encodeURIComponent(exercise.name)}`;
 
                 const exerciseItem = document.createElement('a');
                 exerciseItem.className = 'exercise-item';
@@ -1125,6 +1189,8 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
 
 
     </script>
+
+
 </body>
 
 </html>
