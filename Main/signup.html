@@ -43,6 +43,69 @@
             animation: glow 1.5s infinite alternate;
         }
 
+        .password-container {
+            position: relative;
+            width: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Ensure both password and text inputs have the same styling */
+        .password-container input[type="password"],
+        .password-container input[type="text"] {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid rgba(195, 218, 253, 0.705);
+            border-radius: 12px;
+            background-color: #ececec;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            color: #88c0f5;
+            padding-right: 45px;
+            /* Make space for the icon */
+        }
+
+        /* Focus styles for both input types */
+        .password-container input[type="password"]:focus,
+        .password-container input[type="text"]:focus {
+            outline: none;
+            border-color: #3498db;
+            background-color: #f5f5f5;
+            box-shadow: 0 0 0 4px rgb(68, 165, 255);
+        }
+
+        /* Placeholder styles for both input types */
+        .password-container input[type="password"]::placeholder,
+        .password-container input[type="text"]::placeholder {
+            color: #7a7a7a;
+            opacity: 0.7;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+        }
+
+        .toggle-icon {
+            width: 20px;
+            height: 20px;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+
+        .toggle-icon:hover {
+            opacity: 1;
+        }
+
         /* Optional: Fade-in animation */
         @keyframes fade-in {
             from {
@@ -279,7 +342,12 @@
 
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" id="password" placeholder="Choose a strong password" required>
+            <div class="password-container">
+                <input type="password" id="password" placeholder="Choose a strong password" required>
+                <span class="password-toggle" id="password-toggle">
+                    <img src="./assets/eye-open.png" alt="Show Password" class="toggle-icon">
+                </span>
+            </div>
         </div>
 
         <div class="form-group">
@@ -309,7 +377,28 @@
         <button type="submit" id="submitBtn">Create Account</button>
         <button type="button" class="home-button" onclick="window.location.href='index.html'">Back to Login</button>
     </form>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const passwordToggle = document.getElementById('password-toggle');
 
+            if (passwordToggle) {
+                passwordToggle.addEventListener('click', function () {
+                    const passwordInput = document.getElementById('password');
+                    const icon = passwordToggle.querySelector('.toggle-icon');
+
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        icon.src = './assets/eye-closed.png';
+                        icon.alt = 'Hide Password';
+                    } else {
+                        passwordInput.type = 'password';
+                        icon.src = './assets/eye-open.png';
+                        icon.alt = 'Show Password';
+                    }
+                });
+            }
+        });
+    </script>
     <script type="module" src="scripts/signup.js"></script>
 </body>
 
