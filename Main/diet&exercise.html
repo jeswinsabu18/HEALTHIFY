@@ -530,12 +530,11 @@
     </div>
 
     <script type="module">
-
         import { getDoc, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
         import { checkAuthAndRedirect, displayUserInfo, handleLogout } from './scripts/auth.js';
         import { db } from "./scripts/firebase-storage-config.js";
         import { getCurrentUserId, isAuthenticated } from "./scripts/user-data-service.js";
-        import { supabase } from "./scripts/config.js"; // Add this import
+        import { supabase } from "./scripts/config.js";
         import {
             collection,
             query,
@@ -543,28 +542,48 @@
             getDocs
         } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
-        const foodIconMap = {
-            "spinach": "🥬",
-            "salmon": "🐟",
-            "quinoa": "🌾",
-            "almonds": "🥜",
-            "chicken": "🍗",
-            "broccoli": "🥦",
-            "sweet potato": "🍠",
-            "avocado": "🥑",
-            "berries": "🍓",
-            "oats": "🥣",
-            "processed meats": "🥓",
-            "sugary drinks": "🥤",
-            "fried foods": "🍟",
-            "white bread": "🍞",
-            "cake": "🍰",
-            "cheese": "🧀",
-            "red meat": "🥩",
-            "butter": "🧈",
-            // Add more mappings as needed
-            "default": "🥗" // Fallback icon
-        };
+        // Simple hash function for profile versioning
+        function generateProfileHash(profile) {
+            const relevantFields = {
+                birthdate: profile.birthdate || '',
+                gender: profile.gender || '',
+                weight: profile.weight || '',
+                height: profile.height || '',
+                medicalInfo: profile.medicalInfo || '',
+                country: profile.country || '',
+                customCountry: profile.customCountry || ''
+            };
+            const str = JSON.stringify(relevantFields);
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32-bit integer
+            }
+            return hash.toString();
+        }
+
+        // const foodIconMap = {
+        //     "spinach": "🥬",
+        //     "salmon": "🐟",
+        //     "quinoa": "🌾",
+        //     "almonds": "🥜",
+        //     "chicken": "🍗",
+        //     "broccoli": "🥦",
+        //     "sweet potato": "🍠",
+        //     "avocado": "🥑",
+        //     "berries": "🍓",
+        //     "oats": "🥣",
+        //     "processed meats": "🥓",
+        //     "sugary drinks": "🥤",
+        //     "fried foods": "🍟",
+        //     "white bread": "🍞",
+        //     "cake": "🍰",
+        //     "cheese": "🧀",
+        //     "red meat": "🥩",
+        //     "butter": "🧈",
+        //     "default": "🥗"
+        // };
 
         async function initializeApp() {
             const isLoggedIn = await checkAuthAndRedirect();
@@ -580,11 +599,11 @@
             initializeUI();
 
             document.getElementById('patientSummary').innerHTML = `
-        <div class="parameter-card">
-            <h3>Loading Data</h3>
-            <p>Fetching your latest blood test data... <span class="spinner"></span></p>
-        </div>
-    `;
+                <div class="parameter-card">
+                    <h3>Loading Data</h3>
+                    <p>Fetching your latest blood test data... <span class="spinner"></span></p>
+                </div>
+            `;
 
             const latestReport = await getLatestBloodReport();
             if (latestReport) {
@@ -593,7 +612,7 @@
                 showNoDataMessage();
             }
         }
-        // Function to fetch user profile from Supabase
+
         async function fetchUserProfile() {
             try {
                 const { data: { user }, error } = await supabase.auth.getUser();
@@ -609,24 +628,17 @@
                 return null;
             }
         }
-        // Separate UI initialization into its own function
+
         function initializeUI() {
-            // Set up tab functionality
             const tabs = document.querySelectorAll('.tab');
             const tabContents = document.querySelectorAll('.tab-content');
 
             tabs.forEach(tab => {
                 tab.addEventListener('click', function () {
                     const tabId = this.getAttribute('data-tab');
-
-                    // Log for debugging
                     console.log(`Tab clicked: ${tabId}`);
-
-                    // Remove active class from all tabs and contents
                     tabs.forEach(t => t.classList.remove('active'));
                     tabContents.forEach(c => c.classList.remove('active'));
-
-                    // Add active class to selected tab and content
                     this.classList.add('active');
                     const content = document.getElementById(tabId);
                     if (content) {
@@ -638,9 +650,7 @@
             });
         }
 
-        // Make sure only one event listener is set up
         document.addEventListener('DOMContentLoaded', initializeApp);
-
 
         async function getLatestBloodReport() {
             try {
@@ -679,7 +689,6 @@
                 return null;
             }
         }
-
 
         function parseAnalysisHTML(analysisHTML) {
             const parser = new DOMParser();
@@ -747,7 +756,6 @@
             ).join('\n') || 'No test results available.';
             const patientInfoText = Object.entries(patientInfo).map(([key, value]) => `${key}: ${value}`).join(', ');
 
-            // Calculate age from birthdate if available
             let age = null;
             if (userProfile?.birthdate) {
                 const birthDate = new Date(userProfile.birthdate);
@@ -757,118 +765,74 @@
             const apiKey = 'AIzaSyCaBpjdVtlzriQUljPhAmxRem49DNBPFGU';
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-            const promptText = `Analyze the following blood test report and provide detailed diet and exercise recommendations based on the test results, patient information, and the following user profile:
+            const promptText = `Analyze the following blood test report and generate highly personalized diet and exercise recommendations based on test results, patient data, and this user profile:
 - Age: ${age || 'Not provided'}
 - Gender: ${userProfile?.gender || 'Not provided'}
 - Weight: ${userProfile?.weight ? `${userProfile.weight} kg` : 'Not provided'}
 - Height: ${userProfile?.height ? `${userProfile.height} cm` : 'Not provided'}
 - Medical History: ${userProfile?.medicalInfo || 'Not provided'}
--Country : ${userProfile?.country || 'Not provided'}
+- Country: ${userProfile?.country || 'Not provided'}
 
-Make recommendations highly personalized to the user profile and test results. Do not include generic or fallback recommendations—every suggestion must be directly tied to the analyzed data.
+### Guidelines:
 
-For diet recommendations:
-- Provide at least 4 foods to include, each with a specific reason tied to the test results and user profile.
-- Provide foods to limit, each with a specific reason tied to the test results and user profile.
-- Include nutrition guidelines tailored to the user's age, gender, weight, height, and medical history.Suggest Foods based on the conuntry of the user.
+Only generate specific, personalized recommendations. Avoid generic advice or fallback suggestions.
 
+**Diet**:
+- Recommend ≥4 foods to include. Each must be tied to specific test results and user profile.
+- Recommend foods to limit with reasons based on the report and profile.
+- Tailor nutrition guidelines to the user's age, gender, weight, height, medical history, and country.
+- Each food must include a relevant emoji icon. Icons **must match** the food (e.g., no broccoli emoji for almonds).
 
-For exercise recommendations, ensure:
-- Exactly 5 unique exercises are provided, each tailored to the specific test results, patient condition, and user profile (e.g., adjust intensity based on age/weight).
-- Exercises are not generic (e.g., avoid "brisk walking," "swimming," "yoga," or "body strengthening" unless explicitly justified with a unique variation).
-- Each exercise has a specific name (e.g., "Goblet Squat," "Plank to Shoulder Tap") and a step-by-step description.
-- Each exercise explicitly references the relevant test values and their status (e.g., "Due to low Hemoglobin of 10 g/dL...") and user profile (e.g., "Given your weight of 70 kg...") to justify the recommendation.
+**Exercise**:
+- Recommend exactly 5 **distinct** exercises.
+- Each must be tailored to relevant test results and user profile (e.g., low hemoglobin → low-impact routines).
+- Avoid generic exercises unless **justified** with a specific variation.
+- Each should have:
+  - Name (e.g., "Goblet Squat")
+  - Reason (explicitly tied to the test values and profile)
+  - 3+ steps
+  - Duration (e.g., "20 mins")
+  - A matching emoji icon (e.g., no yoga icon for a cardio routine)
 
-Test Results (including status and reference ranges):
+**Test Results**:
 ${testResultsText}
 
-Test Date:
+**Test Date**:
 ${testDate}
 
-Patient Information:
+**Patient Information**:
 ${patientInfoText}
 
-Return the response as a JSON object (and ONLY the JSON object, with no additional text, Markdown, or code block formatting) in the following format:
+### Output Format:
+Respond with **only a valid JSON object** using this structure (no markdown/code formatting):
 
 {
-    "diet": {
-        "summary": "A brief summary of dietary recommendations based on the test results and user profile.",
-        "recommendedFoods": [
-            {"name": "Food 1", "description": "Why this is recommended based on specific test results and user profile.", "icon": "🍎"},
-            {"name": "Food 2", "description": "Why this is recommended based on specific test results and user profile.", "icon": "🥦"}
-        ],
-        "foodsToLimit": [
-            {"name": "Food 1", "description": "Why this should be limited based on specific test results and user profile.", "icon": "🍩"},
-            {"name": "Food 2", "description": "Why this should be limited based on specific test results and user profile.", "icon": "🍟"}
-        ],
-        "nutritionGuidelines": [
-            "Guideline 1 tied to test results and user profile",
-            "Guideline 2 tied to test results and user profile"
-        ]
-    },
-    "exercise": {
-        "summary": "A brief summary of exercise recommendations tailored to the test results and user profile.",
-        "exercises": [
-            {
-                "name": "Specific Exercise Name 1",
-                "description": "Why this is recommended, explicitly referencing specific test results and user profile.",
-                "steps": [
-                    "Step 1: Description of the first step.",
-                    "Step 2: Description of the second step.",
-                    "Step 3: Continue detailing the steps."
-                ],
-                "duration": "20 mins",
-                "icon": "🏋️"
-            },
-            {
-                "name": "Specific Exercise Name 2",
-                "description": "Why this is recommended, explicitly referencing specific test results and user profile.",
-                "steps": [
-                    "Step 1: Description of the first step.",
-                    "Step 2: Description of the second step.",
-                    "Step 3: Continue detailing the steps."
-                ],
-                "duration": "15 mins",
-                "icon": "🤸"
-            },
-            {
-                "name": "Specific Exercise Name 3",
-                "description": "Why this is recommended, explicitly referencing specific test results and user profile.",
-                "steps": [
-                    "Step 1: Description of the first step.",
-                    "Step 2: Description of the second step.",
-                    "Step 3: Continue detailing the steps."
-                ],
-                "duration": "25 mins",
-                "icon": "🏃"
-            },
-            {
-                "name": "Specific Exercise Name 4",
-                "description": "Why this is recommended, explicitly referencing specific test results and user profile.",
-                "steps": [
-                    "Step 1: Description of the first step.",
-                    "Step 2: Description of the second step.",
-                    "Step 3: Continue detailing the steps."
-                ],
-                "duration": "30 mins",
-                "icon": "🚴"
-            },
-            {
-                "name": "Specific Exercise Name 5",
-                "description": "Why this is recommended, explicitly referencing specific test results and user profile.",
-                "steps": [
-                    "Step 1: Description of the first step.",
-                    "Step 2: Description of the second step.",
-                    "Step 3: Continue detailing the steps."
-                ],
-                "duration": "20 mins",
-                "icon": "🧘"
-            }
-        ]
-    }
-}`;
-
-            console.log(promptText);
+  "diet": {
+    "summary": "...",
+    "recommendedFoods": [
+      { "name": "...", "description": "...", "icon": "🍎" }
+    ],
+    "foodsToLimit": [
+      { "name": "...", "description": "...", "icon": "🍩" }
+    ],
+    "nutritionGuidelines": [
+      "..."
+    ]
+  },
+  "exercise": {
+    "summary": "...",
+    "exercises": [
+      {
+        "name": "...",
+        "description": "...",
+        "steps": ["...", "..."],
+        "duration": "...",
+        "icon": "🏃"
+      }
+    ]
+  }
+}
+`;
 
             try {
                 const response = await fetch(endpoint, {
@@ -915,35 +879,42 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
                     return null;
                 }
 
-                // Check if recommendations already exist for this blood report
+                const profileHash = generateProfileHash(userProfile);
                 const recommendationsRef = doc(db, "users", userId, "recommendations", bloodData.id);
                 const recommendationsDoc = await getDoc(recommendationsRef);
 
                 if (recommendationsDoc.exists()) {
-                    // Use existing recommendations
-                    console.log("Using existing recommendations from Firebase");
-                    return recommendationsDoc.data();
-                } else {
-                    // Generate new recommendations
-                    console.log("Generating new recommendations with Gemini");
-                    const aiRecommendations = await getGeminiRecommendations(bloodData, userProfile);
-
-                    // Store the new recommendations
-                    if (aiRecommendations) {
-                        await setDoc(recommendationsRef, {
-                            bloodReportId: bloodData.id,
-                            timestamp: new Date(),
-                            diet: aiRecommendations.diet,
-                            exercise: aiRecommendations.exercise
-                        });
-                        console.log("New recommendations saved to Firebase");
-                        return aiRecommendations;
+                    const storedData = recommendationsDoc.data();
+                    if (storedData.profileHash === profileHash) {
+                        console.log("Using cached recommendations from Firebase");
+                        return {
+                            diet: storedData.diet,
+                            exercise: storedData.exercise
+                        };
+                    } else {
+                        console.log("Profile hash changed; regenerating recommendations");
                     }
-                    return null;
+                } else {
+                    console.log("No cached recommendations found");
                 }
+
+                console.log("Generating new recommendations with Gemini");
+                const aiRecommendations = await getGeminiRecommendations(bloodData, userProfile);
+
+                if (aiRecommendations) {
+                    await setDoc(recommendationsRef, {
+                        bloodReportId: bloodData.id,
+                        timestamp: new Date(),
+                        profileHash,
+                        diet: aiRecommendations.diet,
+                        exercise: aiRecommendations.exercise
+                    });
+                    console.log("New recommendations saved to Firebase with profile hash");
+                    return aiRecommendations;
+                }
+                return null;
             } catch (error) {
                 console.error("Error with recommendations:", error);
-                // Fallback to generating recommendations without storing
                 return await getGeminiRecommendations(bloodData, userProfile);
             }
         }
@@ -959,13 +930,13 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
             const patientSummary = document.getElementById('patientSummary');
 
             patientSummary.innerHTML = `
-        <h3 class="section-title">Health Profile</h3>
-        <p>Recommendations based on your blood test from ${date}</p>
-        <div id="loadingIndicator">
-            <p>Generating personalized AI recommendations... <span class="spinner"></span></p>
-        </div>
-        <div id="abnormalParameters"></div>
-    `;
+                <h3 class="section-title">Health Profile</h3>
+                <p>Recommendations based on your blood test from ${date}</p>
+                <div id="loadingIndicator">
+                    <p>Generating personalized AI recommendations... <span class="spinner"></span></p>
+                </div>
+                <div id="abnormalParameters"></div>
+            `;
 
             const abnormalParamsContainer = document.getElementById('abnormalParameters');
             testResults.forEach(result => {
@@ -1042,35 +1013,18 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
                     </div>
                 `;
             }
+
             const aiRecommendations = await getOrGenerateRecommendations(bloodData, userProfile);
             document.getElementById('loadingIndicator').style.display = 'none';
 
             if (!aiRecommendations) {
                 patientSummary.innerHTML += `
-            <div class="parameter-card">
-                <h3>Error</h3>
-                <p>Unable to generate recommendations at this time. Please try again later.</p>
-            </div>
-        `;
+                    <div class="parameter-card">
+                        <h3>Error</h3>
+                        <p>Unable to generate recommendations at this time. Please try again later.</p>
+                    </div>
+                `;
                 return;
-            }
-
-            // Store the recommendations in Firebase
-            try {
-                const userId = await getCurrentUserId();
-                if (userId) {
-                    // Create a document with the blood report ID to link recommendations to the report
-                    const recommendationsRef = doc(db, "users", userId, "recommendations", bloodData.id);
-                    await setDoc(recommendationsRef, {
-                        bloodReportId: bloodData.id,
-                        timestamp: new Date(),
-                        diet: aiRecommendations.diet,
-                        exercise: aiRecommendations.exercise
-                    });
-                    console.log("Recommendations saved to Firebase");
-                }
-            } catch (error) {
-                console.error("Error saving recommendations to Firebase:", error);
             }
 
             generateDietRecommendations(aiRecommendations);
@@ -1094,19 +1048,17 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
 
             recommendedFoods.innerHTML = '';
             aiRecommendations.diet.recommendedFoods.forEach(food => {
-                const foodNameLower = food.name.toLowerCase();
-                const icon = foodIconMap[foodNameLower] || food.icon || foodIconMap["default"];
                 const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(food.name)}`;
 
                 const foodItem = document.createElement('a');
                 foodItem.className = 'food-item';
                 foodItem.href = googleSearchUrl;
-                foodItem.target = '_blank'; // Open in new tab
-                foodItem.style.cursor = 'pointer'; // Indicate clickability
-                foodItem.style.textDecoration = 'none'; // Remove underline from link
-                foodItem.style.color = 'inherit'; // Inherit text color
+                foodItem.target = '_blank';
+                foodItem.style.cursor = 'pointer';
+                foodItem.style.textDecoration = 'none';
+                foodItem.style.color = 'inherit';
                 foodItem.innerHTML = `
-            <div class="food-icon">${icon}</div>
+            <div class="food-icon">${food.icon || ''}</div>
             <div class="food-title">${food.name}</div>
             <div class="food-description">${food.description}</div>
         `;
@@ -1115,19 +1067,17 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
 
             limitFoods.innerHTML = '';
             aiRecommendations.diet.foodsToLimit.forEach(food => {
-                const foodNameLower = food.name.toLowerCase();
-                const icon = foodIconMap[foodNameLower] || food.icon || foodIconMap["default"];
                 const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(food.name)}`;
 
                 const foodItem = document.createElement('a');
                 foodItem.className = 'food-item';
                 foodItem.href = googleSearchUrl;
-                foodItem.target = '_blank'; // Open in new tab
-                foodItem.style.cursor = 'pointer'; // Indicate clickability
-                foodItem.style.textDecoration = 'none'; // Remove underline from link
-                foodItem.style.color = 'inherit'; // Inherit text color
+                foodItem.target = '_blank';
+                foodItem.style.cursor = 'pointer';
+                foodItem.style.textDecoration = 'none';
+                foodItem.style.color = 'inherit';
                 foodItem.innerHTML = `
-            <div class="food-icon">${icon}</div>
+            <div class="food-icon">${food.icon || ''}</div>
             <div class="food-title">${food.name}</div>
             <div class="food-description">${food.description}</div>
         `;
@@ -1165,12 +1115,12 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
                 const exerciseItem = document.createElement('a');
                 exerciseItem.className = 'exercise-item';
                 exerciseItem.href = googleSearchUrl;
-                exerciseItem.target = '_blank'; // Open in new tab
-                exerciseItem.style.cursor = 'pointer'; // Indicate clickability
-                exerciseItem.style.textDecoration = 'none'; // Remove underline from link
-                exerciseItem.style.color = 'inherit'; // Inherit text color
+                exerciseItem.target = '_blank';
+                exerciseItem.style.cursor = 'pointer';
+                exerciseItem.style.textDecoration = 'none';
+                exerciseItem.style.color = 'inherit';
                 exerciseItem.innerHTML = `
-            <div class="exercise-item-icon">${exercise.icon || '🏃‍♂️'}</div>
+            <div class="exercise-item-icon">${exercise.icon || ''}</div>
             <div class="exercise-item-content">
                 <div class="exercise-title">${exercise.name}</div>
                 <div class="exercise-description">${exercise.description}</div>
@@ -1186,8 +1136,6 @@ Return the response as a JSON object (and ONLY the JSON object, with no addition
             exerciseLoadingIndicator.style.display = 'none';
             exerciseContent.style.display = 'block';
         }
-        document.addEventListener('DOMContentLoaded', initializeApp);
-
 
     </script>
 
