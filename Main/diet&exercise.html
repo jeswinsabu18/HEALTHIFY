@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Health Recommendations | Blood Analysis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         :root {
             --primary-color: #2e7aad;
@@ -80,7 +83,6 @@
             background-color: #1f5f91;
         }
 
-
         .tabs {
             display: flex;
             background-color: #f0f7ff;
@@ -120,9 +122,7 @@
 
         .food-item:hover {
             background-color: #f0f7ff;
-            /* Light blue hover effect */
             transform: scale(1.02);
-            /* Slight scale-up */
             transition: background-color 0.3s, transform 0.2s;
         }
 
@@ -185,10 +185,14 @@
         }
 
         .food-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
             margin-top: 20px;
+            justify-content: space-between;
+            /* Distributes items evenly */
+            width: 100%;
+            /* Ensures the container uses full width */
         }
 
         .food-item {
@@ -197,11 +201,20 @@
             gap: 15px;
             background-color: white;
             border-radius: 8px;
-            padding: 20px;
+            padding: 30px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             border: 1px solid var(--border-color);
             min-height: 120px;
+            position: relative;
+            flex-basis: 24%;
+            /* Approx. 25% minus gap adjustment */
+            max-width: 24%;
+            /* Ensures consistent width */
         }
+
+
+
+
 
         .food-content {
             flex: 1;
@@ -252,9 +265,7 @@
 
         .exercise-item:hover {
             background-color: #f0f7ff;
-            /* Light blue hover effect */
             transform: scale(1.02);
-            /* Slight scale-up */
             transition: background-color 0.3s, transform 0.2s;
         }
 
@@ -263,6 +274,24 @@
             font-weight: bold;
             font-size: 20px;
             color: var(--secondary-color);
+        }
+
+        .food-title,
+        .exercise-title {
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 20px;
+            color: var(--secondary-color);
+            word-break: break-word;
+            /* Allows long words to wrap */
+            max-width: calc(100% - 60px);
+            /* Reserves space for the 40px button + 20px margin */
+        }
+
+        .food-title:hover,
+        .exercise-title:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
         }
 
         .food-description {
@@ -286,10 +315,12 @@
             align-items: flex-start;
             background-color: white;
             border-radius: 8px;
-            padding: 15px;
+            padding: 25px;
+            /* Increased from 20px */
             margin-bottom: 15px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             border: 1px solid var(--border-color);
+            position: relative;
         }
 
         .exercise-item-icon {
@@ -403,6 +434,34 @@
             margin-top: 4px;
         }
 
+        .delete-icon {
+            position: absolute;
+            top: 15px;
+            /* Increased from 10px */
+            right: 15px;
+            /* Increased from 10px */
+            font-size: 24px;
+            color: var(--danger-color);
+            background-color: #f5d9d7;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 1px solid var(--danger-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .delete-icon:hover {
+            background-color: #e74c3c;
+            /* --danger-color */
+            color: white;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
         @media print {
             body {
                 background-color: white;
@@ -412,8 +471,6 @@
             .container {
                 box-shadow: none;
             }
-
-
 
             .tab-content {
                 display: block !important;
@@ -450,6 +507,17 @@
             .container {
                 padding: 0;
             }
+
+            .food-item,
+            .exercise-item {
+                padding: 20px;
+                /* Reduce on small screens */
+            }
+
+            .delete-icon {
+                top: 10px;
+                right: 10px;
+            }
         }
 
         #logoutBtn:hover {
@@ -459,10 +527,8 @@
 </head>
 
 <body>
-
     <div class="container">
         <header>
-
             <div class="Login">
                 <a href="profile.html" class="user-info-link">
                     <div class="user-info">
@@ -471,7 +537,6 @@
                     </div>
                 </a>
             </div>
-
             <h1>Diet & Exercise Recommendations</h1>
             <p>Personalized advice based on your blood test results.</p>
         </header>
@@ -482,7 +547,6 @@
             <a href="progress.html">Track Progress</a>
             <a href="storage.html" aria-label="Storage">Storage</a>
             <a href="#" id="logoutBtn" aria-label="Logout">Logout</a>
-
         </nav>
 
         <div class="tabs">
@@ -492,9 +556,7 @@
         </div>
 
         <div id="overview" class="tab-content active">
-            <div id="patientSummary">
-                <!-- Summary content will be populated here -->
-            </div>
+            <div id="patientSummary"></div>
         </div>
 
         <div id="diet" class="tab-content">
@@ -525,8 +587,6 @@
                 <div id="exerciseRecommendations" class="exercise-recommendations"></div>
             </div>
         </div>
-
-
     </div>
 
     <script type="module">
@@ -542,7 +602,6 @@
             getDocs
         } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
 
-        // Simple hash function for profile versioning
         function generateProfileHash(profile) {
             const relevantFields = {
                 birthdate: profile.birthdate || '',
@@ -558,32 +617,10 @@
             for (let i = 0; i < str.length; i++) {
                 const char = str.charCodeAt(i);
                 hash = ((hash << 5) - hash) + char;
-                hash = hash & hash; // Convert to 32-bit integer
+                hash = hash & hash;
             }
             return hash.toString();
         }
-
-        // const foodIconMap = {
-        //     "spinach": "🥬",
-        //     "salmon": "🐟",
-        //     "quinoa": "🌾",
-        //     "almonds": "🥜",
-        //     "chicken": "🍗",
-        //     "broccoli": "🥦",
-        //     "sweet potato": "🍠",
-        //     "avocado": "🥑",
-        //     "berries": "🍓",
-        //     "oats": "🥣",
-        //     "processed meats": "🥓",
-        //     "sugary drinks": "🥤",
-        //     "fried foods": "🍟",
-        //     "white bread": "🍞",
-        //     "cake": "🍰",
-        //     "cheese": "🧀",
-        //     "red meat": "🥩",
-        //     "butter": "🧈",
-        //     "default": "🥗"
-        // };
 
         async function initializeApp() {
             const isLoggedIn = await checkAuthAndRedirect();
@@ -871,6 +908,102 @@ Respond with **only a valid JSON object** using this structure (no markdown/code
             }
         }
 
+        async function getSingleGeminiRecommendation(type, bloodData, userProfile, existingItems) {
+            if (!bloodData || !bloodData.analysisHTML) return null;
+
+            const { testResults, patientInfo } = parseAnalysisHTML(bloodData.analysisHTML);
+            const testDate = new Date(bloodData.date).toLocaleDateString();
+            const testResultsText = testResults.map(result =>
+                `- ${result.testName}: ${result.result} ${result.unit} (${result.status}, Reference: ${result.referenceRange})`
+            ).join('\n') || 'No test results available.';
+            const patientInfoText = Object.entries(patientInfo).map(([key, value]) => `${key}: ${value}`).join(', ');
+
+            let age = null;
+            if (userProfile?.birthdate) {
+                const birthDate = new Date(userProfile.birthdate);
+                age = new Date().getFullYear() - birthDate.getFullYear();
+            }
+
+            const apiKey = 'AIzaSyCaBpjdVtlzriQUljPhAmxRem49DNBPFGU';
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            const existingItemsText = existingItems.length > 0
+                ? `**Existing ${type === 'exercises' ? 'Exercises' : 'Foods'} (Do Not Recommend These)**:\n${existingItems.map(item => `- ${item.name}`).join('\n')}`
+                : 'No existing items to exclude.';
+
+            const promptText = `Generate a single ${type === 'exercises' ? 'exercise' : 'food'} recommendation to replace a removed item, tailored to the user's blood test results and profile:
+- Type: ${type === 'recommendedFoods' ? 'food to include' : type === 'foodsToLimit' ? 'food to limit' : 'exercise'}
+- Age: ${age || 'Not provided'}
+- Gender: ${userProfile?.gender || 'Not provided'}
+- Weight: ${userProfile?.weight ? `${userProfile.weight} kg` : 'Not provided'}
+- Height: ${userProfile?.height ? `${userProfile.height} cm` : 'Not provided'}
+- Medical History: ${userProfile?.medicalInfo || 'Not provided'}
+- Country: ${userProfile?.country || 'Not provided'}
+
+### Guidelines:
+- Provide one specific recommendation tied to the test results and profile.
+- **Do not recommend any item listed below** to avoid duplicates.
+- For foods, include a matching emoji icon (e.g., apple → 🍎, not 🥦).
+- For exercises, include:
+  - Name (e.g., "Goblet Squat")
+  - Reason (tied to test values/profile)
+  - 3+ steps
+  - Duration (e.g., "20 mins")
+  - Matching emoji icon
+- Avoid generic suggestions.
+
+${existingItemsText}
+
+**Test Results**:
+${testResultsText}
+
+**Test Date**:
+${testDate}
+
+**Patient Information**:
+${patientInfoText}
+
+### Output Format:
+Return a JSON object:
+${type === 'exercises' ?
+                    `{ "name": "...", "description": "...", "steps": ["...", "..."], "duration": "...", "icon": "🏃" }` :
+                    `{ "name": "...", "description": "...", "icon": "🍎" }`
+                }
+`;
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: promptText }] }],
+                        safetySettings: [
+                            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+                            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+                            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+                            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' }
+                        ]
+                    })
+                });
+
+                if (!response.ok) throw new Error(`API request failed: ${response.status}`);
+
+                const data = await response.json();
+                if (data.candidates && data.candidates.length > 0) {
+                    let generatedText = data.candidates[0].content.parts[0].text.trim();
+                    generatedText = generatedText.replace(/^```json\n|\n```$/g, '');
+                    const jsonMatch = generatedText.match(/{[\s\S]*}/);
+                    if (jsonMatch) generatedText = jsonMatch[0];
+                    return JSON.parse(generatedText);
+                }
+                return null;
+            } catch (error) {
+                console.error('Error fetching single recommendation:', error);
+                return null;
+            }
+        }
+
+
         async function getOrGenerateRecommendations(bloodData, userProfile) {
             try {
                 const userId = await getCurrentUserId();
@@ -916,6 +1049,62 @@ Respond with **only a valid JSON object** using this structure (no markdown/code
             } catch (error) {
                 console.error("Error with recommendations:", error);
                 return await getGeminiRecommendations(bloodData, userProfile);
+            }
+        }
+
+        async function deleteItem(type, index, bloodData, userProfile) {
+            if (!confirm('Are you sure you want to remove this item?')) return null;
+
+            try {
+                const userId = await getCurrentUserId();
+                const recommendationsRef = doc(db, "users", userId, "recommendations", bloodData.id);
+                const recommendationsDoc = await getDoc(recommendationsRef);
+
+                if (!recommendationsDoc.exists()) {
+                    console.error("No recommendations found");
+                    return null;
+                }
+
+                const data = recommendationsDoc.data();
+                let updatedItems = [];
+                let existingItems = [];
+
+                if (type === 'recommendedFoods') {
+                    updatedItems = [...data.diet.recommendedFoods];
+                    existingItems = updatedItems.filter((_, i) => i !== index); // Exclude item being deleted
+                    updatedItems.splice(index, 1);
+                    data.diet.recommendedFoods = updatedItems;
+                } else if (type === 'foodsToLimit') {
+                    updatedItems = [...data.diet.foodsToLimit];
+                    existingItems = updatedItems.filter((_, i) => i !== index);
+                    updatedItems.splice(index, 1);
+                    data.diet.foodsToLimit = updatedItems;
+                } else if (type === 'exercises') {
+                    updatedItems = [...data.exercise.exercises];
+                    existingItems = updatedItems.filter((_, i) => i !== index);
+                    updatedItems.splice(index, 1);
+                    data.exercise.exercises = updatedItems;
+                }
+
+                const newItem = await getSingleGeminiRecommendation(type, bloodData, userProfile, existingItems);
+                if (newItem) {
+                    if (type === 'recommendedFoods') {
+                        data.diet.recommendedFoods.push(newItem);
+                    } else if (type === 'foodsToLimit') {
+                        data.diet.foodsToLimit.push(newItem);
+                    } else if (type === 'exercises') {
+                        data.exercise.exercises.push(newItem);
+                    }
+                } else {
+                    console.warn('No replacement item received from API');
+                }
+
+                await setDoc(recommendationsRef, data, { merge: true });
+                return data;
+            } catch (error) {
+                console.error('Error deleting item:', error);
+                alert('Failed to delete item. Please try again.');
+                return null;
             }
         }
 
@@ -1031,7 +1220,6 @@ Respond with **only a valid JSON object** using this structure (no markdown/code
             generateExerciseRecommendations(aiRecommendations);
         }
 
-
         function generateDietRecommendations(aiRecommendations) {
             const dietLoadingIndicator = document.getElementById('dietLoadingIndicator');
             const dietContent = document.getElementById('dietContent');
@@ -1047,39 +1235,33 @@ Respond with **only a valid JSON object** using this structure (no markdown/code
     `;
 
             recommendedFoods.innerHTML = '';
-            aiRecommendations.diet.recommendedFoods.forEach(food => {
-                const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(food.name)}`;
-
-                const foodItem = document.createElement('a');
+            aiRecommendations.diet.recommendedFoods.forEach((food, index) => {
+                const foodItem = document.createElement('div');
                 foodItem.className = 'food-item';
-                foodItem.href = googleSearchUrl;
-                foodItem.target = '_blank';
-                foodItem.style.cursor = 'pointer';
-                foodItem.style.textDecoration = 'none';
-                foodItem.style.color = 'inherit';
+                foodItem.dataset.id = `recommended-${index}`;
                 foodItem.innerHTML = `
             <div class="food-icon">${food.icon || ''}</div>
-            <div class="food-title">${food.name}</div>
-            <div class="food-description">${food.description}</div>
+            <div class="food-content">
+                <a href="https://www.google.com/search?q=${encodeURIComponent(food.name)}" target="_blank" class="food-title">${food.name}</a>
+                <div class="food-description">${food.description}</div>
+            </div>
+            <i class="fas fa-times delete-icon" title="Remove Item"></i>
         `;
                 recommendedFoods.appendChild(foodItem);
             });
 
             limitFoods.innerHTML = '';
-            aiRecommendations.diet.foodsToLimit.forEach(food => {
-                const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(food.name)}`;
-
-                const foodItem = document.createElement('a');
+            aiRecommendations.diet.foodsToLimit.forEach((food, index) => {
+                const foodItem = document.createElement('div');
                 foodItem.className = 'food-item';
-                foodItem.href = googleSearchUrl;
-                foodItem.target = '_blank';
-                foodItem.style.cursor = 'pointer';
-                foodItem.style.textDecoration = 'none';
-                foodItem.style.color = 'inherit';
+                foodItem.dataset.id = `limit-${index}`;
                 foodItem.innerHTML = `
             <div class="food-icon">${food.icon || ''}</div>
-            <div class="food-title">${food.name}</div>
-            <div class="food-description">${food.description}</div>
+            <div class="food-content">
+                <a href="https://www.google.com/search?q=${encodeURIComponent(food.name)}" target="_blank" class="food-title">${food.name}</a>
+                <div class="food-description">${food.description}</div>
+            </div>
+            <i class="fas fa-times delete-icon" title="Remove Item"></i>
         `;
                 limitFoods.appendChild(foodItem);
             });
@@ -1091,9 +1273,40 @@ Respond with **only a valid JSON object** using this structure (no markdown/code
                 nutritionGuidelines.appendChild(li);
             });
 
+            document.querySelectorAll('#recommendedFoods .delete-icon').forEach((icon, idx) => {
+                icon.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const itemElement = e.target.closest('.food-item');
+                    itemElement.style.opacity = '0.5';
+                    const latestReport = await getLatestBloodReport();
+                    const userProfile = await fetchUserProfile();
+                    const newRecommendations = await deleteItem('recommendedFoods', idx, latestReport, userProfile);
+                    if (newRecommendations) {
+                        generateDietRecommendations(newRecommendations);
+                    }
+                    itemElement.style.opacity = '1';
+                });
+            });
+
+            document.querySelectorAll('#limitFoods .delete-icon').forEach((icon, idx) => {
+                icon.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const itemElement = e.target.closest('.food-item');
+                    itemElement.style.opacity = '0.5';
+                    const latestReport = await getLatestBloodReport();
+                    const userProfile = await fetchUserProfile();
+                    const newRecommendations = await deleteItem('foodsToLimit', idx, latestReport, userProfile);
+                    if (newRecommendations) {
+                        generateDietRecommendations(newRecommendations);
+                    }
+                    itemElement.style.opacity = '1';
+                });
+            });
+
             dietLoadingIndicator.style.display = 'none';
             dietContent.style.display = 'block';
         }
+
 
 
         function generateExerciseRecommendations(aiRecommendations) {
@@ -1109,28 +1322,38 @@ Respond with **only a valid JSON object** using this structure (no markdown/code
     `;
 
             exerciseRecommendations.innerHTML = '';
-            aiRecommendations.exercise.exercises.forEach(exercise => {
-                const googleSearchUrl = `https://www.youtube.com/search?q=${encodeURIComponent(exercise.name)}`;
-
-                const exerciseItem = document.createElement('a');
+            aiRecommendations.exercise.exercises.forEach((exercise, index) => {
+                const exerciseItem = document.createElement('div');
                 exerciseItem.className = 'exercise-item';
-                exerciseItem.href = googleSearchUrl;
-                exerciseItem.target = '_blank';
-                exerciseItem.style.cursor = 'pointer';
-                exerciseItem.style.textDecoration = 'none';
-                exerciseItem.style.color = 'inherit';
+                exerciseItem.dataset.id = `exercise-${index}`;
                 exerciseItem.innerHTML = `
             <div class="exercise-item-icon">${exercise.icon || ''}</div>
             <div class="exercise-item-content">
-                <div class="exercise-title">${exercise.name}</div>
+                <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(exercise.name + ' exercise')}" target="_blank" class="exercise-title">${exercise.name}</a>
                 <div class="exercise-description">${exercise.description}</div>
                 <ol class="exercise-steps">
                     ${exercise.steps.map(step => `<li>${step}</li>`).join('')}
                 </ol>
                 <div class="exercise-duration">Duration: ${exercise.duration}</div>
             </div>
+            <i class="fas fa-times delete-icon" title="Remove Item"></i>
         `;
                 exerciseRecommendations.appendChild(exerciseItem);
+            });
+
+            document.querySelectorAll('#exerciseRecommendations .delete-icon').forEach((icon, idx) => {
+                icon.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const itemElement = e.target.closest('.exercise-item');
+                    itemElement.style.opacity = '0.5';
+                    const latestReport = await getLatestBloodReport();
+                    const userProfile = await fetchUserProfile();
+                    const newRecommendations = await deleteItem('exercises', idx, latestReport, userProfile);
+                    if (newRecommendations) {
+                        generateExerciseRecommendations(newRecommendations);
+                    }
+                    itemElement.style.opacity = '1';
+                });
             });
 
             exerciseLoadingIndicator.style.display = 'none';
@@ -1138,8 +1361,6 @@ Respond with **only a valid JSON object** using this structure (no markdown/code
         }
 
     </script>
-
-
 </body>
 
 </html>
