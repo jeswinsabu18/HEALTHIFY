@@ -714,6 +714,7 @@ If it is a blood test report, proceed with the following analysis:
   - Interpret the value by multiplying by 1000 (e.g., "251 x1000/cumm" should be extracted as 251000).
   - Interpret the reference range in the same unit (e.g., "150 - 450" for PLC means 150000 - 450000).
   - Compare the adjusted value to the adjusted range to determine the status.
+  After extracting and determining the status of all test results, sort the rows in the table in the following order of priority: High first, then Low, then Borderline, and finally Normal.
 - For each abnormal value (High or Low), provide a brief interpretation (1-2 lines max) in a separate section, considering the user's age, gender, weight, height, and medical history:
   - Age: ${age || 'Not provided'}
   - Gender: ${userProfile?.gender || 'Not provided'}

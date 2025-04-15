@@ -533,11 +533,11 @@
             async function fetchUserPDFs() {
                 try {
                     pdfList.innerHTML = `
-                        <div class="loading-container" id="loadingContainer">
-                            <div class="loader"></div>
-                            <p class="loading-text">Loading your reports...</p>
-                        </div>
-                    `;
+            <div class="loading-container" id="loadingContainer">
+                <div class="loader"></div>
+                <p class="loading-text">Loading your reports...</p>
+            </div>
+        `;
 
                     const startTime = Date.now();
                     const userId = await getCurrentUserId();
@@ -559,10 +559,16 @@
                         return;
                     }
 
+                    // Convert to array and sort by date (newest first)
+                    const reports = [];
+                    querySnapshot.forEach(doc => {
+                        reports.push({ id: doc.id, data: doc.data() });
+                    });
+                    reports.sort((a, b) => (b.data.date?.toDate?.() || 0) - (a.data.date?.toDate?.() || 0));
+
                     pdfList.innerHTML = '';
 
-                    querySnapshot.forEach(doc => {
-                        const data = doc.data();
+                    reports.forEach(({ id, data }) => {
                         const reportDate = data.date && data.date.toDate ?
                             new Date(data.date.toDate()).toLocaleDateString() :
                             'Unknown date';
@@ -572,30 +578,30 @@
                             'Blood Report';
 
                         const pdfUrl = data.pdfUrl || '';
-                        const reportId = doc.id;
+                        const reportId = id;
                         const analysisHTML = data.analysisHTML || '<p>No analysis available</p>';
 
                         const pdfContainer = document.createElement('div');
                         pdfContainer.classList.add('pdf-container');
                         pdfContainer.innerHTML = `
-                            <h3 class="pdf-title">${fileName}</h3>
-                            <p class="pdf-date">Uploaded: ${reportDate}</p>
-                            <div class="pdf-actions">
-                                <button class="pdf-view-button" data-pdf-url="${pdfUrl}" data-report-id="${reportId}">View Report</button>
-                                <button class="pdf-view-button" data-report-id="${reportId}" style="background: linear-gradient(135deg, #28a745, #218838);">Show Recommendations</button>
-                                <button class="pdf-delete-button" data-report-id="${reportId}" data-pdf-url="${pdfUrl}">
-                                <span class="delete-icon">🗑️</span> Delete
-                                </button>
-                            </div>
-                            <button class="toggle-details">
-                                <span class="toggle-icon">▼</span> Show Analysis
-                            </button>
-                            <div class="pdf-details">
-                                <div class="pdf-details-content analysis-content">
-                                    ${analysisHTML}
-                                </div>
-                            </div>
-                        `;
+                <h3 class="pdf-title">${fileName}</h3>
+                <p class="pdf-date">Uploaded: ${reportDate}</p>
+                <div class="pdf-actions">
+                    <button class="pdf-view-button" data-pdf-url="${pdfUrl}" data-report-id="${reportId}">View Report</button>
+                    <button class="pdf-view-button" data-report-id="${reportId}" style="background: linear-gradient(135deg, #28a745, #218838);">Show Recommendations</button>
+                    <button class="pdf-delete-button" data-report-id="${reportId}" data-pdf-url="${pdfUrl}">
+                        <span class="delete-icon">🗑️</span> Delete
+                    </button>
+                </div>
+                <button class="toggle-details">
+                    <span class="toggle-icon">▼</span> Show Analysis
+                </button>
+                <div class="pdf-details">
+                    <div class="pdf-details-content analysis-content">
+                        ${analysisHTML}
+                    </div>
+                </div>
+            `;
 
                         pdfList.appendChild(pdfContainer);
 
@@ -651,6 +657,7 @@
                     console.error('Error fetching PDFs:', error);
                     showNoReportsMessage("Error Loading Reports", "We encountered a problem loading your reports. Please try again later.");
                 }
+
 
 
                 async function showRecommendations(reportId, pdfContainer) {

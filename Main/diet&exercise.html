@@ -763,13 +763,14 @@
 - Weight: ${userProfile?.weight ? `${userProfile.weight} kg` : 'Not provided'}
 - Height: ${userProfile?.height ? `${userProfile.height} cm` : 'Not provided'}
 - Medical History: ${userProfile?.medicalInfo || 'Not provided'}
+-Country : ${userProfile?.country || 'Not provided'}
 
 Make recommendations highly personalized to the user profile and test results. Do not include generic or fallback recommendations—every suggestion must be directly tied to the analyzed data.
 
 For diet recommendations:
 - Provide at least 4 foods to include, each with a specific reason tied to the test results and user profile.
 - Provide foods to limit, each with a specific reason tied to the test results and user profile.
-- Include nutrition guidelines tailored to the user's age, gender, weight, height, and medical history.
+- Include nutrition guidelines tailored to the user's age, gender, weight, height, and medical history.Suggest Foods based on the conuntry of the user.
 
 
 For exercise recommendations, ensure:

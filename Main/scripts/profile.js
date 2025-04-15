@@ -14,6 +14,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     const spinner = document.getElementById('spinner');
     const usernameDisplay = document.getElementById('username');
     const logoutBtn = document.querySelectorAll('#logoutBtn');
+    const countryField = document.getElementById('country');
+    const customCountryGroup = document.getElementById('custom-country-group');
+    const customCountryField = document.getElementById('custom-country');
+
+    countryField.addEventListener('change', () => {
+        if (countryField.value === 'Other') {
+            customCountryGroup.style.display = 'block';
+        } else {
+            customCountryGroup.style.display = 'none';
+            customCountryField.value = '';
+        }
+    });
+
+
 
     // Avatar elements
     const avatarContainer = document.getElementById('avatar-container');
@@ -111,6 +125,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             weightField.value = userData.weight || '';
             heightField.value = userData.height || '';
             medicalInfoField.value = userData.medicalInfo || '';
+
+            countryField.value = userData.country || '';
+            if (userData.country === 'Other') {
+                customCountryGroup.style.display = 'block';
+                customCountryField.value = userData.customCountry || '';
+            }
+
 
             // Display avatar if available
             if (userData.avatarUrl) {
@@ -246,6 +267,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             const height = parseFloat(heightField.value);
             const medicalInfo = medicalInfoField.value.trim();
 
+            const country = countryField.value;
+            const customCountry = customCountryField.value.trim();
+
+            if (!country) {
+                throw new Error('Please select a country');
+            }
+            if (country === 'Other' && !customCountry) {
+                throw new Error('Please specify your country');
+            }
+
+
             if (!fullName) {
                 throw new Error('Full name is required');
             }
@@ -290,10 +322,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     weight,
                     height,
                     medicalInfo,
-                    // Include the avatar URL if it exists
+                    country,
+                    ...(country === 'Other' && { customCountry }),
                     ...(avatarUrl && { avatarUrl })
                 }
             });
+
 
             if (error) {
                 throw new Error(error.message);
