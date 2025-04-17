@@ -714,6 +714,7 @@ If it is a blood test report, proceed with the following analysis:
   - Interpret the value by multiplying by 1000 (e.g., "251 x1000/cumm" should be extracted as 251000).
   - Interpret the reference range in the same unit (e.g., "150 - 450" for PLC means 150000 - 450000).
   - Compare the adjusted value to the adjusted range to determine the status.
+  After extracting and determining the status of all test results, sort the rows in the table in the following order of priority: High first, then Low, then Borderline, and finally Normal.
 - For each abnormal value (High or Low), provide a brief interpretation (1-2 lines max) in a separate section, considering the user's age, gender, weight, height, and medical history:
   - Age: ${age || 'Not provided'}
   - Gender: ${userProfile?.gender || 'Not provided'}
@@ -799,10 +800,33 @@ Use this structure and these HTML classes:
 
                     // Fallback to regex extraction if no table found
                     const regexPatterns = {
-                        "Hemoglobin": /H(?:b|emoglobin)\s+(\d+\.?\d*)\s*(?:g\/dl|gm\/dl)/i,
+                        "Hemoglobin": /H(?:b|emoglobin)\s+(\d+\.?\d*)\s*(?:g\/dL|gm\/dL)/i,
                         "RBC count": /RBC\s+(?:count)?\s+(\d+\.?\d*)/i,
                         "Glucose": /(?:Glucose|FBS|Blood sugar)\s+(\d+\.?\d*)/i,
-                        "CRP": /CRP\s+(?:\(C reactive\s+protein\))?\s+(\d+\.?\d*)\s*mg\/L/i
+                        "CRP": /CRP\s+(?:\(C reactive\s+protein\))?\s+(\d+\.?\d*)\s*mg\/L/i,
+                        "WBC count": /(?:WBC|TLC)\s+(?:count)?\s+(\d+\.?\d*)/i,
+                        "Platelets": /(?:Platelet|PLC)\s+(?:count)?\s+(\d+\.?\d*)/i,
+                        "HbA1c": /HbA1c\s+(\d+\.?\d*)/i,
+                        "Creatinine": /Creatinine\s+(\d+\.?\d*)/i,
+                        "Cholesterol": /Cholesterol\s+(?:total)?\s+(\d+\.?\d*)/i,
+                        "Triglycerides": /Triglycerides\s+(\d+\.?\d*)/i,
+                        "HDL": /HDL\s+(?:cholesterol)?\s+(\d+\.?\d*)/i,
+                        "LDL": /LDL\s+(?:cholesterol)?\s+(\d+\.?\d*)/i,
+                        "VLDL": /VLDL\s+(?:cholesterol)?\s+(\d+\.?\d*)/i,
+                        "ESR": /ESR\s+(\d+\.?\d*)/i,
+                        "BUN": /(?:BUN|Blood Urea Nitrogen)\s+(\d+\.?\d*)/i,
+                        "Uric Acid": /Uric Acid\s+(\d+\.?\d*)/i,
+                        "Sodium": /Sodium\s+(\d+\.?\d*)/i,
+                        "Potassium": /Potassium\s+(\d+\.?\d*)/i,
+                        "Calcium": /Calcium\s+(\d+\.?\d*)/i,
+                        "Total Protein": /Total Protein\s+(\d+\.?\d*)/i,
+                        "Albumin": /Albumin\s+(\d+\.?\d*)/i,
+                        "Globulin": /Globulin\s+(\d+\.?\d*)/i,
+                        "AST": /(?:AST|SGOT)\s+(\d+\.?\d*)/i,
+                        "ALT": /(?:ALT|SGPT)\s+(\d+\.?\d*)/i,
+                        "ALP": /(?:ALP|Alkaline Phosphatase)\s+(\d+\.?\d*)/i,
+                        "Bilirubin": /Bilirubin\s+(?:total)?\s+(\d+\.?\d*)/i,
+                        "TSH": /TSH\s+(\d+\.?\d*)/i
                     };
 
                     for (let test in regexPatterns) {
@@ -818,18 +842,54 @@ Use this structure and these HTML classes:
                 // Map test names to keys for extractedValues
                 const testNameMap = {
                     "hb": "Hemoglobin",
+                    "hemoglobin": "Hemoglobin",
                     "hct": "PCV",
+                    "pcv": "PCV",
+                    "hematocrit": "PCV",
                     "rbc count": "RBC count",
+                    "rbc": "RBC count",
                     "tlc": "WBC count",
+                    "wbc count": "WBC count",
+                    "wbc": "WBC count",
                     "plc": "Platelets",
+                    "platelet count": "Platelets",
+                    "platelets": "Platelets",
                     "glucose": "Glucose",
+                    "fbs": "Glucose",
+                    "random glucose": "Glucose",
                     "hba1c": "HbA1c",
                     "creatinine": "Creatinine",
                     "cholesterol": "Cholesterol",
+                    "total cholesterol": "Cholesterol",
                     "triglycerides": "Triglycerides",
                     "hdl": "HDL",
+                    "hdl cholesterol": "HDL",
                     "ldl": "LDL",
-                    "vldl": "VLDL"
+                    "ldl cholesterol": "LDL",
+                    "vldl": "VLDL",
+                    "vldl cholesterol": "VLDL",
+                    "crp": "CRP",
+                    "c-reactive protein": "CRP",
+                    "esr": "ESR",
+                    "bun": "BUN",
+                    "blood urea nitrogen": "BUN",
+                    "uric acid": "Uric Acid",
+                    "sodium": "Sodium",
+                    "potassium": "Potassium",
+                    "calcium": "Calcium",
+                    "total protein": "Total Protein",
+                    "albumin": "Albumin",
+                    "globulin": "Globulin",
+                    "ast": "AST",
+                    "sgot": "AST",
+                    "alt": "ALT",
+                    "sgpt": "ALT",
+                    "alp": "ALP",
+                    "alkaline phosphatase": "ALP",
+                    "bilirubin": "Bilirubin",
+                    "total bilirubin": "Bilirubin",
+                    "tsh": "TSH",
+                    "thyroid stimulating hormone": "TSH"
                 };
 
                 tables.forEach(table => {

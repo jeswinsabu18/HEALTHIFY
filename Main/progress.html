@@ -5,9 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Track Progress - Healthify</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/2.1.0/chartjs-plugin-annotation.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -58,8 +59,6 @@
         #logoutBtn:hover {
             background-color: #dc3545;
         }
-
-
 
         .chart-container {
             width: 90%;
@@ -130,31 +129,25 @@
             border-radius: 4px;
         }
 
-        /* Loading animation styles */
         #loadingIndicator {
             padding: 30px;
             color: #3b637d;
-            /* Darker color for better visibility */
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 15px;
-            /* Space between text and spinner */
         }
 
         #loadingIndicator p {
             font-size: 1.5rem;
-            /* Larger text */
             font-weight: bold;
         }
 
         #loadingIndicator.loading::after {
             content: "";
             width: 40px;
-            /* Larger spinner */
             height: 40px;
             border: 5px solid #87bdd8;
-            /* Thicker border */
             border-radius: 50%;
             border-top-color: transparent;
             animation: spin 0.8s linear infinite;
@@ -165,7 +158,6 @@
                 transform: rotate(360deg);
             }
         }
-
 
         .Login {
             position: absolute;
@@ -196,32 +188,58 @@
             font-weight: bold;
         }
 
-        /* Add this at the end of the existing <style> section */
+        /* New styles for date range selector */
+        .date-range-selector {
+            margin: 1rem 0;
+            padding: 0.5rem;
+            background-color: #f2f2f2;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .date-range-selector label {
+            font-weight: bold;
+            color: #3b637d;
+        }
+
+        .date-range-selector select {
+            padding: 8px;
+            font-size: 1rem;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            background-color: white;
+            cursor: pointer;
+        }
+
+        .date-range-selector select:focus {
+            outline: none;
+            border-color: #3b637d;
+        }
+
         @media (max-width: 768px) {
             header {
                 padding: 0.5rem;
-                /* Reduce padding */
             }
 
             header h1 {
                 font-size: 1.5rem;
-                /* Smaller header */
             }
 
             header p {
                 font-size: 0.9rem;
-                /* Smaller subtext */
             }
 
             nav {
                 padding: 0.5rem;
                 display: flex;
                 flex-wrap: wrap;
-                /* Allow wrapping */
                 justify-content: center;
             }
 
-            nav Withdrawal {
+            nav a {
                 margin: 0.5rem;
                 padding: 6px 10px;
                 font-size: 0.9rem;
@@ -229,20 +247,17 @@
 
             .chart-container {
                 width: 95%;
-                /* Slightly wider on mobile */
                 padding: 0.5rem;
             }
 
             .individual-chart {
                 height: 250px;
-                /* Reduce chart height */
             }
 
             .chart-controls {
                 padding: 0.3rem;
                 display: flex;
                 flex-wrap: wrap;
-                /* Allow toggle buttons to wrap */
                 justify-content: center;
             }
 
@@ -252,14 +267,22 @@
                 font-size: 0.9rem;
             }
 
+            .date-range-selector {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .date-range-selector select {
+                width: 100%;
+                max-width: 200px;
+            }
+
             #loadingIndicator p {
                 font-size: 1.2rem;
-                /* Smaller loading text */
             }
 
             #loadingIndicator.loading::after {
                 width: 30px;
-                /* Smaller spinner */
                 height: 30px;
                 border-width: 4px;
             }
@@ -295,7 +318,6 @@
 
             .individual-chart {
                 height: 200px;
-                /* Further reduce chart height */
             }
 
             .test-toggle {
@@ -352,22 +374,29 @@
 
     <div class="chart-container">
         <h2>Health Metrics Over Time</h2>
-
+        <div class="date-range-selector">
+            <label for="dateRange">Select Date Range:</label>
+            <select id="dateRange">
+                <option value="1">Last 24 Hours</option>
+                <option value="5">Last 5 Days</option>
+                <option value="30">Last 30 Days</option>
+                <option value="90">Last 90 Days</option>
+                <option value="365">Last Year</option>
+                <option value="all" selected>All Time</option>
+            </select>
+        </div>
         <!-- Enhanced Loading Indicator with animation -->
         <div id="loadingIndicator" class="loading">
             <p>Loading Health Data...</p>
             <!-- Spinner will appear here via ::after -->
         </div>
-
         <!-- Make sure these start hidden -->
         <div class="chart-controls" id="testToggleContainer" style="display: none;">
             <!-- Test toggles will be generated here -->
         </div>
-
         <div id="chartsContainer" style="display: none;">
             <!-- Individual charts will be generated here -->
         </div>
-
         <div id="noDataMessage" style="display: none; margin-top: 20px; color: #666;">
             <p>No blood test data available. Please upload some reports first.</p>
             <a href="upld.html" class="button"
@@ -425,86 +454,93 @@
 
         // Initialize the application
         async function initializeApp() {
-
             const isLoggedIn = await checkAuthAndRedirect();
             if (!isLoggedIn) return;
 
-            // Get references to the elements we need to control visibility
+            // Get references to elements
             const loadingIndicator = document.getElementById('loadingIndicator');
             const noDataMessage = document.getElementById('noDataMessage');
             const chartsContainer = document.getElementById('chartsContainer');
             const testToggleContainer = document.getElementById('testToggleContainer');
+            const dateRangeSelect = document.getElementById('dateRange');
 
-            // --- Start: Show loading, hide everything else ---
+            // Show loading, hide everything else
             loadingIndicator.style.display = 'block';
             loadingIndicator.classList.add('loading');
             noDataMessage.style.display = 'none';
             chartsContainer.style.display = 'none';
             testToggleContainer.style.display = 'none';
-            // --- End: Initial State ---
 
             try {
-                const isLoggedIn = await isAuthenticated();
-                if (!isLoggedIn) {
+                if (!(await isAuthenticated())) {
                     window.location.href = 'index.html';
-                    return; // Stop execution if not logged in
+                    return;
                 }
 
                 console.log("Initializing charts: Fetching data...");
-                const reports = await getReportsFromStorage(); // Wait for data
-                console.log("Data fetched. Reports:", reports);
 
-                // --- Data fetch complete: Hide loading indicator ---
-                loadingIndicator.style.display = 'none';
-                loadingIndicator.classList.remove('loading');
-                // --- End: Loading Complete ---
-
-                // Now check if we actually got data
-                if (!Array.isArray(reports) || reports.length === 0) {
-                    console.log("No reports found. Displaying 'No Data' message.");
-                    // --- Start: Show 'No Data' message ---
-                    noDataMessage.style.display = 'block';
-                    chartsContainer.style.display = 'none'; // Ensure these remain hidden
+                async function refreshCharts() {
+                    // Show loading state
+                    loadingIndicator.style.display = 'block';
+                    loadingIndicator.classList.add('loading');
+                    noDataMessage.style.display = 'none';
+                    chartsContainer.style.display = 'none';
                     testToggleContainer.style.display = 'none';
-                    // --- End: No Data State ---
-                    return; // Stop execution, nothing more to do
+
+                    const dateRange = dateRangeSelect.value === 'all' ? null : parseInt(dateRangeSelect.value);
+                    const reports = await getReportsFromStorage(dateRange);
+                    console.log("Data fetched. Reports:", reports);
+
+                    // Hide loading indicator
+                    loadingIndicator.style.display = 'none';
+                    loadingIndicator.classList.remove('loading');
+
+                    // Check for data
+                    if (!Array.isArray(reports) || reports.length === 0) {
+                        console.log("No reports found for selected range.");
+                        noDataMessage.innerHTML = `<p>No blood test data available${dateRange ? ' for this period' : ''}. Please upload some reports${dateRange ? ' or select a different range' : ''}.</p><a href="upld.html" class="button" style="display: inline-block; margin-top: 10px; padding: 8px 16px; background-color: #87bdd8; color: white; text-decoration: none; border-radius: 4px;">Upload Reports</a>`;
+                        noDataMessage.style.display = 'block';
+                        chartsContainer.style.display = 'none';
+                        testToggleContainer.style.display = 'none';
+                        clearCharts();
+                        return;
+                    }
+
+                    // Show charts and toggles
+                    noDataMessage.style.display = 'none';
+                    chartsContainer.style.display = 'block';
+                    testToggleContainer.style.display = 'block';
+
+                    allTests = extractUniqueTests(reports);
+                    console.log("All unique tests identified:", allTests);
+
+                    createTestToggles(allTests);
+                    await updateCharts(reports);
+                    console.log("Charts updated/created.");
                 }
 
-                // --- Data Found: Show chart/toggle containers ---
-                console.log("Reports found. Preparing charts and toggles.");
-                noDataMessage.style.display = 'none'; // Ensure 'no data' message is hidden
-                chartsContainer.style.display = 'block';
-                testToggleContainer.style.display = 'block';
-                // --- End: Data Available State ---
+                // Initial load
+                await refreshCharts();
 
-                // Proceed with chart generation
-                allTests = extractUniqueTests(reports);
-                console.log("All unique tests identified:", allTests);
-
-                createTestToggles(allTests);
-                await updateCharts(reports); // Update/Create charts with the fetched data
-                console.log("Charts updated/created.");
+                // Update charts on date range change
+                dateRangeSelect.addEventListener('change', refreshCharts);
 
             } catch (error) {
-                console.error("Error during initialization or chart update:", error);
-                // --- Start: Handle Error State ---
-                loadingIndicator.style.display = 'none'; // Hide loading
+                console.error("Error during initialization:", error);
+                loadingIndicator.style.display = 'none';
                 loadingIndicator.classList.remove('loading');
-                chartsContainer.style.display = 'none'; // Hide content
+                chartsContainer.style.display = 'none';
                 testToggleContainer.style.display = 'none';
-
-                // Show an error message (can reuse noDataMessage or add a specific error div)
                 noDataMessage.innerHTML = `<p>Error loading health data. Please try refreshing the page.</p><p style="font-size: 0.8em; color: #dc3545;">${error.message}</p>`;
-                noDataMessage.style.borderColor = '#f5c6cb'; // Error styling
+                noDataMessage.style.borderColor = '#f5c6cb';
                 noDataMessage.style.backgroundColor = '#f8d7da';
                 noDataMessage.style.color = '#721c24';
                 noDataMessage.style.display = 'block';
-                // --- End: Error State ---
             }
         }
 
         // Fetch reports from Firebase
-        async function getReportsFromStorage() {
+        async function getReportsFromStorage(dateRangeDays = null) {
             try {
                 const userId = await getCurrentUserId();
                 console.log(userId);
@@ -518,7 +554,7 @@
                 const q = query(reportsRef, orderBy("date", "asc"));
                 const querySnapshot = await getDocs(q);
 
-                const reports = [];
+                let reports = [];
                 querySnapshot.forEach((doc) => {
                     const reportData = doc.data();
                     reports.push({
@@ -527,6 +563,13 @@
                         date: reportData.date.toDate().toISOString()
                     });
                 });
+
+                // Filter by date range
+                if (dateRangeDays) {
+                    const cutoff = new Date();
+                    cutoff.setDate(cutoff.getDate() - dateRangeDays);
+                    reports = reports.filter(report => new Date(report.date) >= cutoff);
+                }
 
                 return reports;
             } catch (error) {
@@ -640,15 +683,13 @@
                 let filteredDates = pairedData.map(item => item.date);
                 let filteredValues = pairedData.map(item => item.value);
 
-                // --- START: Modification for single data point ---
-                let showPoints = true; // Default: show points
+                // Handle single data point
+                let showPoints = true;
                 if (filteredValues.length === 1) {
-                    // Duplicate the single point to create a line
-                    filteredDates.push(filteredDates[0]); // Add the same date label again
-                    filteredValues.push(filteredValues[0]); // Add the same value again
+                    filteredDates.push(filteredDates[0]);
+                    filteredValues.push(filteredValues[0]);
                     console.log(`Duplicating single data point for ${testType} to draw a horizontal line.`);
                 }
-                // --- END: Modification for single data point ---
 
                 console.log(`Creating chart for ${testType}:`, filteredValues);
 
@@ -666,7 +707,6 @@
                 const range = testRanges[testType] || {};
                 let min, max;
 
-                // Use filtered values (potentially duplicated) for min/max calculation
                 const originalValuesForRange = pairedData.map(item => item.value);
                 if (originalValuesForRange.length > 0) {
                     min = Math.min(...originalValuesForRange);
@@ -803,6 +843,20 @@
                                         }
                                         return label;
                                     }
+                                }
+                            },
+                            zoom: {
+                                zoom: {
+                                    wheel: { enabled: true },
+                                    pinch: { enabled: true },
+                                    mode: 'x'
+                                },
+                                pan: {
+                                    enabled: true,
+                                    mode: 'x'
+                                },
+                                limits: {
+                                    x: { min: 'original', max: 'original' }
                                 }
                             }
                         }
